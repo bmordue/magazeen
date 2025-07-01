@@ -17,16 +17,17 @@ export function startInteractiveSession() {
     console.log('1. Add an article');
     console.log('2. Add an interest');
     console.log('3. Add a chat highlight');
-    console.log('4. Generate magazine');
-    console.log('5. View current content');
-    console.log('6. Exit');
+    console.log('4. Manage Claude Chats');
+    console.log('5. Generate magazine');
+    console.log('6. View current content');
+    console.log('7. Exit');
 
     const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout
     });
 
-    rl.question('\nEnter your choice (1-6): ', (choice) => {
+    rl.question('\nEnter your choice (1-7): ', (choice) => {
         switch(choice) {
             case '1':
                 promptForArticle(rl);
@@ -38,6 +39,9 @@ export function startInteractiveSession() {
                 promptForChatHighlight(rl);
                 break;
             case '4':
+                manageClaudeChats(rl);
+                break;
+            case '5':
                 magazineGenerator.generateMagazine()
                     .then(path => {
                         console.log(`\nMagazine generated: ${path}`);
@@ -48,11 +52,11 @@ export function startInteractiveSession() {
                         rl.close();
                     });
                 break;
-            case '5':
+            case '6':
                 showCurrentContent();
                 rl.close();
                 break;
-            case '6':
+            case '7':
             default:
                 rl.close();
                 break;
@@ -125,6 +129,7 @@ function showCurrentContent() {
     console.log(`Articles: ${contentManager.content.articles.length}`);
     console.log(`Interests: ${contentManager.content.interests.length}`);
     console.log(`Chat Highlights: ${contentManager.content.chatHighlights.length}`);
+    console.log(`Claude Chats: ${contentManager.content.claudeChats.length} (Selected: ${contentManager.content.claudeChats.filter(c => c.selected).length})`);
 
     if (contentManager.content.articles.length > 0) {
         console.log('\nRecent Articles:');
@@ -140,6 +145,54 @@ function showCurrentContent() {
         });
     }
 }
+
+function manageClaudeChats(rl, page = 1, pageSize = 10) {
+    const chats = contentManager.content.claudeChats;
+    const totalPages = Math.ceil(chats.length / pageSize);
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const chatsToShow = chats.slice(startIndex, endIndex);
+
+    console.log('\n=== Manage Claude Chats ===');
+    if (chats.length === 0) {
+        console.log('No Claude chats found. Import them first (e.g., using a command or by ensuring `claudeChats` in `magazine-content.json` is populated).');
+        rl.question('Press Enter to return to main menu...', () => startInteractiveSession());
+        return;
+    }
+
+    chatsToShow.forEach((chat, index) => {
+        const displayIndex = startIndex + index + 1;
+        console.log(`${displayIndex}. [${chat.selected ? 'X' : ' '}] ${chat.title} (ID: ${chat.id.substring(0, 8)}...)`);
+    });
+
+    console.log(`\nPage ${page}/${totalPages}. Total chats: ${chats.length}`);
+    console.log('Enter chat number to toggle selection, (N)ext page, (P)revious page, (B)ack to main menu:');
+
+    rl.question('Your choice: ', (choice) => {
+        const numChoice = parseInt(choice);
+        // Check if the choice is a number corresponding to an item on the current page
+        if (!isNaN(numChoice) && numChoice >= startIndex + 1 && numChoice <= Math.min(endIndex, chats.length)) {
+            const chatToToggle = chats[numChoice - 1]; // numChoice is 1-based index in the full list
+            if (chatToToggle) {
+                contentManager.toggleClaudeChatSelection(chatToToggle.id);
+            } else {
+                // This case should ideally not be reached if logic is correct
+                console.log('Error: Could not find the selected chat.');
+            }
+            manageClaudeChats(rl, page, pageSize); // Refresh current page
+        } else if (choice.toLowerCase() === 'n') {
+            manageClaudeChats(rl, Math.min(page + 1, totalPages), pageSize);
+        } else if (choice.toLowerCase() === 'p') {
+            manageClaudeChats(rl, Math.max(1, page - 1), pageSize);
+        } else if (choice.toLowerCase() === 'b') {
+            startInteractiveSession(); // Go back to main menu
+        } else {
+            console.log('Invalid choice. Please try again.');
+            manageClaudeChats(rl, page, pageSize); // Stay on current page
+        }
+    });
+}
+
 
 // Main CLI logic
 export function runCli() {
