@@ -10,7 +10,6 @@ import { ContentManager } from './contentManager.js';
 import { ArticleGenerator } from './articleGenerator.js';
 import { MagazineGenerator } from './magazineGenerator.js';
 import { fileURLToPath } from 'url'; // To resolve paths for MagazineGenerator
-import path from 'path'; // To resolve paths for MagazineGenerator
 
 
 // Middleware to parse URL-encoded bodies (as sent by HTML forms)
