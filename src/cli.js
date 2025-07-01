@@ -185,6 +185,7 @@ function manageClaudeChats(rl, page = 1, pageSize = 10) {
         } else if (choice.toLowerCase() === 'p') {
             manageClaudeChats(rl, Math.max(1, page - 1), pageSize);
         } else if (choice.toLowerCase() === 'b') {
+            rl.close();
             startInteractiveSession(); // Go back to main menu
         } else {
             console.log('Invalid choice. Please try again.');
