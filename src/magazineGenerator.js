@@ -38,7 +38,7 @@ export class MagazineGenerator {
             if (chat.selected) {
                 let chatContent = `<h2>${chat.title}</h2>`;
                 chat.conversation.forEach(message => {
-                    const messageDate = message.timestamp ? new Date(message.timestamp).toLocaleString() : 'N/A';
+                    const messageDate = message.timestamp ? new Date(message.timestamp).toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : 'N/A';
                     chatContent += `
                         <div style="margin-bottom: 10px;">
                             <strong>${message.sender === 'human' ? 'You' : 'Claude'}</strong> (${messageDate}):<br/>
