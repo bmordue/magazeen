@@ -1,15 +1,21 @@
-import { existsSync, readFileSync, writeFileSync } from 'fs';
+import * as fs from 'fs'; // Import fs for default usage
 
 export class ContentManager {
-    constructor(contentFile = 'out/magazine-content.json') {
+    constructor(contentFile = 'out/magazine-content.json', fsUtils = null) {
         this.contentFile = contentFile;
+        // Use provided fs utilities or default to Node's fs module
+        this.fsUtils = fsUtils || {
+            existsSync: fs.existsSync,
+            readFileSync: fs.readFileSync,
+            writeFileSync: fs.writeFileSync,
+        };
         this.loadContent();
     }
 
     loadContent() {
         try {
-            if (existsSync(this.contentFile)) {
-                this.content = JSON.parse(readFileSync(this.contentFile, 'utf8'));
+            if (this.fsUtils.existsSync(this.contentFile)) {
+                this.content = JSON.parse(this.fsUtils.readFileSync(this.contentFile, 'utf8'));
             } else {
                 this.content = {
                     metadata: {
@@ -19,18 +25,23 @@ export class ContentManager {
                     },
                     articles: [],
                     interests: [],
-                    chatHighlights: []
+                    chatHighlights: [],
+                    claudeChats: [] // Add new field for Claude chats
                 };
+            }
+            // Ensure claudeChats array exists if loading from an older file
+            if (!this.content.claudeChats) {
+                this.content.claudeChats = [];
             }
         } catch (error) {
             console.error('Error loading content:', error);
-            this.content = { metadata: {}, articles: [], interests: [], chatHighlights: [] };
+            this.content = { metadata: {}, articles: [], interests: [], chatHighlights: [], claudeChats: [] };
         }
     }
 
     saveContent() {
         try {
-            writeFileSync(this.contentFile, JSON.stringify(this.content, null, 2));
+            this.fsUtils.writeFileSync(this.contentFile, JSON.stringify(this.content, null, 2));
             console.log('Content saved successfully!');
         } catch (error) {
             console.error('Error saving content:', error);
@@ -88,5 +99,64 @@ export class ContentManager {
 
     countWords(text) {
         return text.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(word => word.length > 0).length;
+    }
+
+    importClaudeChatsFromFile(filePath) {
+        try {
+            if (!this.fsUtils.existsSync(filePath)) {
+                console.error(`Error: File not found at ${filePath}`);
+                return 0;
+            }
+
+            const fileContent = this.fsUtils.readFileSync(filePath, 'utf8');
+            const importedChats = JSON.parse(fileContent);
+
+            if (!Array.isArray(importedChats)) {
+                console.error('Error: Expected an array of chats from the JSON file.');
+                return 0;
+            }
+
+            let successfullyImportedCount = 0;
+            for (const chat of importedChats) {
+                if (chat && chat.uuid && chat.name && Array.isArray(chat.chat_messages)) {
+                    const conversation = chat.chat_messages.map(msg => ({
+                        sender: msg.sender,
+                        text: msg.text,
+                        timestamp: msg.created_at
+                    }));
+
+                    const newClaudeChat = {
+                        id: chat.uuid, // Use Claude's UUID as the ID
+                        title: chat.name,
+                        conversation: conversation,
+                        // Assuming 'insights' and 'category' might be added later or manually
+                        insights: "", // Default or to be filled manually
+                        category: "Claude Import", // Default category
+                        dateAdded: chat.created_at || new Date().toISOString(), // Use Claude's creation date
+                        originalImportDate: new Date().toISOString() // Mark when it was imported
+                    };
+
+                    // Avoid duplicates based on ID
+                    if (!this.content.claudeChats.find(existingChat => existingChat.id === newClaudeChat.id)) {
+                        this.content.claudeChats.push(newClaudeChat);
+                        successfullyImportedCount++;
+                    }
+                } else {
+                    console.warn('Skipping chat due to missing essential fields (uuid, name, or chat_messages):', chat);
+                }
+            }
+
+            if (successfullyImportedCount > 0) {
+                this.saveContent();
+                console.log(`Successfully imported ${successfullyImportedCount} Claude chats from ${filePath}.`);
+            } else {
+                console.log(`No new Claude chats were imported from ${filePath}.`);
+            }
+            return successfullyImportedCount;
+
+        } catch (error) {
+            console.error(`Error importing Claude chats from ${filePath}:`, error);
+            return 0;
+        }
     }
 }
