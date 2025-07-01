@@ -21,6 +21,25 @@ node content-collector.js
 node content-collector.js --generate
 ```
 
+## Web Interface (New)
+
+A web interface is available for uploading JSON chat exports (e.g., from Claude), selecting specific chats, and downloading the generated EPUB.
+
+### 1. Start the Web Server
+```bash
+npm run start:web
+```
+This will typically start the server on `http://localhost:3000`.
+
+### 2. Using the Web Interface
+- Open your browser and navigate to the server address (e.g., `http://localhost:3000`).
+- You will see an upload form. Select your JSON chat export file.
+- After uploading, you'll be presented with a list of chats found in the file.
+- Select the chats you want to include in your EPUB.
+- Click "Generate EPUB". The EPUB file will be compiled and downloaded by your browser.
+
+**Note:** The web interface currently supports the Claude JSON export format. Uploaded files are processed and then deleted from the server; generated EPUBs are also deleted after download.
+
 ## File Structure
 ```
 my-magazine/

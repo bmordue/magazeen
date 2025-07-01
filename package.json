@@ -8,11 +8,11 @@
   },
   "scripts": {
     "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
-    "lint": "eslint src/**/*.js test/**/*.js"
+    "lint": "eslint src/**/*.js test/**/*.js",
+    "start:web": "node src/server.js"
   },
   "type": "module",
   "jest": {
-    "transform": {},
     "moduleFileExtensions": [
       "js",
       "jsx",
@@ -25,11 +25,14 @@
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "jszip": "^3.10.1"
+    "express": "^5.1.0",
+    "jszip": "^3.10.1",
+    "multer": "^2.0.1"
   },
   "devDependencies": {
     "eslint": "^9.30.0",
     "eslint-plugin-jest": "^29.0.1",
-    "jest": "^30.0.3"
+    "jest": "^30.0.3",
+    "supertest": "^7.1.1"
   }
 }
