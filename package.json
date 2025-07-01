@@ -2,7 +2,10 @@
   "name": "magazeen",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "src/magazineGenerator.js",
+  "bin": {
+    "magazeen": "src/cli.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
