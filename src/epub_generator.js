@@ -2,7 +2,9 @@
 
 import { readFileSync, writeFileSync } from 'fs';
 import { extname } from 'path';
+import path from 'path';
 import JSZip from 'jszip';
+import { fileURLToPath } from 'url';
 
 class EPUBMagazineGenerator {
     constructor() {
@@ -33,7 +35,7 @@ class EPUBMagazineGenerator {
         // Add CSS
         let cssContent = '';
         try {
-            const cssPath = join(dirname(fileURLToPath(import.meta.url)), "epub_styles.css");
+            const cssPath = path.join(path.dirname(fileURLToPath(import.meta.url)), "epub_styles.css");
             cssContent = readFileSync(cssPath, "utf-8");
         } catch (error) {
             console.error(`Warning: Could not read 'epub_styles.css'. Proceeding without custom styles. Error: ${error.message}`);
@@ -321,11 +323,11 @@ function createMagazine() {
 // Export for use as a module
 export default EPUBMagazineGenerator;
 
-import { resolve } from 'path'
-import { fileURLToPath } from 'url'
+// Note: fileURLToPath is already imported at the top of the file.
+// import { fileURLToPath } from 'url';
 
-const thisFile = resolve(fileURLToPath(import.meta.url))
-const pathPassedToNode = resolve(process.argv[1])
+const thisFile = fileURLToPath(import.meta.url);
+const pathPassedToNode = process.argv[1];
 
 // Run if called directly
 if (thisFile.includes(pathPassedToNode)) {
