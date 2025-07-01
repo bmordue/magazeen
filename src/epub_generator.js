@@ -31,7 +31,13 @@ class EPUBMagazineGenerator {
         this.oebps = this.zip.folder("OEBPS");
         
         // Add CSS
-        const cssContent = readFileSync("src/epub_styles.css", "utf-8");
+        let cssContent = '';
+        try {
+            const cssPath = join(dirname(fileURLToPath(import.meta.url)), "epub_styles.css");
+            cssContent = readFileSync(cssPath, "utf-8");
+        } catch (error) {
+            console.error(`Warning: Could not read 'epub_styles.css'. Proceeding without custom styles. Error: ${error.message}`);
+        }
         this.oebps.file("styles.css", cssContent);
         
         return this;
