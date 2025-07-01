@@ -57,7 +57,10 @@ Then choose from the following options:
    - Choose option 3: Add a chat highlight.
    - Provide a title, category, conversation excerpt, and key insights.
 
-4. **View Current Content**:
+4. **Generate Magazine**:
+   - Choose option 4: Generate magazine.
+   - This creates the magazine.
+5. **View Current Content**:
    - Choose option 5: View current content.
    - See a summary of your collected articles, interests, and highlights.
 
@@ -186,7 +189,7 @@ if (fs.existsSync(articlesDir)) {
     console.log(`Found ${articleFiles.length} markdown files in ${articlesDir}.`);
 
     articleFiles.forEach(file => {
-        const filePath = `${articlesDir}/${file}`;
+const filePath = path.join(articlesDir, file);
         const markdownContent = fs.readFileSync(filePath, 'utf8');
         // For simplicity, using filename (without .md) as title.
         // You might parse frontmatter for title, category, author.
