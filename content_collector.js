@@ -1,8 +1,10 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
-const EPUBMagazineGenerator = require('./epub-generator');
+import { existsSync, readFileSync, writeFileSync } from 'fs';
+// import path from 'path';
+import EPUBMagazineGenerator from './epub_generator.js';
+import readline from 'readline';
+
 
 class ContentCollector {
     constructor() {
@@ -12,8 +14,8 @@ class ContentCollector {
 
     loadContent() {
         try {
-            if (fs.existsSync(this.contentFile)) {
-                this.content = JSON.parse(fs.readFileSync(this.contentFile, 'utf8'));
+            if (existsSync(this.contentFile)) {
+                this.content = JSON.parse(readFileSync(this.contentFile, 'utf8'));
             } else {
                 this.content = {
                     metadata: {
@@ -34,7 +36,7 @@ class ContentCollector {
 
     saveContent() {
         try {
-            fs.writeFileSync(this.contentFile, JSON.stringify(this.content, null, 2));
+            writeFileSync(this.contentFile, JSON.stringify(this.content, null, 2));
             console.log('Content saved successfully!');
         } catch (error) {
             console.error('Error saving content:', error);
@@ -195,7 +197,7 @@ class ContentCollector {
         
         // Generate the EPUB file
         const date = new Date();
-        const outputPath = `./magazine-${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}.epub`;
+        const outputPath = `./out/magazine-${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}.epub`;
         
         return generator.generateEPUB(outputPath);
     }
@@ -216,7 +218,6 @@ class ContentCollector {
         console.log('5. View current content');
         console.log('6. Exit');
         
-        const readline = require('readline');
         const rl = readline.createInterface({
             input: process.stdin,
             output: process.stdout
@@ -399,12 +400,19 @@ function createTemplate() {
         ]
     };
     
-    fs.writeFileSync('magazine-content.json', JSON.stringify(template, null, 2));
+    writeFileSync('out/magazine-content.json', JSON.stringify(template, null, 2));
     console.log('Template created! Edit magazine-content.json to customize your magazine.');
 }
 
+import { resolve } from 'path'
+import { fileURLToPath } from 'url'
+
+const thisFile = resolve(fileURLToPath(import.meta.url))
+const pathPassedToNode = resolve(process.argv[1])
+
+
 // CLI interface
-if (require.main === module) {
+if (thisFile.includes(pathPassedToNode)) {
     const args = process.argv.slice(2);
     
     if (args.includes('--template')) {
@@ -420,4 +428,4 @@ if (require.main === module) {
     }
 }
 
-module.exports = ContentCollector;
+export default ContentCollector;

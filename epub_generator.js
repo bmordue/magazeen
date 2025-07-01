@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
-const JSZip = require('jszip');
+import { readFileSync, writeFileSync } from 'fs';
+import { extname } from 'path';
+import JSZip from 'jszip';
 
 class EPUBMagazineGenerator {
     constructor() {
@@ -58,7 +58,7 @@ class EPUBMagazineGenerator {
 
     // Add image to the EPUB
     addImage(imagePath, filename) {
-        const imageData = fs.readFileSync(imagePath);
+        const imageData = readFileSync(imagePath);
         this.oebps.file(`images/${filename}`, imageData);
         this.images.push(filename);
         return this;
@@ -79,7 +79,7 @@ class EPUBMagazineGenerator {
             compressionOptions: { level: 9 }
         });
         
-        fs.writeFileSync(outputPath, content);
+        writeFileSync(outputPath, content);
         return outputPath;
     }
 
@@ -111,7 +111,7 @@ class EPUBMagazineGenerator {
         });
 
         this.images.forEach((image, index) => {
-            const ext = path.extname(image).toLowerCase();
+            const ext = extname(image).toLowerCase();
             const mediaType = ext === '.jpg' || ext === '.jpeg' ? 'image/jpeg' : 
                              ext === '.png' ? 'image/png' : 'image/gif';
             manifestItems.push(`<item id="img${index}" href="images/${image}" media-type="${mediaType}"/>`);
@@ -611,9 +611,15 @@ function createMagazine() {
 }
 
 // Export for use as a module
-module.exports = EPUBMagazineGenerator;
+export default EPUBMagazineGenerator;
+
+import { resolve } from 'path'
+import { fileURLToPath } from 'url'
+
+const thisFile = resolve(fileURLToPath(import.meta.url))
+const pathPassedToNode = resolve(process.argv[1])
 
 // Run if called directly
-if (require.main === module) {
+if (thisFile.includes(pathPassedToNode)) {
     createMagazine();
 }
