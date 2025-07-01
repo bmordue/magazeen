@@ -6,17 +6,7 @@ Create beautiful, professional EPUB magazines from your interests and conversati
 
 ### 1. Setup
 ```bash
-# Create a new directory for your magazine project
-mkdir my-magazine && cd my-magazine
-
-# Create package.json
-npm init -y
-
-# Install required dependency
-npm install jszip
-
-# Save the generator files (epub-generator.js and content-collector.js)
-# Copy the code from the artifacts into these files
+npm i
 ```
 
 ### 2. Create Your First Issue
