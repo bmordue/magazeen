@@ -1,15 +1,18 @@
 import express from 'express';
 import multer from 'multer';
 import path from 'path';
+import crypto from 'crypto';
+import { kv } from '@vercel/kv';
+import { tmpdir } from 'os';
 
 const app = express();
 const port = process.env.PORT || 3000;
 
+import fs from 'fs/promises'; // fs.promises is used for unlinking files
 import { readFile, unlink } from 'fs/promises';
 import { ContentManager } from './contentManager.js';
 import { ArticleGenerator } from './articleGenerator.js';
 import { MagazineGenerator } from './magazineGenerator.js';
-import { fileURLToPath } from 'url'; // To resolve paths for MagazineGenerator
 
 
 // Middleware to parse URL-encoded bodies (as sent by HTML forms)
@@ -19,12 +22,19 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
 // Configure multer for file uploads
-const upload = multer({ dest: 'uploads/', limits: { fileSize: 10 * 1024 * 1024 } }); // e.g., 10MB limit
+const upload = multer({ dest: tmpdir(), limits: { fileSize: 10 * 1024 * 1024 } }); // e.g., 10MB limit
 
-// Simple in-memory storage for chat data. NOT production-ready.
-if (!global.uploadedChats) {
-  global.uploadedChats = {};
-}
+// WARNING: Simple in-memory storage for chat data.
+// This is NOT production-ready for serverless environments like Vercel. (Comment being removed as global state is removed)
+// Global state `global.uploadedChats` has been replaced with Vercel KV.
+
+// Ensure the /tmp/uploads directory exists if it doesn't.
+// This is generally good practice, though multer might create it.
+// fs.mkdir is not directly used here as multer handles directory creation.
+// However, for Vercel, /tmp is usually available.
+// We should ensure this doesn't cause issues if run locally where /tmp/uploads might not exist
+// or have correct permissions without manual creation. Multer should handle this.
+// For local dev, you might need to create 'uploads/' or '/tmp/uploads/' manually if multer doesn't.
 
 app.get('/', (req, res) => {
   res.send(`
@@ -82,22 +92,20 @@ app.post('/upload', upload.single('chatExport'), async (req, res) => {
       };
     });
 
-    // To pass the chat data to the next step (/generate-epub),
-    // we can't put it all in the HTML form for large exports.
-    // We'll temporarily store it on the server.
-    // A more robust solution would use a session or a temporary database.
-    // For simplicity here, we'll use a global variable. This is NOT production-ready.
-    // It will only handle one user at a time.
-    if (!global.uploadedChats) {
-      global.uploadedChats = {};
+    // Clean up the uploaded file from /tmp first
+    await fs.unlink(filePath);
+
+    if (chats.length === 0) {
+      return res.status(400).send(renderErrorPage('No processable chats found in the uploaded file. Please check the file content.'));
     }
-    // Store the processed chats under the original filename to retrieve later
-    // This assumes filenames are unique enough for this simple temporary storage.
-    global.uploadedChats[req.file.originalname] = chats;
 
-
-    // Clean up the uploaded file
-    await unlink(filePath);
+    const sessionId = crypto.randomUUID();
+    try {
+      await kv.set(sessionId, JSON.stringify(chats), { ex: 900 }); // 15 minutes expiry
+    } catch (kvError) {
+      console.error('KV Set Error in /upload:', kvError);
+      return res.status(500).send(renderErrorPage('Could not save session data. Please try again.'));
+    }
 
     res.send(`
       <!DOCTYPE html>
@@ -111,7 +119,8 @@ app.post('/upload', upload.single('chatExport'), async (req, res) => {
       <body>
         <h1>Select Chats to Include</h1>
         <form action="/generate-epub" method="post">
-          <input type="hidden" name="originalFilename" value="${req.file.originalname}">
+          <input type="hidden" name="sessionId" value="${sessionId}">
+          <input type="hidden" name="originalFilename" value="${req.file.originalname}"> {/* Retain for potential use in EPUB metadata, though not strictly needed for KV logic */}
           ${chats.map(chat => `
             <div>
               <input type="checkbox" name="selectedChats" value="${chat.id}" id="${chat.id}">
@@ -138,21 +147,23 @@ app.post('/upload', upload.single('chatExport'), async (req, res) => {
 });
 
 app.post('/generate-epub', async (req, res) => {
+  const { selectedChats: selectedChatIds, originalFilename, sessionId } = req.body;
+  let kvDataRetrieved = false; // Flag to ensure cleanup even if errors occur after retrieval
+
+  if (!selectedChatIds || !sessionId) {
+    return res.status(400).send(renderErrorPage('Missing selection or session information. Please try uploading and selecting again.'));
+  }
+
   try {
-    const selectedChatIds = req.body ? req.body.selectedChats : undefined;
-    const originalFilename = req.body ? req.body.originalFilename : undefined;
+    const storedChatsJson = await kv.get(sessionId);
+    kvDataRetrieved = true; // Mark that we've attempted to get it, for cleanup purposes
 
-    if (!selectedChatIds || !originalFilename) {
-      if (originalFilename && global.uploadedChats[originalFilename]) { // Clean up if only selection is missing
-        delete global.uploadedChats[originalFilename];
-      }
-      return res.status(400).send(renderErrorPage('Missing selection or filename. Please try uploading and selecting again.'));
+    if (!storedChatsJson) {
+      await kv.del(sessionId); // Clean up potentially empty/stale key
+      return res.status(404).send(renderErrorPage('Chat data not found or session expired. Please upload your file again.'));
     }
 
-    const allUploadedChats = global.uploadedChats[originalFilename];
-    if (!allUploadedChats) {
-      return res.status(404).send(renderErrorPage('Chat data not found. This could be due to a server restart or timeout. Please upload your file again.'));
-    }
+    const allUploadedChats = JSON.parse(storedChatsJson);
 
     // Ensure selectedChatIds is always an array
     const chatIdsArray = Array.isArray(selectedChatIds) ? selectedChatIds : [selectedChatIds];
@@ -186,19 +197,16 @@ app.post('/generate-epub', async (req, res) => {
 
     const epubFilePath = await magazineGenerator.generateMagazine();
 
-    // Clean up the stored chat data for this file
-    delete global.uploadedChats[originalFilename];
+    // Data has been used, clean up from KV
+    await kv.del(sessionId);
+    kvDataRetrieved = false; // Mark as cleaned up
 
     res.download(epubFilePath, path.basename(epubFilePath), async (err) => {
       if (err) {
         console.error('Error sending file:', err);
-        // Important: Cannot send another response if headers already sent by res.download
-        // However, if res.download fails before sending data, an error page could be sent.
-        // For simplicity, we're logging. A robust app might try to send an error page if possible.
         if (!res.headersSent) {
             res.status(500).send(renderErrorPage('Error sending the EPUB file.'));
         }
-        return; // Stop further processing in this callback
       }
       // Clean up the generated EPUB file after sending
       try {
@@ -210,9 +218,13 @@ app.post('/generate-epub', async (req, res) => {
 
   } catch (error) {
     console.error('Error generating EPUB:', error);
-    // Clean up stored chat data in case of an error during generation
-    if (req.body && req.body.originalFilename && global.uploadedChats[req.body.originalFilename]) {
-        delete global.uploadedChats[req.body.originalFilename];
+    // If an error occurred and we had retrieved data from KV, try to clean it up
+    if (sessionId && kvDataRetrieved) {
+      try {
+        await kv.del(sessionId);
+      } catch (kvDeleteError) {
+        console.error('Error cleaning up KV session after EPUB generation error:', kvDeleteError);
+      }
     }
     res.status(500).send(renderErrorPage('An unexpected error occurred while generating the EPUB. Please check the server logs.'));
   }

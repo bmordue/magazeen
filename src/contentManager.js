@@ -1,13 +1,13 @@
-import * as fs from 'fs'; // Import fs for default usage
+import * as nodeFs from 'fs'; // Renamed import to avoid conflict if fsUtils is also named fs
 
 export class ContentManager {
     constructor(contentFile = 'out/magazine-content.json', fsUtils = null) {
         this.contentFile = contentFile;
-        // Use provided fs utilities or default to Node's fs module
+        // Use provided fs utilities or default to Node's actual fs module
         this.fsUtils = fsUtils || {
-            existsSync: fs.existsSync,
-            readFileSync: fs.readFileSync,
-            writeFileSync: fs.writeFileSync,
+            existsSync: nodeFs.existsSync,
+            readFileSync: nodeFs.readFileSync,
+            writeFileSync: nodeFs.writeFileSync,
         };
         this.loadContent();
     }
@@ -33,6 +33,12 @@ export class ContentManager {
             if (!this.content.claudeChats) {
                 this.content.claudeChats = [];
             }
+            // Ensure each chat has a 'selected' field
+            this.content.claudeChats.forEach(chat => {
+                if (typeof chat.selected === 'undefined') {
+                    chat.selected = false; // Default to not selected
+                }
+            });
         } catch (error) {
             console.error('Error loading content:', error);
             this.content = { metadata: {}, articles: [], interests: [], chatHighlights: [], claudeChats: [] };
@@ -101,6 +107,39 @@ export class ContentManager {
         return text.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(word => word.length > 0).length;
     }
 
+    selectClaudeChat(chatId) {
+        const chat = this.content.claudeChats.find(c => c.id === chatId);
+        if (chat) {
+            chat.selected = true;
+            this.saveContent();
+            console.log(`Chat "${chat.title}" selected.`);
+        } else {
+            console.error(`Chat with ID ${chatId} not found.`);
+        }
+    }
+
+    deselectClaudeChat(chatId) {
+        const chat = this.content.claudeChats.find(c => c.id === chatId);
+        if (chat) {
+            chat.selected = false;
+            this.saveContent();
+            console.log(`Chat "${chat.title}" deselected.`);
+        } else {
+            console.error(`Chat with ID ${chatId} not found.`);
+        }
+    }
+
+    toggleClaudeChatSelection(chatId) {
+        const chat = this.content.claudeChats.find(c => c.id === chatId);
+        if (chat) {
+            chat.selected = !chat.selected;
+            this.saveContent();
+            console.log(`Chat "${chat.title}" selection toggled to: ${chat.selected}.`);
+        } else {
+            console.error(`Chat with ID ${chatId} not found.`);
+        }
+    }
+
     importClaudeChatsFromFile(filePath) {
         try {
             if (!this.fsUtils.existsSync(filePath)) {
@@ -133,13 +172,26 @@ export class ContentManager {
                         insights: "", // Default or to be filled manually
                         category: "Claude Import", // Default category
                         dateAdded: chat.created_at || new Date().toISOString(), // Use Claude's creation date
-                        originalImportDate: new Date().toISOString() // Mark when it was imported
+                        originalImportDate: new Date().toISOString(), // Mark when it was imported
+                        selected: false // Initialize as not selected
                     };
 
                     // Avoid duplicates based on ID
-                    if (!this.content.claudeChats.find(existingChat => existingChat.id === newClaudeChat.id)) {
+                    const existingChat = this.content.claudeChats.find(existingChat => existingChat.id === newClaudeChat.id);
+                    if (!existingChat) {
                         this.content.claudeChats.push(newClaudeChat);
                         successfullyImportedCount++;
+                    } else {
+                        // If chat already exists, update its fields but preserve selection status
+                        if (existingChat) {
+                            existingChat.title = newClaudeChat.title;
+                            existingChat.conversation = newClaudeChat.conversation;
+                            existingChat.insights = newClaudeChat.insights;
+                            existingChat.category = newClaudeChat.category;
+                            existingChat.dateAdded = newClaudeChat.dateAdded;
+                            existingChat.originalImportDate = newClaudeChat.originalImportDate;
+                            // Do not change existingChat.selected
+                        }
                     }
                 } else {
                     console.warn('Skipping chat due to missing essential fields (uuid, name, or chat_messages):', chat);
