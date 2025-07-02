@@ -18,7 +18,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
 // Configure multer for file uploads
-const upload = multer({ dest: 'uploads/', limits: { fileSize: 10 * 1024 * 1024 } }); // e.g., 10MB limit
+const upload = multer({ dest: os.tmpdir(), limits: { fileSize: 10 * 1024 * 1024 } }); // e.g., 10MB limit
 
 // Simple in-memory storage for chat data. NOT production-ready.
 if (!global.uploadedChats) {
