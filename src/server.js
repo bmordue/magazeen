@@ -9,6 +9,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 
 import fs from 'fs/promises'; // fs.promises is used for unlinking files
+import { readFile, unlink } from 'fs/promises';
 import { ContentManager } from './contentManager.js';
 import { ArticleGenerator } from './articleGenerator.js';
 import { MagazineGenerator } from './magazineGenerator.js';
@@ -65,7 +66,7 @@ app.post('/upload', upload.single('chatExport'), async (req, res) => {
   if (req.file.mimetype !== 'application/json') {
     // Clean up the wrongly uploaded file
     try {
-      await fs.unlink(req.file.path);
+      await unlink(req.file.path);
     } catch (unlinkError) {
       console.error('Error deleting non-JSON uploaded file:', unlinkError);
     }
@@ -74,7 +75,7 @@ app.post('/upload', upload.single('chatExport'), async (req, res) => {
 
   try {
     const filePath = req.file.path;
-    const fileContent = await fs.readFile(filePath, 'utf-8');
+    const fileContent = await readFile(filePath, 'utf-8');
     const chatData = JSON.parse(fileContent);
 
     // Assuming Claude JSON export format
@@ -136,7 +137,7 @@ app.post('/upload', upload.single('chatExport'), async (req, res) => {
     // Clean up the uploaded file in case of an error
     if (req.file && req.file.path) {
       try {
-        await fs.unlink(req.file.path);
+        await unlink(req.file.path);
       } catch (unlinkError) {
         console.error('Error deleting uploaded file after error:', unlinkError);
       }
@@ -209,7 +210,7 @@ app.post('/generate-epub', async (req, res) => {
       }
       // Clean up the generated EPUB file after sending
       try {
-        await fs.unlink(epubFilePath);
+        await unlink(epubFilePath);
       } catch (unlinkErr) {
         console.error('Error deleting EPUB file:', unlinkErr);
       }
