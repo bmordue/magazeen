@@ -209,6 +209,21 @@ export function runCli() {
             magazineGenerator.generateMagazine()
                 .then(path => console.log(`Magazine generated: ${path}`))
                 .catch(error => console.error('Error:', error));
+        } else if (args.includes('--import-claude')) {
+            const filePathIndex = args.indexOf('--import-claude') + 1;
+            if (filePathIndex < args.length && args[filePathIndex] && !args[filePathIndex].startsWith('--')) {
+                const filePath = args[filePathIndex];
+                console.log(`Importing Claude chats from: ${filePath}`);
+                const importedCount = contentManager.importClaudeChatsFromFile(filePath);
+                if (importedCount > 0) {
+                    console.log(`Successfully imported ${importedCount} chats.`);
+                } else {
+                    console.log('No new chats were imported or an error occurred.');
+                }
+            } else {
+                console.error('Error: --import-claude option requires a file path.');
+                console.log('Usage: node src/cli.js --import-claude <path_to_claude_export.json>');
+            }
         } else {
             startInteractiveSession();
         }
