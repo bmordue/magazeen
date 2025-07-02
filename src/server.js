@@ -147,7 +147,7 @@ app.post('/upload', upload.single('chatExport'), async (req, res) => {
 });
 
 app.post('/generate-epub', async (req, res) => {
-  const { selectedChats: selectedChatIds, originalFilename, sessionId } = req.body;
+  const { selectedChats: selectedChatIds, sessionId } = req.body;
   let kvDataRetrieved = false; // Flag to ensure cleanup even if errors occur after retrieval
 
   if (!selectedChatIds || !sessionId) {
