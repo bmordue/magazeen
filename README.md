@@ -29,10 +29,10 @@ A web interface is available for uploading JSON chat exports (e.g., from Claude)
 ```bash
 npm run start:web
 ```
-This will typically start the server on `http://localhost:3000`.
+This will start the server on `http://localhost:3000`.
 
 ### 2. Using the Web Interface
-- Open your browser and navigate to the server address (e.g., `http://localhost:3000`).
+- Open your browser and navigate to the server address (`http://localhost:3000`).
 - You will see an upload form. Select your JSON chat export file.
 - After uploading, you'll be presented with a list of chats found in the file.
 - Select the chats you want to include in your EPUB.
@@ -42,7 +42,7 @@ This will typically start the server on `http://localhost:3000`.
 
 ## File Structure
 ```
-my-magazine/
+magazeen/
 ├── src/
 │   ├── cli.js                 # Command Line Interface
 │   ├── contentManager.js      # Manages content (articles, interests, highlights)
@@ -54,99 +54,6 @@ my-magazine/
 │   └── magazine-2024-07.epub # Generated magazines (example location)
 ├── package.json              # Node.js dependencies
 ```
-
-## Monthly Workflow
-
-### Throughout the Month
-Launch the interactive tool by running:
-```bash
-magazeen
-```
-Then choose from the following options:
-
-1. **Write Articles**:
-   - Choose option 1: Add an article.
-   - Follow the prompts to add your title, category, author, and content.
-
-2. **Collect Interests**:
-   - Choose option 2: Add an interest.
-   - Input the topic, description, and priority.
-
-3. **Save Chat Highlights**:
-   - Choose option 3: Add a chat highlight.
-   - Provide a title, category, conversation excerpt, and key insights.
-
-4. **Generate Magazine**:
-   - Choose option 4: Generate magazine.
-   - This creates the magazine.
-5. **View Current Content**:
-   - Choose option 5: View current content.
-   - See a summary of your collected articles, interests, and highlights.
-
-### End of Month
-Generate your magazine using the interactive tool (option 4) or directly:
-```bash
-magazeen --generate
-```
-
-This creates an EPUB file like `magazine-2024-07.epub` that you can:
-- Read on any device (phones, tablets, e-readers, computers)
-- Share with friends
-- Archive for future reference
-
-## Content Types
-
-### Articles
-Full articles you write about any topic. Can include:
-- HTML formatting (headings, lists, blockquotes)
-- Categories for organization
-- Author attribution
-- Word count tracking
-
-### Interests
-Track topics you want to explore further:
-- Topic name and description
-- Priority levels (low/medium/high)
-- Automatic date tracking
-
-### Chat Highlights
-Save meaningful conversations:
-- Conversation excerpts
-- Key insights extracted
-- Categorization
-- Context preservation
-
-## Customization
-
-### Magazine Metadata
-Edit `magazine-content.json` to customize:
-```json
-{
-  "metadata": {
-    "title": "Your Magazine Name",
-    "author": "Your Name",
-    "description": "Your custom description"
-  }
-}
-```
-
-### Styling
-The generator includes professional magazine styling with:
-- Beautiful cover pages with gradients
-- Responsive design
-- Print-optimized layouts
-- Magazine-style typography
-- Category-based color coding
-
-### Categories
-Use meaningful categories like:
-- Technology
-- Personal Growth
-- Cooking
-- Reading
-- Travel
-- Health & Fitness
-- Creative Projects
 
 ## Advanced Usage
 
