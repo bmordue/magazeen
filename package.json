@@ -13,6 +13,10 @@
   },
   "type": "module",
   "jest": {
+    "globals": {
+      "__DEV__": true
+    },
+    "transform": {},
     "moduleFileExtensions": [
       "js",
       "jsx",
@@ -31,6 +35,8 @@
     "multer": "^2.0.1"
   },
   "devDependencies": {
+    "@jest/types": "^30.0.1",
+    "@types/supertest": "^6.0.3",
     "eslint": "^9.30.0",
     "eslint-plugin-jest": "^29.0.1",
     "jest": "^30.0.3",

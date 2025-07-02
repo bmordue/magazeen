@@ -11,8 +11,6 @@ import fs from 'fs/promises'; // fs.promises is used for unlinking files
 import { ContentManager } from './contentManager.js';
 import { ArticleGenerator } from './articleGenerator.js';
 import { MagazineGenerator } from './magazineGenerator.js';
-import { fileURLToPath } from 'url'; // To resolve paths for MagazineGenerator
-// Duplicate 'path' import removed
 
 
 // Middleware to parse URL-encoded bodies (as sent by HTML forms)
@@ -22,8 +20,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
 // Configure multer for file uploads
-// Vercel only allows writing to /tmp directory in serverless functions
-const upload = multer({ dest: '/tmp/uploads/' });
+const upload = multer({ dest: os.tmpdir(), limits: { fileSize: 10 * 1024 * 1024 } }); // e.g., 10MB limit
 
 // WARNING: Simple in-memory storage for chat data.
 // This is NOT production-ready for serverless environments like Vercel. (Comment being removed as global state is removed)
