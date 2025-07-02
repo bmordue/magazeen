@@ -18,12 +18,14 @@ jest.mock("../src/magazineGenerator.js", () => {
 });
 
 // Mock fs/promises
-jest.mock("fs/promises", () => ({
-  readFile: jest.fn(),
-  unlink: jest.fn().mockResolvedValue(),
-}));
+jest.mock("fs/promises");
+// jest.mock("fs/promises", () => ({
+//   readFile: jest.fn(),
+//   unlink: jest.fn().mockResolvedValue(),
+// }));
 
-describe("Web Server Tests - Temporarily Skipped", () => {
+describe("Web Server Tests", () => {
+
   beforeEach(async () => {
     jest.clearAllMocks();
     global.uploadedChats = {};
