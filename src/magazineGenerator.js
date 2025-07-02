@@ -1,4 +1,5 @@
 import DefaultEPUBMagazineGenerator from './epub_generator.js';
+import fs from 'fs';
 
 export class MagazineGenerator {
     constructor(contentManager, articleGenerator, epubGeneratorFactory) {

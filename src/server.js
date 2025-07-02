@@ -3,6 +3,7 @@ import multer from 'multer';
 import path from 'path';
 import crypto from 'crypto';
 import { kv } from '@vercel/kv';
+import { tmpdir } from 'os';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -20,7 +21,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static('public'));
 
 // Configure multer for file uploads
-const upload = multer({ dest: os.tmpdir(), limits: { fileSize: 10 * 1024 * 1024 } }); // e.g., 10MB limit
+const upload = multer({ dest: tmpdir(), limits: { fileSize: 10 * 1024 * 1024 } }); // e.g., 10MB limit
 
 // WARNING: Simple in-memory storage for chat data.
 // This is NOT production-ready for serverless environments like Vercel. (Comment being removed as global state is removed)
