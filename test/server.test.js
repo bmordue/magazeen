@@ -1,6 +1,8 @@
 import request from "supertest";
 import app from "../src/server.js"; // Import the Express app
 import fs from "fs/promises";
+import { jest, describe, beforeEach, it, expect } from '@jest/globals';
+
 
 // Mock the core logic modules
 jest.mock("../src/contentManager.js");
@@ -18,11 +20,10 @@ jest.mock("../src/magazineGenerator.js", () => {
 });
 
 // Mock fs/promises
-// jest.mock("fs/promises");
-// jest.mock("fs/promises", () => ({
-//   readFile: jest.fn(),
-//   unlink: jest.fn().mockResolvedValue(),
-// }));
+jest.mock("fs/promises", () => ({
+  readFile: jest.fn(),
+  unlink: jest.fn().mockResolvedValue(),
+}));
 
 describe("Web Server Tests", () => {
 
