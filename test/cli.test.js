@@ -62,7 +62,7 @@ jest.unstable_mockModule('readline', () => ({
 
 
 // Now, import the CLI module
-const { runCli, startInteractiveSession } = await import('../src/cli.js');
+const { runCli } = await import('../src/cli.js');
 
 
 describe('CLI Argument Parsing and Functionality', () => {
