@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18' # Or your preferred LTS version
+
+    - name: Install dependencies
+      run: npm install
+
+    - name: Run tests and generate coverage
+      run: npm test -- --coverage
+
+    - name: Lint
+      run: npm run lint
+
+    - name: Upload coverage artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report
+        path: coverage/ # Assuming your coverage report is generated in a 'coverage' directory
+
+    - name: Add coverage comment to PR
+      if: github.event_name == 'pull_request'
+      uses: marocchino/sticky-pull-request-comment@v2
+      with:
+        filePath: coverage/lcov-report/index.html # Path to the HTML coverage report for display
+        message: |
+          ## Code Coverage Report
+          You can view the full coverage report [here]( ${{ steps.upload-artifact.outputs.artifact-url }} ).
+          Coverage summary will be extracted and posted here if you use an action like `romeovs/lcov-reporter-action`.
+          For now, please find the lcov.info file in the uploaded artifact.
+          *Note: For more detailed inline annotations, a more specific coverage action might be needed depending on your test runner's output format.*

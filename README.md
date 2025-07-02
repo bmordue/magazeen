@@ -12,50 +12,62 @@ npm i
 ### 2. Create Your First Issue
 ```bash
 # Generate a template to get started
-node content-collector.js --template
+magazeen --template
 
 # Start adding content interactively
-node content-collector.js
+magazeen
 
 # Or generate magazine from existing content
-node content-collector.js --generate
+magazeen --generate
 ```
 
 ## File Structure
 ```
 my-magazine/
-├── epub-generator.js          # Core EPUB generation logic
-├── content-collector.js       # Content management and CLI
-├── magazine-content.json      # Your content database
+├── src/
+│   ├── cli.js                 # Command Line Interface
+│   ├── contentManager.js      # Manages content (articles, interests, highlights)
+│   ├── magazineGenerator.js   # Core EPUB generation logic
+│   ├── articleGenerator.js    # Handles article formatting for EPUB
+│   └── templateManager.js     # Manages the content template
+├── out/
+│   ├── magazine-content.json  # Your content database (default location)
+│   └── magazine-2024-07.epub # Generated magazines (example location)
 ├── package.json              # Node.js dependencies
-└── magazine-2024-07.epub     # Generated magazines
 ```
 
 ## Monthly Workflow
 
 ### Throughout the Month
-1. **Collect Interests**: When you discover something interesting, add it:
-   ```bash
-   node content-collector.js
-   # Choose option 2: Add an interest
-   ```
+Launch the interactive tool by running:
+```bash
+magazeen
+```
+Then choose from the following options:
 
-2. **Save Chat Highlights**: After meaningful conversations with Claude:
-   ```bash
-   node content-collector.js
-   # Choose option 3: Add a chat highlight
-   ```
+1. **Write Articles**:
+   - Choose option 1: Add an article.
+   - Follow the prompts to add your title, category, author, and content.
 
-3. **Write Articles**: Create articles about topics you're exploring:
-   ```bash
-   node content-collector.js
-   # Choose option 1: Add an article
-   ```
+2. **Collect Interests**:
+   - Choose option 2: Add an interest.
+   - Input the topic, description, and priority.
+
+3. **Save Chat Highlights**:
+   - Choose option 3: Add a chat highlight.
+   - Provide a title, category, conversation excerpt, and key insights.
+
+4. **Generate Magazine**:
+   - Choose option 4: Generate magazine.
+   - This creates the magazine.
+5. **View Current Content**:
+   - Choose option 5: View current content.
+   - See a summary of your collected articles, interests, and highlights.
 
 ### End of Month
-Generate your magazine:
+Generate your magazine using the interactive tool (option 4) or directly:
 ```bash
-node content-collector.js --generate
+magazeen --generate
 ```
 
 This creates an EPUB file like `magazine-2024-07.epub` that you can:
@@ -120,86 +132,85 @@ Use meaningful categories like:
 ## Advanced Usage
 
 ### Direct Programming
-You can also use the generator programmatically:
+You can use the modules programmatically to manage content and generate magazines. Make sure the `./out` directory exists or create it.
 
 ```javascript
-const EPUBMagazineGenerator = require('./epub-generator');
+import { ContentManager } from './src/contentManager.js';
+import { ArticleGenerator } from './src/articleGenerator.js';
+import { MagazineGenerator } from './src/magazineGenerator.js';
+import * as fs from 'fs'; // Node.js file system module
 
-const generator = new EPUBMagazineGenerator();
-generator.initializeEPUB("My Magazine", "Author", "Description");
+// Ensure output directory exists for content file and EPUB
+if (!fs.existsSync('./out')){
+    fs.mkdirSync('./out', { recursive: true });
+}
 
-generator.addArticle(
-    "Article Title",
-    "<p>Article content with HTML...</p>",
-    "Author Name",
-    "Category"
+// 1. Initialize ContentManager.
+//    It loads from 'out/magazine-content.json' by default, or creates it.
+//    You can specify a custom path: new ContentManager('out/my-custom-content.json');
+const contentManager = new ContentManager();
+
+// 2. Add content programmatically
+contentManager.addArticle(
+    "Programmatic Article",
+    "<p>This is content added via code.</p>",
+    "Technology",
+    "Scripter"
 );
+contentManager.addInterest("Advanced JavaScript", "Exploring new JS features", "high");
 
-generator.generateEPUB('./my-magazine.epub');
+// 3. Initialize ArticleGenerator and MagazineGenerator
+const articleGenerator = new ArticleGenerator(contentManager);
+const magazineGenerator = new MagazineGenerator(contentManager, articleGenerator);
+
+// 4. Generate the magazine
+//    The magazine file will be saved in the './out' directory.
+magazineGenerator.generateMagazine()
+    .then(path => console.log(`Magazine generated at: ${path}`))
+    .catch(error => console.error('Error generating magazine:', error));
 ```
 
 ### Batch Processing
-Process multiple articles from files:
+Process multiple articles from local files (e.g., Markdown files in a directory).
 
 ```javascript
-const fs = require('fs');
-const collector = new ContentCollector();
+import * as fs from 'fs';
+import { ContentManager } from './src/contentManager.js';
 
-// Read articles from markdown files
-const articles = fs.readdirSync('./articles')
-    .filter(file => file.endsWith('.md'))
-    .map(file => {
-        const content = fs.readFileSync(`./articles/${file}`, 'utf8');
-        const title = file.replace('.md', '');
-        return { title, content };
+// Initialize ContentManager (uses 'out/magazine-content.json' by default)
+const contentManager = new ContentManager();
+
+const articlesDir = './my_markdown_articles'; // Create this directory and put .md files in it
+
+if (fs.existsSync(articlesDir)) {
+    const articleFiles = fs.readdirSync(articlesDir)
+        .filter(file => file.endsWith('.md'));
+
+    console.log(`Found ${articleFiles.length} markdown files in ${articlesDir}.`);
+
+    articleFiles.forEach(file => {
+const filePath = path.join(articlesDir, file);
+        const markdownContent = fs.readFileSync(filePath, 'utf8');
+        // For simplicity, using filename (without .md) as title.
+        // You might parse frontmatter for title, category, author.
+        const title = file.replace(/\.md$/, '');
+
+        // Convert Markdown to HTML (basic example, consider a library for robust conversion)
+        // For this example, we'll assume content is already HTML or simple text.
+        // If you have Markdown, you'd convert it to HTML here.
+        // For now, let's wrap it in <p> if it's not HTML already.
+        const htmlContent = markdownContent.startsWith('<') ? markdownContent : `<p>${markdownContent.replace(/\n/g, '</p><p>')}</p>`;
+
+        contentManager.addArticle(
+            title,
+            htmlContent,
+            "Batch Import", // Default category
+            "Batch Script"  // Default author
+        );
     });
-
-articles.forEach(article => {
-    collector.addArticle(article.title, article.content);
-});
+    console.log(`Successfully processed and added ${articleFiles.length} articles.`);
+} else {
+    console.warn(`Directory ${articlesDir} not found. Create it and add Markdown files to test batch processing.`);
+}
 ```
 
-## Reading Your Magazine
-
-Your generated EPUB can be read on:
-- **Mobile**: Apple Books, Google Play Books, Amazon Kindle app
-- **Desktop**: Calibre, Adobe Digital Editions, Apple Books
-- **E-readers**: Kindle (convert with Calibre), Kobo, other EPUB readers
-- **Web**: Various online EPUB readers
-
-## Tips for Great Magazines
-
-1. **Consistency**: Try to generate at the same time each month
-2. **Quality over Quantity**: Focus on meaningful content
-3. **Visual Appeal**: Use headings, blockquotes, and formatting
-4. **Personal Voice**: Write in your authentic style
-5. **Archive Everything**: Keep all your issues for future reference
-
-## Troubleshooting
-
-### Common Issues
-- **Missing jszip**: Run `npm install jszip`
-- **Permission errors**: Make sure you have write access to the directory
-- **Large content**: Very long articles might need chunking
-
-### File Validation
-Test your EPUB files with:
-- [EPUB Validator](https://validator.idpf.org/)
-- Calibre's built-in validation
-- Various EPUB readers
-
-## Monthly Checklist
-
-- [ ] Review conversations from the month
-- [ ] Add 2-3 chat highlights
-- [ ] Note 3-5 new interests
-- [ ] Write 1-2 original articles
-- [ ] Generate magazine
-- [ ] Review and read the issue
-- [ ] Archive previous month's raw content
-
----
-
-**Happy magazine making!** 📚✨
-
-This system grows with you - the more you use it, the richer your personal knowledge archive becomes.
