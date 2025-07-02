@@ -18,7 +18,7 @@ jest.mock("../src/magazineGenerator.js", () => {
 });
 
 // Mock fs/promises
-jest.mock("fs/promises");
+// jest.mock("fs/promises");
 // jest.mock("fs/promises", () => ({
 //   readFile: jest.fn(),
 //   unlink: jest.fn().mockResolvedValue(),
