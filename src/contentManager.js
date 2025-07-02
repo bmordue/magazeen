@@ -177,12 +177,12 @@ export class ContentManager {
                     };
 
                     // Avoid duplicates based on ID
-                    if (!this.content.claudeChats.find(existingChat => existingChat.id === newClaudeChat.id)) {
+                    const existingChat = this.content.claudeChats.find(existingChat => existingChat.id === newClaudeChat.id);
+                    if (!existingChat) {
                         this.content.claudeChats.push(newClaudeChat);
                         successfullyImportedCount++;
                     } else {
                         // If chat already exists, update its fields but preserve selection status
-                        const existingChat = this.content.claudeChats.find(existingChat => existingChat.id === newClaudeChat.id);
                         if (existingChat) {
                             existingChat.title = newClaudeChat.title;
                             existingChat.conversation = newClaudeChat.conversation;
