@@ -19,6 +19,9 @@ magazeen
 
 # Or generate magazine from existing content
 magazeen --generate
+
+# Import Claude chat logs from a JSON export
+magazeen --import-claude ./path/to/your/claude_export.json
 ```
 
 ## Web Interface (New)
