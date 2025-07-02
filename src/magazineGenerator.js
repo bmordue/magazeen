@@ -57,7 +57,23 @@ export class MagazineGenerator {
 
         // Generate the EPUB file
         const date = new Date();
-        const outputPath = `./out/magazine-${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}.epub`;
+        // Use /tmp directory for output in serverless environments
+        const outputDir = '/tmp/out';
+        // fs.mkdirSync is needed if epub_generator doesn't create parent directories.
+        // However, epub_generator.js uses jszip and fs.writeFileSync, which won't create parent dirs.
+        // We need to ensure outputDir exists.
+        // Node.js `fs.promises.mkdir` can be used with { recursive: true }.
+        // Let's import fs/promises at the top of the file.
+        const outputPath = `${outputDir}/magazine-${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}.epub`;
+
+        // Ensure the output directory exists
+        // Adding this directly here for simplicity.
+        // Consider moving to a utility or ensuring epub_generator handles it.
+        // const fs = require('fs'); // Using require for synchronous check or use promises
+        // Changed to import fs from 'fs' at the top of the file
+        if (!fs.existsSync(outputDir)){ // fs will be from the import
+            fs.mkdirSync(outputDir, { recursive: true });
+        }
 
         return generator.generateEPUB(outputPath);
     }
