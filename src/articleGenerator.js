@@ -1,3 +1,5 @@
+import { getCachedSummary, cacheSummary } from './summaryCache.js';
+
 export class ArticleGenerator {
     constructor(contentManager) {
         this.contentManager = contentManager;
@@ -72,5 +74,50 @@ export class ArticleGenerator {
             "Claude AI",
             ["conversations", "insights", "learning"]
         );
+    }
+
+    async summarizeArticle(content) {
+        const plainText = content.replace(/<[^>]*>/g, ' ');
+        if (plainText.trim().length === 0) {
+            return "";
+        }
+
+        const cachedSummary = getCachedSummary(plainText);
+        if (cachedSummary) {
+            return cachedSummary;
+        }
+
+        try {
+            const response = await fetch('https://api.anthropic.com/v1/messages', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': process.env.ANTHROPIC_API_KEY,
+                    'anthropic-version': '2023-06-01'
+                },
+                body: JSON.stringify({
+                    model: "claude-3-haiku-20240307",
+                    max_tokens: 1024,
+                    messages: [
+                        {
+                            role: "user",
+                            content: `Please summarize the following article content in 3-5 key bullet points. Focus on the main ideas and takeaways. The summary should be concise and easy to read. Here is the article content: ${plainText}`
+                        }
+                    ]
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data = await response.json();
+            const summary = data.content[0].text;
+            cacheSummary(plainText, summary);
+            return summary;
+        } catch (error) {
+            console.error('Error summarizing article:', error);
+            return ""; // Return empty string on error
+        }
     }
 }
