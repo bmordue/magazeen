@@ -8,7 +8,7 @@ export class MagazineGenerator {
         this.epubGeneratorFactory = epubGeneratorFactory || (() => new DefaultEPUBMagazineGenerator());
     }
 
-    generateMagazine() {
+    async generateMagazine() {
         console.log('Generating magazine...');
 
         // Auto-generate articles from collected content
@@ -24,18 +24,24 @@ export class MagazineGenerator {
             this.contentManager.content.metadata.description
         );
 
-        // Add all articles
-        this.contentManager.content.articles.forEach(article => {
+        // Add all articles with summaries
+        for (const article of this.contentManager.content.articles) {
+            const summary = await this.articleGenerator.summarizeArticle(article.content);
+            const contentWithSummary = `
+                ${article.content}
+                <h2>Key Takeaways</h2>
+                ${summary}
+            `;
             generator.addArticle(
                 article.title,
-                article.content,
+                contentWithSummary,
                 article.author,
                 article.category
             );
-        });
+        }
 
-        // Add selected Claude chats
-        this.contentManager.content.claudeChats.forEach(chat => {
+        // Add selected Claude chats with summaries
+        for (const chat of this.contentManager.content.claudeChats) {
             if (chat.selected) {
                 let chatContent = `<h2>${chat.title}</h2>`;
                 chat.conversation.forEach(message => {
@@ -47,14 +53,22 @@ export class MagazineGenerator {
                         </div>
                     `;
                 });
+
+                const summary = await this.articleGenerator.summarizeArticle(chatContent);
+                const contentWithSummary = `
+                    ${chatContent}
+                    <h2>Key Takeaways</h2>
+                    ${summary}
+                `;
+
                 generator.addArticle(
                     chat.title,
-                    chatContent,
+                    contentWithSummary,
                     'Claude Conversation', // Author/Source
                     chat.category || 'Claude Chats' // Category
                 );
             }
-        });
+        }
 
         // Generate the EPUB file
         const date = new Date();
