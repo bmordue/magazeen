@@ -1,14 +1,24 @@
 import { jest } from '@jest/globals';
 
-// Mock ContentManager before it's imported by cli.js
+// Mock functions
 const mockImportClaudeChatsFromFile = jest.fn();
 const mockAddArticle = jest.fn();
 const mockAddInterest = jest.fn();
 const mockAddChatHighlight = jest.fn();
 const mockToggleClaudeChatSelection = jest.fn();
-const mockLoadContent = jest.fn(); // Mock loadContent
-const mockSaveContent = jest.fn(); // Mock saveContent
+const mockLoadContent = jest.fn();
+const mockSaveContent = jest.fn();
+const mockGenerateMagazine = jest.fn().mockResolvedValue('path/to/magazine.epub');
+const mockCreateTemplate = jest.fn();
 
+// Mock readline
+const mockReadlineInstance = {
+    question: jest.fn((_query, cb) => cb('7')), // Auto-exit by choosing '7'
+    close: jest.fn(),
+};
+const mockCreateInterface = jest.fn(() => mockReadlineInstance);
+
+// Set up module mocks before importing
 jest.unstable_mockModule('../src/contentManager.js', () => ({
   ContentManager: jest.fn().mockImplementation(() => ({
     importClaudeChatsFromFile: mockImportClaudeChatsFromFile,
@@ -16,9 +26,9 @@ jest.unstable_mockModule('../src/contentManager.js', () => ({
     addInterest: mockAddInterest,
     addChatHighlight: mockAddChatHighlight,
     toggleClaudeChatSelection: mockToggleClaudeChatSelection,
-    loadContent: mockLoadContent, // Ensure loadContent is part of the mock
-    saveContent: mockSaveContent, // Ensure saveContent is part of the mock
-    content: { // Provide a basic structure for content
+    loadContent: mockLoadContent,
+    saveContent: mockSaveContent,
+    content: {
       articles: [],
       interests: [],
       chatHighlights: [],
@@ -28,40 +38,24 @@ jest.unstable_mockModule('../src/contentManager.js', () => ({
   })),
 }));
 
-// Mock MagazineGenerator
-const mockGenerateMagazine = jest.fn().mockResolvedValue('path/to/magazine.epub');
 jest.unstable_mockModule('../src/magazineGenerator.js', () => ({
     MagazineGenerator: jest.fn().mockImplementation(() => ({
         generateMagazine: mockGenerateMagazine,
     })),
 }));
 
-// Mock templateManager
-const mockCreateTemplate = jest.fn();
 jest.unstable_mockModule('../src/templateManager.js', () => ({
     createTemplate: mockCreateTemplate,
 }));
 
-
-// Mock readline for interactive session parts
-const mockReadlineInstance = {
-    question: jest.fn((_query, cb) => cb('7')), // Auto-exit by choosing '7'
-    close: jest.fn(),
-};
-const mockCreateInterface = jest.fn(() => mockReadlineInstance);
-
 jest.unstable_mockModule('readline', () => ({
-    __esModule: true, // This is important for ES modules
-    default: { // cli.js uses `import readline from 'readline'`
+    __esModule: true,
+    default: {
         createInterface: mockCreateInterface,
     },
-    // If cli.js used `import { createInterface } from 'readline'`,
-    // then this would be enough:
-    // createInterface: mockCreateInterface,
 }));
 
-
-// Now, import the CLI module
+// Import the CLI module after mocks are set up
 const { runCli } = await import('../src/cli.js');
 
 
