@@ -1,4 +1,9 @@
-import { writeFileSync } from 'fs';
+import { writeFileSync, mkdirSync, existsSync } from 'fs';
+import path from 'path';
+
+const OUTPUT_DIR = 'out';
+const CONTENT_FILE_PATH = path.join(OUTPUT_DIR, 'magazine-content.json');
+
 
 // Create a simple template generator for new users
 export function createTemplate() {
@@ -61,13 +66,14 @@ export function createTemplate() {
         ]
     };
 
-    // Ensure the 'out' directory exists, or handle potential errors.
-    // For simplicity, assuming 'out' directory exists as per original script.
-    // In a more robust solution, we'd check and create it if necessary.
     try {
-        writeFileSync('out/magazine-content.json', JSON.stringify(template, null, 2));
-        console.log('Template created! Edit out/magazine-content.json to customize your magazine.');
+        // Ensure the output directory exists
+        if (!existsSync(OUTPUT_DIR)) {
+            mkdirSync(OUTPUT_DIR, { recursive: true });
+        }
+        writeFileSync(CONTENT_FILE_PATH, JSON.stringify(template, null, 2));
+        console.log(`Template created! Edit ${CONTENT_FILE_PATH} to customize your magazine.`);
     } catch (error) {
-        console.error('Error creating template file. Make sure the "out" directory exists.', error);
+        console.error(`Error creating template file at ${CONTENT_FILE_PATH}.`, error);
     }
 }

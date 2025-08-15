@@ -191,6 +191,41 @@ describe('ContentManager - Claude Chat Import', () => {
         consoleWarnSpy.mockRestore();
     });
 
+    test('should gracefully handle chats with empty or invalid chat_messages array', () => {
+        const malformedData = JSON.stringify([
+            {
+                "uuid": "valid-uuid-1",
+                "name": "Chat with Empty Messages",
+                "created_at": "2023-01-01T12:00:00Z",
+                "chat_messages": []
+            },
+            {
+                "uuid": "valid-uuid-2",
+                "name": "Chat with Invalid Messages",
+                "created_at": "2023-01-02T12:00:00Z",
+                "chat_messages": "not-an-array"
+            }
+        ]);
+        mockReadFileSync.mockReturnValue(malformedData);
+        const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+        const importCount = contentManager.importClaudeChatsFromFile(sampleClaudeExportPath);
+
+        // Expects the chat with an empty message array to be imported (as it's valid)
+        // and the one with a non-array `chat_messages` to be skipped.
+        expect(importCount).toBe(1);
+        expect(contentManager.content.claudeChats.length).toBe(1);
+        expect(contentManager.content.claudeChats[0].title).toBe("Chat with Empty Messages");
+
+        // Check that a warning was logged for the invalid chat structure.
+        expect(consoleWarnSpy).toHaveBeenCalledWith(
+            'Skipping chat due to missing essential fields (uuid, name, or chat_messages):',
+            expect.objectContaining({ name: "Chat with Invalid Messages" })
+        );
+        consoleWarnSpy.mockRestore();
+    });
+
+
     test('should create claudeChats array in content if it does not exist (backward compatibility)', () => {
         // Specific mock setup for this test
         const localMockExistsSync = jest.fn(filePath => filePath === mockContentFile);
