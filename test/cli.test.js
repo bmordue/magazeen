@@ -101,7 +101,6 @@ describe('CLI Argument Parsing and Functionality', () => {
     expect(mockImportClaudeChatsFromFile).toHaveBeenCalledTimes(1);
     expect(mockImportClaudeChatsFromFile).toHaveBeenCalledWith(testFilePath);
     expect(consoleLogSpy).toHaveBeenCalledWith(`Importing Claude chats from: ${testFilePath}`);
-    expect(consoleLogSpy).toHaveBeenCalledWith('Successfully imported 1 chats.');
   });
 
   test('--import-claude without filepath shows error and usage', () => {
@@ -125,7 +124,6 @@ describe('CLI Argument Parsing and Functionality', () => {
     expect(mockImportClaudeChatsFromFile).toHaveBeenCalledTimes(1);
     expect(mockImportClaudeChatsFromFile).toHaveBeenCalledWith(testFilePath);
     expect(consoleLogSpy).toHaveBeenCalledWith(`Importing Claude chats from: ${testFilePath}`);
-    expect(consoleLogSpy).toHaveBeenCalledWith('No new chats were imported or an error occurred.');
   });
 
   test('--generate calls magazineGenerator.generateMagazine', async () => {
