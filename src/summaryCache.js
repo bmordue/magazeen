@@ -1,5 +1,5 @@
 import * as nodeFs from 'fs';
-import *s crypto from 'crypto';
+import * as crypto from 'crypto';
 
 const CACHE_DIR = './summary_cache';
 if (!nodeFs.existsSync(CACHE_DIR)) {
