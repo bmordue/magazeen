@@ -1,3 +1,20 @@
+const MAX_RECENT_INTERESTS = 5;
+const MAX_RECENT_HIGHLIGHTS = 3;
+
+// Basic HTML sanitization
+function sanitizeHTML(text) {
+    const replacements = {
+        '&': '&amp;',
+        '<': '&lt;',
+        '>': '&gt;',
+        '"': '&quot;',
+        "'": '&#39;',
+        '/': '&#x2F;'
+    };
+    return String(text).replace(/[&<>"'/]/g, (match) => replacements[match]);
+}
+
+
 export class ArticleGenerator {
     constructor(contentManager) {
         this.contentManager = contentManager;
@@ -6,24 +23,28 @@ export class ArticleGenerator {
     generateInterestArticle() {
         if (this.contentManager.content.interests.length === 0) {
             console.log('No interests to generate article from');
-            return null;
+            return "";
         }
 
         const recentInterests = this.contentManager.content.interests
             .sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded))
-            .slice(0, 5);
+            .slice(0, MAX_RECENT_INTERESTS);
+
+        if (recentInterests.length === 0) {
+            return "";
+        }
 
         const content = `
         <p>This month, several topics have captured my attention and sparked deeper exploration:</p>
 
         ${recentInterests.map(interest => `
-        <h2>${interest.topic}</h2>
-        <p><strong>Priority:</strong> ${interest.priority.charAt(0).toUpperCase() + interest.priority.slice(1)}</p>
-        <p>${interest.description}</p>
+        <h2>${sanitizeHTML(interest.topic)}</h2>
+        <p><strong>Priority:</strong> ${sanitizeHTML(interest.priority.charAt(0).toUpperCase() + interest.priority.slice(1))}</p>
+        <p>${sanitizeHTML(interest.description)}</p>
         `).join('')}
 
         <h2>Reflection</h2>
-        <p>These interests reflect my ongoing curiosity about ${recentInterests.map(i => i.topic.toLowerCase()).join(', ')}.
+        <p>These interests reflect my ongoing curiosity about ${recentInterests.map(i => sanitizeHTML(i.topic.toLowerCase())).join(', ')}.
         I plan to explore these topics further in upcoming conversations and research.</p>
         `;
 
@@ -39,25 +60,29 @@ export class ArticleGenerator {
     generateChatHighlightsArticle() {
         if (this.contentManager.content.chatHighlights.length === 0) {
             console.log('No chat highlights to generate article from');
-            return null;
+            return "";
         }
 
         const recentHighlights = this.contentManager.content.chatHighlights
             .sort((a, b) => new Date(b.dateAdded) - new Date(a.dateAdded))
-            .slice(0, 3);
+            .slice(0, MAX_RECENT_HIGHLIGHTS);
+
+        if (recentHighlights.length === 0) {
+            return "";
+        }
 
         const content = `
         <p>Here are some of the most insightful conversations and discoveries from my recent chats with Claude:</p>
 
         ${recentHighlights.map(highlight => `
-        <h2>${highlight.title}</h2>
-        <p><em>Category: ${highlight.category}</em></p>
+        <h2>${sanitizeHTML(highlight.title)}</h2>
+        <p><em>Category: ${sanitizeHTML(highlight.category)}</em></p>
 
         <h3>Key Insights</h3>
-        <p>${highlight.insights}</p>
+        <p>${sanitizeHTML(highlight.insights)}</p>
 
         <h3>Notable Exchange</h3>
-        <blockquote>${highlight.conversation}</blockquote>
+        <blockquote>${sanitizeHTML(highlight.conversation)}</blockquote>
         `).join('')}
 
         <h2>Reflections</h2>

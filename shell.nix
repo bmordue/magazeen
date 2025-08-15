@@ -1,9 +1,11 @@
 { pkgs ? import <nixpkgs> {} }:
 
 pkgs.mkShell {
-  buildInputs = [
-    pkgs.nodejs  # For vanilla JavaScript development
-    pkgs.foliate # EPUB viewer
+  buildInputs = with pkgs; [
+    nodejs  # For vanilla JavaScript development
+    foliate # EPUB viewer
+    claude-code
+    gemini-cli
   ];
 
   shellHook = ''
