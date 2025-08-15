@@ -10,7 +10,15 @@ function getCacheKey(content) {
     return crypto.createHash('sha256').update(content).digest('hex');
 }
 
+
+function getCacheKey(content) {
+    return crypto.createHash('sha256').update(content).digest('hex');
+}
+
 export function getCachedSummary(content) {
+    if (!nodeFs.existsSync(CACHE_DIR)) {
+        nodeFs.mkdirSync(CACHE_DIR, { recursive: true });
+    }
     const cacheKey = getCacheKey(content);
     const cacheFile = `${CACHE_DIR}/${cacheKey}.txt`;
 
