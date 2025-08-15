@@ -8,7 +8,6 @@ import { tmpdir } from 'os';
 const app = express();
 const port = process.env.PORT || 3000;
 
-import fs from 'fs/promises'; // fs.promises is used for unlinking files
 import { readFile, unlink } from 'fs/promises';
 import { ContentManager } from './contentManager.js';
 import { ArticleGenerator } from './articleGenerator.js';
@@ -57,14 +56,38 @@ app.get('/', (req, res) => {
   `);
 });
 
+export async function processUploadedFile(filePath, originalFilename) {
+  const fileContent = await readFile(filePath, 'utf-8');
+  const chatData = JSON.parse(fileContent);
+
+  const chats = chatData.map((chat, index) => {
+    const id = chat.uuid || `chat_${index}`;
+    const title = chat.name || `Chat ${index + 1} (no name)`;
+    return {
+      id: id,
+      title: title,
+      originalChatData: chat
+    };
+  });
+
+  await unlink(filePath);
+
+  if (chats.length === 0) {
+    throw new Error('No processable chats found in the uploaded file.');
+  }
+
+  const sessionId = crypto.randomUUID();
+  await kv.set(sessionId, JSON.stringify(chats), { ex: 900 });
+
+  return { sessionId, chats, originalFilename };
+}
+
 app.post('/upload', upload.single('chatExport'), async (req, res) => {
   if (!req.file) {
     return res.status(400).send(renderErrorPage('No file uploaded. Please select a JSON file and try again.'));
   }
 
-  // Check if the file is JSON
   if (req.file.mimetype !== 'application/json') {
-    // Clean up the wrongly uploaded file
     try {
       await unlink(req.file.path);
     } catch (unlinkError) {
@@ -74,38 +97,7 @@ app.post('/upload', upload.single('chatExport'), async (req, res) => {
   }
 
   try {
-    const filePath = req.file.path;
-    const fileContent = await readFile(filePath, 'utf-8');
-    const chatData = JSON.parse(fileContent);
-
-    // Assuming Claude JSON export format
-    // chatData is an array of chat objects.
-    // Each chat object has 'uuid' and 'name'.
-    const chats = chatData.map((chat, index) => {
-      const id = chat.uuid || `chat_${index}`;
-      const title = chat.name || `Chat ${index + 1} (no name)`;
-      return {
-        id: id,
-        title: title,
-        // Store the original chat data to pass to the EPUB generation step
-        originalChatData: chat
-      };
-    });
-
-    // Clean up the uploaded file from /tmp first
-    await fs.unlink(filePath);
-
-    if (chats.length === 0) {
-      return res.status(400).send(renderErrorPage('No processable chats found in the uploaded file. Please check the file content.'));
-    }
-
-    const sessionId = crypto.randomUUID();
-    try {
-      await kv.set(sessionId, JSON.stringify(chats), { ex: 900 }); // 15 minutes expiry
-    } catch (kvError) {
-      console.error('KV Set Error in /upload:', kvError);
-      return res.status(500).send(renderErrorPage('Could not save session data. Please try again.'));
-    }
+    const { sessionId, chats, originalFilename } = await processUploadedFile(req.file.path, req.file.originalname);
 
     res.send(`
       <!DOCTYPE html>
@@ -120,7 +112,7 @@ app.post('/upload', upload.single('chatExport'), async (req, res) => {
         <h1>Select Chats to Include</h1>
         <form action="/generate-epub" method="post">
           <input type="hidden" name="sessionId" value="${sessionId}">
-          <input type="hidden" name="originalFilename" value="${req.file.originalname}"> {/* Retain for potential use in EPUB metadata, though not strictly needed for KV logic */}
+          <input type="hidden" name="originalFilename" value="${originalFilename}">
           ${chats.map(chat => `
             <div>
               <input type="checkbox" name="selectedChats" value="${chat.id}" id="${chat.id}">
@@ -134,7 +126,6 @@ app.post('/upload', upload.single('chatExport'), async (req, res) => {
     `);
   } catch (error) {
     console.error('Error processing file:', error);
-    // Clean up the uploaded file in case of an error
     if (req.file && req.file.path) {
       try {
         await unlink(req.file.path);
