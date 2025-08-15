@@ -100,12 +100,7 @@ export class ArticleGenerator {
         );
     }
 
-    async summarizeArticle(content) {
-                            content: "Please summarize the following article content in 3-5 key bullet points. Focus on the main ideas and takeaways. The summary should be concise and easy to read."
-                        },
-                        {
-                            role: "user",
-                            content: plainText
+    async summarizeArticle(plainText) {
         if (plainText.trim().length === 0) {
             return "";
         }
