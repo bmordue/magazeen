@@ -23,7 +23,12 @@ export function getCachedSummary(content) {
     const cacheFile = `${CACHE_DIR}/${cacheKey}.txt`;
 
     if (nodeFs.existsSync(cacheFile)) {
-        return nodeFs.readFileSync(cacheFile, 'utf8');
+        try {
+            return nodeFs.readFileSync(cacheFile, 'utf8');
+        } catch (err) {
+            // If the cache file is unreadable or corrupted, gracefully return null
+            return null;
+        }
     }
 
     return null;
