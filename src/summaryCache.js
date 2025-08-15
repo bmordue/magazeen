@@ -38,5 +38,9 @@ export function cacheSummary(content, summary) {
     const cacheKey = getCacheKey(content);
     const cacheFile = `${CACHE_DIR}/${cacheKey}.txt`;
 
-    nodeFs.writeFileSync(cacheFile, summary, 'utf8');
+    try {
+        nodeFs.writeFileSync(cacheFile, summary, 'utf8');
+    } catch (err) {
+        console.error(`Failed to write cache file "${cacheFile}":`, err);
+    }
 }
