@@ -8,6 +8,15 @@ const mockAddChatHighlight = jest.fn();
 const mockToggleClaudeChatSelection = jest.fn();
 const mockLoadContent = jest.fn(); // Mock loadContent
 const mockSaveContent = jest.fn(); // Mock saveContent
+const mockGetPageLimitInfo = jest.fn().mockReturnValue({
+    currentPages: 0,
+    pageLimit: null,
+    totalWords: 0,
+    wordsPerPage: 300,
+    hasLimit: false,
+    isAtLimit: false
+});
+const mockSetPageLimit = jest.fn();
 
 jest.unstable_mockModule('../src/contentManager.js', () => ({
   ContentManager: jest.fn().mockImplementation(() => ({
@@ -18,6 +27,8 @@ jest.unstable_mockModule('../src/contentManager.js', () => ({
     toggleClaudeChatSelection: mockToggleClaudeChatSelection,
     loadContent: mockLoadContent, // Ensure loadContent is part of the mock
     saveContent: mockSaveContent, // Ensure saveContent is part of the mock
+    getPageLimitInfo: mockGetPageLimitInfo, // Add new method
+    setPageLimit: mockSetPageLimit, // Add new method
     content: { // Provide a basic structure for content
       articles: [],
       interests: [],

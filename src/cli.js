@@ -13,21 +13,34 @@ const magazineGenerator = new MagazineGenerator(contentManager, articleGenerator
 // Interactive CLI interface
 export function startInteractiveSession() {
     console.log('\n=== Personal Magazine Content Collector ===');
-    console.log('What would you like to do?');
+    
+    // Show page limit information
+    const pageInfo = contentManager.getPageLimitInfo();
+    if (pageInfo.hasLimit) {
+        console.log(`📄 Pages: ${pageInfo.currentPages}/${pageInfo.pageLimit} (${pageInfo.totalWords} words)`);
+        if (pageInfo.isAtLimit) {
+            console.log('⚠️  Page limit reached! Cannot add more content.');
+        }
+    } else {
+        console.log(`📄 Current pages: ${pageInfo.currentPages} (${pageInfo.totalWords} words, no limit set)`);
+    }
+    
+    console.log('\nWhat would you like to do?');
     console.log('1. Add an article');
     console.log('2. Add an interest');
     console.log('3. Add a chat highlight');
     console.log('4. Manage Claude Chats');
     console.log('5. Generate magazine');
     console.log('6. View current content');
-    console.log('7. Exit');
+    console.log('7. Set page limit');
+    console.log('8. Exit');
 
     const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout
     });
 
-    rl.question('\nEnter your choice (1-7): ', (choice) => {
+    rl.question('\nEnter your choice (1-8): ', (choice) => {
         switch(choice) {
             case '1':
                 promptForArticle(rl);
@@ -57,6 +70,9 @@ export function startInteractiveSession() {
                 rl.close();
                 break;
             case '7':
+                promptForPageLimit(rl);
+                break;
+            case '8':
             default:
                 rl.close();
                 break;
@@ -126,10 +142,21 @@ function promptForChatHighlight(rl) {
 
 function showCurrentContent() {
     console.log('\n=== Current Content ===');
+    const pageInfo = contentManager.getPageLimitInfo();
     console.log(`Articles: ${contentManager.content.articles.length}`);
     console.log(`Interests: ${contentManager.content.interests.length}`);
     console.log(`Chat Highlights: ${contentManager.content.chatHighlights.length}`);
     console.log(`Claude Chats: ${contentManager.content.claudeChats.length} (Selected: ${contentManager.content.claudeChats.filter(c => c.selected).length})`);
+    console.log(`\n📄 Page Information:`);
+    console.log(`  Current pages: ${pageInfo.currentPages}`);
+    console.log(`  Total words: ${pageInfo.totalWords}`);
+    console.log(`  Words per page: ${pageInfo.wordsPerPage}`);
+    if (pageInfo.hasLimit) {
+        console.log(`  Page limit: ${pageInfo.pageLimit}`);
+        console.log(`  Status: ${pageInfo.isAtLimit ? '⚠️ At limit' : '✅ Under limit'}`);
+    } else {
+        console.log(`  Page limit: None set`);
+    }
 
     if (contentManager.content.articles.length > 0) {
         console.log('\nRecent Articles:');
@@ -144,6 +171,29 @@ function showCurrentContent() {
             console.log(`  - ${interest.topic} (${interest.priority} priority)`);
         });
     }
+}
+
+function promptForPageLimit(rl) {
+    const pageInfo = contentManager.getPageLimitInfo();
+    console.log(`\n=== Set Page Limit ===`);
+    console.log(`Current: ${pageInfo.hasLimit ? pageInfo.pageLimit + ' pages' : 'No limit'}`);
+    console.log(`Current content: ${pageInfo.currentPages} pages (${pageInfo.totalWords} words)`);
+    
+    rl.question('Enter new page limit (0 or empty to remove limit): ', (input) => {
+        const limit = parseInt(input.trim());
+        if (input.trim() === '' || limit === 0) {
+            contentManager.setPageLimit(0);
+        } else if (limit > 0) {
+            if (limit < pageInfo.currentPages) {
+                console.log(`⚠️  Warning: New limit (${limit}) is less than current content (${pageInfo.currentPages} pages)`);
+                console.log('This will prevent adding new content but won\'t remove existing content.');
+            }
+            contentManager.setPageLimit(limit);
+        } else {
+            console.log('Invalid input. Please enter a positive number or 0 to remove limit.');
+        }
+        rl.close();
+    });
 }
 
 function manageClaudeChats(rl, page = 1, pageSize = 10) {
@@ -206,9 +256,33 @@ export function runCli() {
         if (args.includes('--template')) {
             createTemplate();
         } else if (args.includes('--generate')) {
+            // Check page limit before generation
+            const pageInfo = contentManager.getPageLimitInfo();
+            if (pageInfo.hasLimit && pageInfo.isAtLimit) {
+                console.log(`⚠️  Magazine has ${pageInfo.currentPages} pages (limit: ${pageInfo.pageLimit}). Generating anyway...`);
+            }
             magazineGenerator.generateMagazine()
                 .then(path => console.log(`Magazine generated: ${path}`))
                 .catch(error => console.error('Error:', error));
+        } else if (args.includes('--page-limit')) {
+            const limitIndex = args.indexOf('--page-limit') + 1;
+            if (limitIndex < args.length && args[limitIndex] && !args[limitIndex].startsWith('--')) {
+                const limit = parseInt(args[limitIndex]);
+                if (limit > 0) {
+                    contentManager.setPageLimit(limit);
+                    const pageInfo = contentManager.getPageLimitInfo();
+                    console.log(`Page limit set to ${limit} pages. Current content: ${pageInfo.currentPages} pages.`);
+                } else if (limit === 0) {
+                    contentManager.setPageLimit(0);
+                    console.log('Page limit removed.');
+                } else {
+                    console.error('Error: Page limit must be a positive number or 0 to remove limit.');
+                }
+            } else {
+                console.error('Error: --page-limit option requires a number.');
+                console.log('Usage: node src/cli.js --page-limit <number>');
+                console.log('       node src/cli.js --page-limit 0  # Remove limit');
+            }
         } else if (args.includes('--import-claude')) {
             const filePathIndex = args.indexOf('--import-claude') + 1;
             if (filePathIndex < args.length && args[filePathIndex] && !args[filePathIndex].startsWith('--')) {
