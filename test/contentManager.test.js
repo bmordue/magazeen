@@ -212,7 +212,7 @@ describe('ContentManager - Claude Chat Import', () => {
                 "chat_messages": "not-an-array"
             }
         ]);
-        mockReadFileSync.mockReturnValue(malformedData);
+        mockReadFileSync.mockResolvedValue(malformedData);
         const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
         const importCount = await contentManager.importClaudeChatsFromFile(sampleClaudeExportPath);
