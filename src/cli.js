@@ -282,6 +282,12 @@ export function runCli() {
                 console.error('Error: --page-limit option requires a number.');
                 console.log('Usage: node src/cli.js --page-limit <number>');
                 console.log('       node src/cli.js --page-limit 0  # Remove limit');
+                console.log('Examples:');
+                console.log('  magazeen --page-limit 10    # Set 10 page limit');
+                console.log('  magazeen --page-limit 0     # Remove page limit');
+                console.log('  magazeen --template         # Create template');
+                console.log('  magazeen --generate         # Generate magazine');
+                console.log('  magazeen --import-claude <file.json>  # Import Claude chats');
             }
         } else if (args.includes('--import-claude')) {
             const filePathIndex = args.indexOf('--import-claude') + 1;
