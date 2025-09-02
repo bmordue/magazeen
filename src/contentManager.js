@@ -1,33 +1,53 @@
-import * as nodeFs from 'fs'; // Renamed import to avoid conflict if fsUtils is also named fs
+import { promises as fs } from 'fs';
 
 export class ContentManager {
     constructor(contentFile = 'out/magazine-content.json', fsUtils = null) {
         this.contentFile = contentFile;
         // Use provided fs utilities or default to Node's actual fs module
         this.fsUtils = fsUtils || {
-            existsSync: nodeFs.existsSync,
-            readFileSync: nodeFs.readFileSync,
-            writeFileSync: nodeFs.writeFileSync,
+            access: fs.access,
+            readFile: fs.readFile,
+            writeFile: fs.writeFile,
         };
+        // Set up default content in case loadContent fails
+        this.content = {
+            metadata: {
+                title: "My Personal Magazine",
+                author: "Your Name",
+                description: "A monthly compilation of my interests, discoveries, and insights."
+            },
+            articles: [],
+            interests: [],
+            chatHighlights: [],
+            claudeChats: []
+        };
+        // Load content asynchronously - we'll need to handle this in calling code
         this.loadContent();
     }
 
-    loadContent() {
+    async loadContent() {
         try {
-            if (this.fsUtils.existsSync(this.contentFile)) {
-                this.content = JSON.parse(this.fsUtils.readFileSync(this.contentFile, 'utf8'));
-            } else {
-                this.content = {
-                    metadata: {
-                        title: "My Personal Magazine",
-                        author: "Your Name",
-                        description: "A monthly compilation of my interests, discoveries, and insights."
-                    },
-                    articles: [],
-                    interests: [],
-                    chatHighlights: [],
-                    claudeChats: [] // Add new field for Claude chats
-                };
+            try {
+                await this.fsUtils.access(this.contentFile);
+                const fileContent = await this.fsUtils.readFile(this.contentFile, 'utf8');
+                this.content = JSON.parse(fileContent);
+            } catch (error) {
+                if (error.code === 'ENOENT') {
+                    // File doesn't exist, create default content
+                    this.content = {
+                        metadata: {
+                            title: "My Personal Magazine",
+                            author: "Your Name",
+                            description: "A monthly compilation of my interests, discoveries, and insights."
+                        },
+                        articles: [],
+                        interests: [],
+                        chatHighlights: [],
+                        claudeChats: [] // Add new field for Claude chats
+                    };
+                } else {
+                    throw error;
+                }
             }
             // Ensure claudeChats array exists if loading from an older file
             if (!this.content.claudeChats) {
@@ -45,16 +65,16 @@ export class ContentManager {
         }
     }
 
-    saveContent() {
+    async saveContent() {
         try {
-            this.fsUtils.writeFileSync(this.contentFile, JSON.stringify(this.content, null, 2));
+            await this.fsUtils.writeFile(this.contentFile, JSON.stringify(this.content, null, 2));
             console.log('Content saved successfully!');
         } catch (error) {
             console.error('Error saving content:', error);
         }
     }
 
-    addArticle(title, content, category = "General", author = null, tags = []) {
+    async addArticle(title, content, category = "General", author = null, tags = []) {
         const article = {
             id: Date.now().toString(),
             title,
@@ -67,12 +87,12 @@ export class ContentManager {
         };
 
         this.content.articles.push(article);
-        this.saveContent();
+        await this.saveContent();
         console.log(`Added article: "${title}" (${article.wordCount} words)`);
         return article.id;
     }
 
-    addInterest(topic, description, priority = "medium") {
+    async addInterest(topic, description, priority = "medium") {
         const interest = {
             id: Date.now().toString(),
             topic,
@@ -82,12 +102,12 @@ export class ContentManager {
         };
 
         this.content.interests.push(interest);
-        this.saveContent();
+        await this.saveContent();
         console.log(`Added interest: "${topic}"`);
         return interest.id;
     }
 
-    addChatHighlight(title, conversation, insights, category = "General") {
+    async addChatHighlight(title, conversation, insights, category = "General") {
         const highlight = {
             id: Date.now().toString(),
             title,
@@ -98,7 +118,7 @@ export class ContentManager {
         };
 
         this.content.chatHighlights.push(highlight);
-        this.saveContent();
+        await this.saveContent();
         console.log(`Added chat highlight: "${title}"`);
         return highlight.id;
     }
@@ -107,47 +127,52 @@ export class ContentManager {
         return text.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(word => word.length > 0).length;
     }
 
-    selectClaudeChat(chatId) {
+    async selectClaudeChat(chatId) {
         const chat = this.content.claudeChats.find(c => c.id === chatId);
         if (chat) {
             chat.selected = true;
-            this.saveContent();
+            await this.saveContent();
             console.log(`Chat "${chat.title}" selected.`);
         } else {
             console.error(`Chat with ID ${chatId} not found.`);
         }
     }
 
-    deselectClaudeChat(chatId) {
+    async deselectClaudeChat(chatId) {
         const chat = this.content.claudeChats.find(c => c.id === chatId);
         if (chat) {
             chat.selected = false;
-            this.saveContent();
+            await this.saveContent();
             console.log(`Chat "${chat.title}" deselected.`);
         } else {
             console.error(`Chat with ID ${chatId} not found.`);
         }
     }
 
-    toggleClaudeChatSelection(chatId) {
+    async toggleClaudeChatSelection(chatId) {
         const chat = this.content.claudeChats.find(c => c.id === chatId);
         if (chat) {
             chat.selected = !chat.selected;
-            this.saveContent();
+            await this.saveContent();
             console.log(`Chat "${chat.title}" selection toggled to: ${chat.selected}.`);
         } else {
             console.error(`Chat with ID ${chatId} not found.`);
         }
     }
 
-    importClaudeChatsFromFile(filePath) {
+    async importClaudeChatsFromFile(filePath) {
         try {
-            if (!this.fsUtils.existsSync(filePath)) {
-                console.error(`Error: File not found at ${filePath}`);
-                return 0;
+            try {
+                await this.fsUtils.access(filePath);
+            } catch (error) {
+                if (error.code === 'ENOENT') {
+                    console.error(`Error: File not found at ${filePath}`);
+                    return 0;
+                }
+                throw error;
             }
 
-            const fileContent = this.fsUtils.readFileSync(filePath, 'utf8');
+            const fileContent = await this.fsUtils.readFile(filePath, 'utf8');
             const importedChats = JSON.parse(fileContent);
 
             if (!Array.isArray(importedChats)) {
@@ -199,7 +224,7 @@ export class ContentManager {
             }
 
             if (successfullyImportedCount > 0) {
-                this.saveContent();
+                await this.saveContent();
                 console.log(`Successfully imported ${successfullyImportedCount} Claude chats from ${filePath}.`);
             } else {
                 console.log(`No new Claude chats were imported from ${filePath}.`);

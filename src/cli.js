@@ -10,6 +10,9 @@ const contentManager = new ContentManager();
 const articleGenerator = new ArticleGenerator(contentManager);
 const magazineGenerator = new MagazineGenerator(contentManager, articleGenerator);
 
+// Wait for content manager to initialize
+await contentManager.loadContent();
+
 // Interactive CLI interface
 export function startInteractiveSession() {
     console.log('\n=== Personal Magazine Content Collector ===');
@@ -71,9 +74,9 @@ function promptForArticle(rl) {
                 console.log('Enter article content (type "END" on a new line to finish):');
                 let content = '';
                 const collectContent = () => {
-                    rl.question('', (line) => {
+                    rl.question('', async (line) => {
                         if (line.trim() === 'END') {
-                            contentManager.addArticle(title, content, category || 'General', author || null);
+                            await contentManager.addArticle(title, content, category || 'General', author || null);
                             console.log('Article added successfully!');
                             rl.close();
                         } else {
@@ -91,8 +94,8 @@ function promptForArticle(rl) {
 function promptForInterest(rl) {
     rl.question('Interest/Topic: ', (topic) => {
         rl.question('Description: ', (description) => {
-            rl.question('Priority (low/medium/high): ', (priority) => {
-                contentManager.addInterest(topic, description, priority || 'medium');
+            rl.question('Priority (low/medium/high): ', async (priority) => {
+                await contentManager.addInterest(topic, description, priority || 'medium');
                 console.log('Interest added successfully!');
                 rl.close();
             });
@@ -108,8 +111,8 @@ function promptForChatHighlight(rl) {
             const collectConversation = () => {
                 rl.question('', (line) => {
                     if (line.trim() === 'END') {
-                        rl.question('Key insights: ', (insights) => {
-                            contentManager.addChatHighlight(title, conversation, insights, category || 'General');
+                        rl.question('Key insights: ', async (insights) => {
+                            await contentManager.addChatHighlight(title, conversation, insights, category || 'General');
                             console.log('Chat highlight added successfully!');
                             rl.close();
                         });
@@ -168,13 +171,13 @@ function manageClaudeChats(rl, page = 1, pageSize = 10) {
     console.log(`\nPage ${page}/${totalPages}. Total chats: ${chats.length}`);
     console.log('Enter chat number to toggle selection, (N)ext page, (P)revious page, (B)ack to main menu:');
 
-    rl.question('Your choice: ', (choice) => {
+    rl.question('Your choice: ', async (choice) => {
         const numChoice = parseInt(choice);
         // Check if the choice is a number corresponding to an item on the current page
         if (!isNaN(numChoice) && numChoice >= startIndex + 1 && numChoice <= Math.min(endIndex, chats.length)) {
             const chatToToggle = chats[numChoice - 1]; // numChoice is 1-based index in the full list
             if (chatToToggle) {
-                contentManager.toggleClaudeChatSelection(chatToToggle.id);
+                await contentManager.toggleClaudeChatSelection(chatToToggle.id);
             } else {
                 // This case should ideally not be reached if logic is correct
                 console.log('Error: Could not find the selected chat.');
@@ -196,7 +199,7 @@ function manageClaudeChats(rl, page = 1, pageSize = 10) {
 
 
 // Main CLI logic
-export function runCli() {
+export async function runCli() {
     const thisFile = resolve(fileURLToPath(import.meta.url));
     const pathPassedToNode = resolve(process.argv[1]);
 
@@ -204,7 +207,7 @@ export function runCli() {
         const args = process.argv.slice(2);
 
         if (args.includes('--template')) {
-            createTemplate();
+            await createTemplate();
         } else if (args.includes('--generate')) {
             magazineGenerator.generateMagazine()
                 .then(path => console.log(`Magazine generated: ${path}`))
@@ -214,7 +217,7 @@ export function runCli() {
             if (filePathIndex < args.length && args[filePathIndex] && !args[filePathIndex].startsWith('--')) {
                 const filePath = args[filePathIndex];
                 console.log(`Importing Claude chats from: ${filePath}`);
-                const importedCount = contentManager.importClaudeChatsFromFile(filePath);
+                const importedCount = await contentManager.importClaudeChatsFromFile(filePath);
                 if (importedCount > 0) {
                     console.log(`Successfully imported ${importedCount} chats.`);
                 } else {
@@ -230,4 +233,4 @@ export function runCli() {
     }
 }
 
-runCli();
+await runCli();

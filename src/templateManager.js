@@ -1,12 +1,19 @@
-import { writeFileSync, mkdirSync, existsSync } from 'fs';
+import { promises as fs } from 'fs';
 import path from 'path';
 
 const OUTPUT_DIR = 'out';
 const CONTENT_FILE_PATH = path.join(OUTPUT_DIR, 'magazine-content.json');
 
+async function ensureCacheDir() {
+    try {
+        await fs.mkdir(OUTPUT_DIR, { recursive: true });
+    } catch (error) {
+        console.error(`Failed to create output directory at ${OUTPUT_DIR}:`, error);
+    }
+}
 
 // Create a simple template generator for new users
-export function createTemplate() {
+export async function createTemplate() {
     const template = {
         metadata: {
             title: "My Personal Magazine",
@@ -68,10 +75,8 @@ export function createTemplate() {
 
     try {
         // Ensure the output directory exists
-        if (!existsSync(OUTPUT_DIR)) {
-            mkdirSync(OUTPUT_DIR, { recursive: true });
-        }
-        writeFileSync(CONTENT_FILE_PATH, JSON.stringify(template, null, 2));
+        await ensureCacheDir();
+        await fs.writeFile(CONTENT_FILE_PATH, JSON.stringify(template, null, 2));
         console.log(`Template created! Edit ${CONTENT_FILE_PATH} to customize your magazine.`);
     } catch (error) {
         console.error(`Error creating template file at ${CONTENT_FILE_PATH}.`, error);

@@ -11,7 +11,7 @@ import { createTemplate } from './templateManager.js';
 
 // The main CLI execution is now handled by runCli from cli.js
 // The runCli function also handles the logic to determine if it's being run as a script.
-runCli();
+await runCli();
 
 // Export classes and functions for potential programmatic use,
 // allowing other scripts to import and use these modules if needed.

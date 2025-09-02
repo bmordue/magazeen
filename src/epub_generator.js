@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { readFileSync, writeFileSync } from 'fs';
+import { promises as fs } from 'fs';
 import { extname } from 'path';
 import path from 'path';
 import JSZip from 'jszip';
@@ -17,7 +17,7 @@ class EPUBMagazineGenerator {
     }
 
     // Initialize EPUB structure
-    initializeEPUB(title, author, description) {
+    async initializeEPUB(title, author, description) {
         this.title = title;
         this.author = author;
         this.description = description;
@@ -36,7 +36,7 @@ class EPUBMagazineGenerator {
         let cssContent = '';
         try {
             const cssPath = path.join(path.dirname(fileURLToPath(import.meta.url)), "epub_styles.css");
-            cssContent = readFileSync(cssPath, "utf-8");
+            cssContent = await fs.readFile(cssPath, "utf-8");
         } catch (error) {
             console.error(`Warning: Could not read 'epub_styles.css'. Proceeding without custom styles. Error: ${error.message}`);
         }
@@ -66,11 +66,16 @@ class EPUBMagazineGenerator {
     }
 
     // Add image to the EPUB
-    addImage(imagePath, filename) {
-        const imageData = readFileSync(imagePath);
-        this.oebps.file(`images/${filename}`, imageData);
-        this.images.push(filename);
-        return this;
+    async addImage(imagePath, filename) {
+        try {
+            const imageData = await fs.readFile(imagePath);
+            this.oebps.file(`images/${filename}`, imageData);
+            this.images.push(filename);
+            return this;
+        } catch (error) {
+            console.error(`Error reading image file ${imagePath}:`, error);
+            return this;
+        }
     }
 
     // Generate the complete EPUB
@@ -88,8 +93,13 @@ class EPUBMagazineGenerator {
             compressionOptions: { level: 9 }
         });
         
-        writeFileSync(outputPath, content);
-        return outputPath;
+        try {
+            await fs.writeFile(outputPath, content);
+            return outputPath;
+        } catch (error) {
+            console.error(`Error writing EPUB file to ${outputPath}:`, error);
+            throw error;
+        }
     }
 
     generateContainerXML() {
@@ -271,11 +281,11 @@ class EPUBMagazineGenerator {
 }
 
 // Usage example
-function createMagazine() {
+async function createMagazine() {
     const generator = new EPUBMagazineGenerator();
     
     // Initialize the magazine
-    generator.initializeEPUB(
+    await generator.initializeEPUB(
         "My Personal Magazine",
         "Your Name",
         "A monthly compilation of my interests, discoveries, and insights from conversations with Claude."
@@ -311,13 +321,12 @@ function createMagazine() {
     // Generate the EPUB
     const outputPath = `./my-magazine-${new Date().getFullYear()}-${(new Date().getMonth() + 1).toString().padStart(2, '0')}.epub`;
     
-    generator.generateEPUB(outputPath)
-        .then(path => {
-            console.log(`Magazine generated successfully: ${path}`);
-        })
-        .catch(error => {
-            console.error('Error generating magazine:', error);
-        });
+    try {
+        const path = await generator.generateEPUB(outputPath);
+        console.log(`Magazine generated successfully: ${path}`);
+    } catch (error) {
+        console.error('Error generating magazine:', error);
+    }
 }
 
 // Export for use as a module
