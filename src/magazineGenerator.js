@@ -1,5 +1,5 @@
 import DefaultEPUBMagazineGenerator from './epub_generator.js';
-import fs from 'fs';
+import { promises as fs } from 'fs';
 
 export class MagazineGenerator {
     constructor(contentManager, articleGenerator, epubGeneratorFactory) {
@@ -8,17 +8,17 @@ export class MagazineGenerator {
         this.epubGeneratorFactory = epubGeneratorFactory || (() => new DefaultEPUBMagazineGenerator());
     }
 
-    generateMagazine() {
+    async generateMagazine() {
         console.log('Generating magazine...');
 
         // Auto-generate articles from collected content
-        this.articleGenerator.generateInterestArticle();
-        this.articleGenerator.generateChatHighlightsArticle();
+        await this.articleGenerator.generateInterestArticle();
+        await this.articleGenerator.generateChatHighlightsArticle();
 
         const generator = this.epubGeneratorFactory();
 
         // Initialize with metadata
-        generator.initializeEPUB(
+        await generator.initializeEPUB(
             this.contentManager.content.metadata.title,
             this.contentManager.content.metadata.author,
             this.contentManager.content.metadata.description
@@ -60,22 +60,15 @@ export class MagazineGenerator {
         const date = new Date();
         // Use /tmp directory for output in serverless environments
         const outputDir = '/tmp/out';
-        // fs.mkdirSync is needed if epub_generator doesn't create parent directories.
-        // However, epub_generator.js uses jszip and fs.writeFileSync, which won't create parent dirs.
-        // We need to ensure outputDir exists.
-        // Node.js `fs.promises.mkdir` can be used with { recursive: true }.
-        // Let's import fs/promises at the top of the file.
         const outputPath = `${outputDir}/magazine-${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}.epub`;
 
         // Ensure the output directory exists
-        // Adding this directly here for simplicity.
-        // Consider moving to a utility or ensuring epub_generator handles it.
-        // const fs = require('fs'); // Using require for synchronous check or use promises
-        // Changed to import fs from 'fs' at the top of the file
-        if (!fs.existsSync(outputDir)){ // fs will be from the import
-            fs.mkdirSync(outputDir, { recursive: true });
+        try {
+            await fs.mkdir(outputDir, { recursive: true });
+        } catch (error) {
+            console.error(`Failed to create output directory at ${outputDir}:`, error);
         }
 
-        return generator.generateEPUB(outputPath);
+        return await generator.generateEPUB(outputPath);
     }
 }

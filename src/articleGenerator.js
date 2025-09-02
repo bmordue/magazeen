@@ -20,7 +20,7 @@ export class ArticleGenerator {
         this.contentManager = contentManager;
     }
 
-    generateInterestArticle() {
+    async generateInterestArticle() {
         if (this.contentManager.content.interests.length === 0) {
             console.log('No interests to generate article from');
             return "";
@@ -48,7 +48,7 @@ export class ArticleGenerator {
         I plan to explore these topics further in upcoming conversations and research.</p>
         `;
 
-        return this.contentManager.addArticle(
+        return await this.contentManager.addArticle(
             "Current Interests & Explorations",
             content,
             "Personal Growth",
@@ -57,7 +57,7 @@ export class ArticleGenerator {
         );
     }
 
-    generateChatHighlightsArticle() {
+    async generateChatHighlightsArticle() {
         if (this.contentManager.content.chatHighlights.length === 0) {
             console.log('No chat highlights to generate article from');
             return "";
@@ -90,7 +90,7 @@ export class ArticleGenerator {
         and gain new perspectives on familiar subjects.</p>
         `;
 
-        return this.contentManager.addArticle(
+        return await this.contentManager.addArticle(
             "Insights from AI Conversations",
             content,
             "AI & Learning",

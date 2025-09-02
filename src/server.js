@@ -166,6 +166,7 @@ app.post('/generate-epub', async (req, res) => {
     }
 
     const contentManager = new ContentManager();
+    await contentManager.loadContent(); // Wait for async initialization
     const articleGenerator = new ArticleGenerator(contentManager);
     const magazineGenerator = new MagazineGenerator(contentManager, articleGenerator);
 
@@ -183,7 +184,7 @@ app.post('/generate-epub', async (req, res) => {
       const insights = `Highlights from chat: ${title}`; // Generic insights
       const category = 'Chat Exports'; // Generic category
 
-      contentManager.addChatHighlight(title, conversation, insights, category);
+      await contentManager.addChatHighlight(title, conversation, insights, category);
     }
 
     const epubFilePath = await magazineGenerator.generateMagazine();

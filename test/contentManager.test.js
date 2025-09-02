@@ -44,7 +44,7 @@ describe('ContentManager - Claude Chat Import', () => {
     }
 ]`;
 
-    beforeEach(() => {
+    beforeEach(async () => {
         // jest.clearAllMocks(); // Not strictly needed if we re-assign mocks, but good practice if any global mocks were used.
                                 // However, since we are creating new jest.fn() each time, this is less critical for these specific mocks.
                                 // Let's clear any *other* mocks that might exist.
@@ -55,27 +55,29 @@ describe('ContentManager - Claude Chat Import', () => {
         mockReadFileSync = jest.fn();
         mockWriteFileSync = jest.fn();
 
-        // Configure the mock implementations for fs functions
-        mockExistsSync.mockImplementation(filePath => {
-            if (filePath === mockContentFile) return false;
+        // Configure the mock implementations for fs functions - now async
+        mockExistsSync.mockImplementation(async filePath => {
+            if (filePath === mockContentFile) throw new Error('ENOENT');
             if (filePath === sampleClaudeExportPath) return true;
-            return false;
+            throw new Error('ENOENT');
         });
-        // Default readFileSync mock
-        mockReadFileSync.mockImplementation(filePath => {
+        // Default readFileSync mock - now async
+        mockReadFileSync.mockImplementation(async filePath => {
             if (filePath === sampleClaudeExportPath) {
                 return fixtureData;
             }
             return '';
         });
-        mockWriteFileSync.mockImplementation(() => {});
+        mockWriteFileSync.mockImplementation(async () => {});
 
         // Initialize ContentManager for each test, injecting the mocks
         contentManager = new ContentManager(mockContentFile, {
-            existsSync: mockExistsSync,
-            readFileSync: mockReadFileSync,
-            writeFileSync: mockWriteFileSync,
+            access: mockExistsSync,
+            readFile: mockReadFileSync,
+            writeFile: mockWriteFileSync,
         });
+        // Wait for async loadContent to complete
+        await contentManager.loadContent();
         // Clear any claudeChats that might have been loaded if a mock file was somehow present
         // This logic might be redundant if mocks correctly prevent loading, but safe to keep.
         contentManager.content.claudeChats = [];
@@ -85,9 +87,9 @@ describe('ContentManager - Claude Chat Import', () => {
         expect(contentManager.content.claudeChats).toEqual([]);
     });
 
-    test('should import Claude chats from a valid JSON file', () => {
+    test('should import Claude chats from a valid JSON file', async () => {
         // The beforeEach setup already configures readFileSync to return fixtureData for sampleClaudeExportPath
-        const importCount = contentManager.importClaudeChatsFromFile(sampleClaudeExportPath);
+        const importCount = await contentManager.importClaudeChatsFromFile(sampleClaudeExportPath);
 
         expect(mockReadFileSync).toHaveBeenCalledWith(sampleClaudeExportPath, 'utf8');
         expect(importCount).toBe(2); // Two valid chats in the fixtureData
@@ -109,10 +111,10 @@ describe('ContentManager - Claude Chat Import', () => {
         expect(mockWriteFileSync).toHaveBeenCalledTimes(1); // saveContent should be called
     });
 
-    test('should not import duplicate chats', () => {
+    test('should not import duplicate chats', async () => {
         // beforeEach sets up readFileSync to return fixtureData
-        contentManager.importClaudeChatsFromFile(sampleClaudeExportPath); // First import
-        const importCountSecond = contentManager.importClaudeChatsFromFile(sampleClaudeExportPath); // Second import
+        await contentManager.importClaudeChatsFromFile(sampleClaudeExportPath); // First import
+        const importCountSecond = await contentManager.importClaudeChatsFromFile(sampleClaudeExportPath); // Second import
 
         expect(contentManager.content.claudeChats.length).toBe(2); // Still 2, not 4
         expect(importCountSecond).toBe(0); // 0 new chats imported
@@ -121,13 +123,17 @@ describe('ContentManager - Claude Chat Import', () => {
         expect(mockWriteFileSync).toHaveBeenCalledTimes(1);
     });
 
-    test('should handle file not found for import', () => {
-        mockExistsSync.mockReturnValue(false); // Simulate file does not exist
+    test('should handle file not found for import', async () => {
+        mockExistsSync.mockImplementation(async () => { 
+            const error = new Error('File not found');
+            error.code = 'ENOENT';
+            throw error;
+        }); // Simulate file does not exist
 
         // Suppress console.error for this test
         const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-        const importCount = contentManager.importClaudeChatsFromFile('nonexistent/path.json');
+        const importCount = await contentManager.importClaudeChatsFromFile('nonexistent/path.json');
 
         expect(importCount).toBe(0);
         expect(contentManager.content.claudeChats.length).toBe(0);
@@ -137,9 +143,9 @@ describe('ContentManager - Claude Chat Import', () => {
         consoleErrorSpy.mockRestore();
     });
 
-    test('should handle invalid JSON format in import file', () => {
+    test('should handle invalid JSON format in import file', async () => {
         // Override the default readFileSync mock for this specific test case
-        mockReadFileSync.mockImplementation(filePath => {
+        mockReadFileSync.mockImplementation(async filePath => {
             if (filePath === sampleClaudeExportPath) {
                 return "This is not JSON";
             }
@@ -147,7 +153,7 @@ describe('ContentManager - Claude Chat Import', () => {
         });
         const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-        const importCount = contentManager.importClaudeChatsFromFile(sampleClaudeExportPath);
+        const importCount = await contentManager.importClaudeChatsFromFile(sampleClaudeExportPath);
 
         expect(importCount).toBe(0);
         expect(contentManager.content.claudeChats.length).toBe(0);
@@ -157,9 +163,9 @@ describe('ContentManager - Claude Chat Import', () => {
         consoleErrorSpy.mockRestore();
     });
 
-    test('should handle JSON that is not an array', () => {
+    test('should handle JSON that is not an array', async () => {
         // Override the default readFileSync mock
-        mockReadFileSync.mockImplementation(filePath => {
+        mockReadFileSync.mockImplementation(async filePath => {
             if (filePath === sampleClaudeExportPath) {
                 return JSON.stringify({ "not": "an array" });
             }
@@ -167,7 +173,7 @@ describe('ContentManager - Claude Chat Import', () => {
         });
         const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
 
-        const importCount = contentManager.importClaudeChatsFromFile(sampleClaudeExportPath);
+        const importCount = await contentManager.importClaudeChatsFromFile(sampleClaudeExportPath);
 
         expect(importCount).toBe(0);
         expect(consoleErrorSpy).toHaveBeenCalledWith('Error: Expected an array of chats from the JSON file.');
@@ -176,11 +182,11 @@ describe('ContentManager - Claude Chat Import', () => {
     });
 
 
-    test('should skip chats with missing essential fields and log a warning', () => {
+    test('should skip chats with missing essential fields and log a warning', async () => {
         // beforeEach ensures fixtureData (which includes malformed chats) is used by readFileSync
         const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-        const importCount = contentManager.importClaudeChatsFromFile(sampleClaudeExportPath);
+        const importCount = await contentManager.importClaudeChatsFromFile(sampleClaudeExportPath);
 
         expect(importCount).toBe(2); // Only 2 valid chats should be imported
         expect(contentManager.content.claudeChats.length).toBe(2);
@@ -191,7 +197,7 @@ describe('ContentManager - Claude Chat Import', () => {
         consoleWarnSpy.mockRestore();
     });
 
-    test('should gracefully handle chats with empty or invalid chat_messages array', () => {
+    test('should gracefully handle chats with empty or invalid chat_messages array', async () => {
         const malformedData = JSON.stringify([
             {
                 "uuid": "valid-uuid-1",
@@ -209,7 +215,7 @@ describe('ContentManager - Claude Chat Import', () => {
         mockReadFileSync.mockReturnValue(malformedData);
         const consoleWarnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
 
-        const importCount = contentManager.importClaudeChatsFromFile(sampleClaudeExportPath);
+        const importCount = await contentManager.importClaudeChatsFromFile(sampleClaudeExportPath);
 
         // Expects the chat with an empty message array to be imported (as it's valid)
         // and the one with a non-array `chat_messages` to be skipped.
@@ -226,10 +232,10 @@ describe('ContentManager - Claude Chat Import', () => {
     });
 
 
-    test('should create claudeChats array in content if it does not exist (backward compatibility)', () => {
+    test('should create claudeChats array in content if it does not exist (backward compatibility)', async () => {
         // Specific mock setup for this test
-        const localMockExistsSync = jest.fn(filePath => filePath === mockContentFile);
-        const localMockReadFileSync = jest.fn(filePath => {
+        const localMockAccess = jest.fn().mockResolvedValue(); // File exists
+        const localMockReadFile = jest.fn(async filePath => {
             if (filePath === mockContentFile) {
                 return JSON.stringify({
                     metadata: {},
@@ -240,17 +246,18 @@ describe('ContentManager - Claude Chat Import', () => {
             }
             return '';
         });
-        const localMockWriteFileSync = jest.fn(); // Not expected to be called during construction load
+        const localMockWriteFile = jest.fn(); // Not expected to be called during construction load
 
         const cm = new ContentManager(mockContentFile, {
-            existsSync: localMockExistsSync,
-            readFileSync: localMockReadFileSync,
-            writeFileSync: localMockWriteFileSync,
+            access: localMockAccess,
+            readFile: localMockReadFile,
+            writeFile: localMockWriteFile,
         });
+        await cm.loadContent();
         expect(cm.content.claudeChats).toEqual([]);
-        expect(localMockExistsSync).toHaveBeenCalledWith(mockContentFile);
-        expect(localMockReadFileSync).toHaveBeenCalledWith(mockContentFile, 'utf8');
+        expect(localMockAccess).toHaveBeenCalledWith(mockContentFile);
+        expect(localMockReadFile).toHaveBeenCalledWith(mockContentFile, 'utf8');
         // writeFileSync should not be called just by loading content
-        expect(localMockWriteFileSync).not.toHaveBeenCalled();
+        expect(localMockWriteFile).not.toHaveBeenCalled();
     });
 });

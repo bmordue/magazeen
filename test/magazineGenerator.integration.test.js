@@ -15,25 +15,28 @@ describe('MagazineGenerator - Integration with Claude Chats', () => {
 
     const mockContentFile = 'out/test-integration-content.json';
 
-    beforeEach(() => {
+    beforeEach(async () => {
         jest.clearAllMocks();
 
         mockEpubInstance = {
-            initializeEPUB: jest.fn(),
+            initializeEPUB: jest.fn().mockResolvedValue(mockEpubInstance),
             addArticle: jest.fn(),
             generateEPUB: jest.fn().mockResolvedValue('mock/path/to/epub.epub'),
         };
         mockEpubFactory = jest.fn(() => mockEpubInstance);
 
         mockFsUtils = {
-            existsSync: jest.fn(),
-            readFileSync: jest.fn(),
-            writeFileSync: jest.fn(),
-            mkdirSync: jest.fn(), // Retain if other parts of system might need it, though not directly by CM's core logic shown
+            access: jest.fn(),
+            readFile: jest.fn(),
+            writeFile: jest.fn(),
+            mkdir: jest.fn(), // For magazine generator output directory creation
         };
 
-        mockFsUtils.existsSync.mockImplementation((path) => path === mockContentFile);
-        mockFsUtils.readFileSync.mockImplementation((path) => {
+        mockFsUtils.access.mockImplementation(async (path) => {
+            if (path === mockContentFile) return; // File exists
+            throw new Error('ENOENT');
+        });
+        mockFsUtils.readFile.mockImplementation(async (path) => {
             if (path === mockContentFile) {
                 return JSON.stringify({
                     metadata: { title: "Test Mag", author: "Tester" }, // This metadata should be used
@@ -50,14 +53,16 @@ describe('MagazineGenerator - Integration with Claude Chats', () => {
             }
             return '';
         });
-        mockFsUtils.writeFileSync.mockImplementation(() => {});
+        mockFsUtils.writeFile.mockImplementation(async () => {});
+        mockFsUtils.mkdir.mockImplementation(async () => {});
 
         // Pass mockFsUtils to ContentManager
         contentManager = new ContentManager(mockContentFile, mockFsUtils);
+        await contentManager.loadContent(); // Wait for async load
         articleGenerator = new ArticleGenerator(contentManager);
 
-        jest.spyOn(articleGenerator, 'generateInterestArticle').mockImplementation(() => {});
-        jest.spyOn(articleGenerator, 'generateChatHighlightsArticle').mockImplementation(() => {});
+        jest.spyOn(articleGenerator, 'generateInterestArticle').mockImplementation(async () => {});
+        jest.spyOn(articleGenerator, 'generateChatHighlightsArticle').mockImplementation(async () => {});
 
         magazineGenerator = new MagazineGenerator(contentManager, articleGenerator, mockEpubFactory);
     });
@@ -88,8 +93,8 @@ describe('MagazineGenerator - Integration with Claude Chats', () => {
     });
 
     test('should handle case with no selected Claude chats', async () => {
-        // Override mockFsUtils.readFileSync for this specific test's content
-        mockFsUtils.readFileSync.mockImplementation((path) => {
+        // Override mockFsUtils.readFile for this specific test's content
+        mockFsUtils.readFile.mockImplementation(async (path) => {
             if (path === mockContentFile) {
                 return JSON.stringify({
                     metadata: { title: "Test Mag No Chats", author: "Tester" },
@@ -103,11 +108,12 @@ describe('MagazineGenerator - Integration with Claude Chats', () => {
             return '';
         });
         // Re-initialize ContentManager and dependent ArticleGenerator due to changed file content
-        // Crucially, pass the mockFsUtils that has the overridden readFileSync
+        // Crucially, pass the mockFsUtils that has the overridden readFile
         contentManager = new ContentManager(mockContentFile, mockFsUtils);
+        await contentManager.loadContent(); // Wait for async load
         articleGenerator = new ArticleGenerator(contentManager);
-        jest.spyOn(articleGenerator, 'generateInterestArticle').mockImplementation(() => {});
-        jest.spyOn(articleGenerator, 'generateChatHighlightsArticle').mockImplementation(() => {});
+        jest.spyOn(articleGenerator, 'generateInterestArticle').mockImplementation(async () => {});
+        jest.spyOn(articleGenerator, 'generateChatHighlightsArticle').mockImplementation(async () => {});
 
         // The mockEpubFactory and mockEpubInstance from the main beforeEach are still fine to use here,
         // as their state is cleared by jest.clearAllMocks() and they are fresh for each test.
