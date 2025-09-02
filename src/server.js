@@ -12,6 +12,7 @@ import { readFile, unlink } from 'fs/promises';
 import { ContentManager } from './contentManager.js';
 import { ArticleGenerator } from './articleGenerator.js';
 import { MagazineGenerator } from './magazineGenerator.js';
+import { renderTemplate } from './templateRenderer.js';
 
 
 // Middleware to parse URL-encoded bodies (as sent by HTML forms)
@@ -36,24 +37,7 @@ const upload = multer({ dest: tmpdir(), limits: { fileSize: 10 * 1024 * 1024 } }
 // For local dev, you might need to create 'uploads/' or '/tmp/uploads/' manually if multer doesn't.
 
 app.get('/', (req, res) => {
-  res.send(`
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Upload Chat Export - Magazeen</title>
-      <link rel="stylesheet" href="/styles.css">
-    </head>
-    <body>
-      <h1>Upload Chat Export</h1>
-      <form action="/upload" method="post" enctype="multipart/form-data">
-        <input type="file" name="chatExport" accept=".json" required>
-        <button type="submit">Upload and Select Chats</button>
-      </form>
-    </body>
-    </html>
-  `);
+  res.send(renderTemplate('home'));
 });
 
 export async function processUploadedFile(filePath, originalFilename) {
@@ -99,31 +83,18 @@ app.post('/upload', upload.single('chatExport'), async (req, res) => {
   try {
     const { sessionId, chats, originalFilename } = await processUploadedFile(req.file.path, req.file.originalname);
 
-    res.send(`
-      <!DOCTYPE html>
-      <html lang="en">
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Select Chats - Magazeen</title>
-        <link rel="stylesheet" href="/styles.css">
-      </head>
-      <body>
-        <h1>Select Chats to Include</h1>
-        <form action="/generate-epub" method="post">
-          <input type="hidden" name="sessionId" value="${sessionId}">
-          <input type="hidden" name="originalFilename" value="${originalFilename}">
-          ${chats.map(chat => `
-            <div>
-              <input type="checkbox" name="selectedChats" value="${chat.id}" id="${chat.id}">
-              <label for="${chat.id}">${chat.title}</label>
-            </div>
-          `).join('')}
-          <button type="submit">Generate EPUB</button>
-        </form>
-      </body>
-      </html>
-    `);
+    const chatListHtml = chats.map(chat => `
+      <div>
+        <input type="checkbox" name="selectedChats" value="${chat.id}" id="${chat.id}">
+        <label for="${chat.id}">${chat.title}</label>
+      </div>
+    `).join('');
+
+    res.send(renderTemplate('select-chats', {
+      sessionId,
+      originalFilename,
+      chatList: chatListHtml
+    }));
   } catch (error) {
     console.error('Error processing file:', error);
     if (req.file && req.file.path) {
@@ -223,22 +194,7 @@ app.post('/generate-epub', async (req, res) => {
 
 // Helper function to render a consistent error page
 function renderErrorPage(message) {
-  return `
-    <!DOCTYPE html>
-    <html lang="en">
-    <head>
-      <meta charset="UTF-8">
-      <meta name="viewport" content="width=device-width, initial-scale=1.0">
-      <title>Error - Magazeen</title>
-      <link rel="stylesheet" href="/styles.css">
-    </head>
-    <body>
-      <h1>An Error Occurred</h1>
-      <div class="error-message">${message}</div>
-      <a href="/">Go back to upload</a>
-    </body>
-    </html>
-  `;
+  return renderTemplate('error', { message });
 }
 
 // Start the server only if this script is run directly
