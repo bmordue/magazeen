@@ -22,7 +22,8 @@ export function renderTemplate(templateName, variables = {}) {
     // Simple variable substitution using {{variableName}} syntax
     for (const [key, value] of Object.entries(variables)) {
       const placeholder = `{{${key}}}`;
-      html = html.replace(new RegExp(placeholder, 'g'), value || '');
+      const escapedPlaceholder = placeholder.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      html = html.replace(new RegExp(escapedPlaceholder, 'g'), value || '');
     }
     
     return html;
