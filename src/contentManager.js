@@ -36,7 +36,7 @@ export class ContentManager {
                 this.content.claudeChats = [];
             }
             // Ensure page limit metadata exists for older files
-            if (!this.content.metadata.pageLimit) {
+            if (this.content.metadata.pageLimit === undefined) {
                 this.content.metadata.pageLimit = null;
             }
             if (!this.content.metadata.wordsPerPage) {
