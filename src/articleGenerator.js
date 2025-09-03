@@ -1,17 +1,25 @@
+import { JSDOM } from 'jsdom';
+import createDOMPurify from 'dompurify';
+
 const MAX_RECENT_INTERESTS = 5;
 const MAX_RECENT_HIGHLIGHTS = 3;
 
-// Basic HTML sanitization
+// Initialize DOMPurify with jsdom for server-side use
+const window = new JSDOM('').window;
+const DOMPurify = createDOMPurify(window);
+
+// Configure DOMPurify for stricter security
+const SANITIZE_CONFIG = {
+    ALLOWED_TAGS: ['strong', 'em', 'b', 'i', 'u', 'a', 'p', 'br', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'blockquote', 'div', 'span', 'img'],
+    ALLOWED_ATTR: ['href', 'src', 'alt', 'title'],
+    ALLOWED_URI_REGEXP: /^(?:(?:(?:f|ht)tps?|mailto|tel|callto|cid|xmpp):|[^a-z]|[a-z+.-]+(?:[^a-z+.-:]|$))/i,
+    FORBID_ATTR: ['style', 'onerror', 'onload', 'onclick', 'onmouseover'],
+    FORBID_TAGS: ['script', 'object', 'embed', 'iframe', 'form', 'input', 'textarea', 'select', 'button'],
+};
+
+// Robust HTML sanitization using DOMPurify
 function sanitizeHTML(text) {
-    const replacements = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#39;',
-        '/': '&#x2F;'
-    };
-    return String(text).replace(/[&<>"'/]/g, (match) => replacements[match]);
+    return DOMPurify.sanitize(String(text), SANITIZE_CONFIG);
 }
 
 
