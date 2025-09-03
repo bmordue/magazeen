@@ -21,7 +21,9 @@ export class ContentManager {
                     metadata: {
                         title: "My Personal Magazine",
                         author: "Your Name",
-                        description: "A monthly compilation of my interests, discoveries, and insights."
+                        description: "A monthly compilation of my interests, discoveries, and insights.",
+                        pageLimit: null, // null = no limit, number = max pages
+                        wordsPerPage: 300 // Average words per EPUB page
                     },
                     articles: [],
                     interests: [],
@@ -32,6 +34,13 @@ export class ContentManager {
             // Ensure claudeChats array exists if loading from an older file
             if (!this.content.claudeChats) {
                 this.content.claudeChats = [];
+            }
+            // Ensure page limit metadata exists for older files
+            if (this.content.metadata.pageLimit === undefined) {
+                this.content.metadata.pageLimit = null;
+            }
+            if (this.content.metadata.wordsPerPage === undefined) {
+                this.content.metadata.wordsPerPage = 300;
             }
             // Ensure each chat has a 'selected' field
             this.content.claudeChats.forEach(chat => {
@@ -55,6 +64,15 @@ export class ContentManager {
     }
 
     addArticle(title, content, category = "General", author = null, tags = []) {
+        const wordCount = this.countWords(content);
+        
+        // Check page limit before adding
+        if (this.wouldExceedPageLimit(wordCount)) {
+            const pageInfo = this.getPageLimitInfo();
+            console.error(`Cannot add article "${title}": would exceed page limit of ${pageInfo.pageLimit} pages (currently ${pageInfo.currentPages} pages, would become ${Math.ceil((pageInfo.totalWords + wordCount) / pageInfo.wordsPerPage)} pages)`);
+            return null;
+        }
+        
         const article = {
             id: Date.now().toString(),
             title,
@@ -63,7 +81,7 @@ export class ContentManager {
             author,
             tags,
             dateAdded: new Date().toISOString(),
-            wordCount: this.countWords(content)
+            wordCount
         };
 
         this.content.articles.push(article);
@@ -105,6 +123,70 @@ export class ContentManager {
 
     countWords(text) {
         return text.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(word => word.length > 0).length;
+    }
+
+    // Calculate total word count from all content
+    getTotalWordCount() {
+        let totalWords = 0;
+        
+        // Count words from articles
+        this.content.articles.forEach(article => {
+            totalWords += this.countWords(article.content);
+        });
+        
+        // Count words from selected Claude chats
+        this.content.claudeChats.forEach(chat => {
+            if (chat.selected) {
+                chat.conversation.forEach(message => {
+                    totalWords += this.countWords(message.text);
+                });
+            }
+        });
+        
+        return totalWords;
+    }
+
+    // Calculate estimated page count
+    getEstimatedPages() {
+        const totalWords = this.getTotalWordCount();
+        const wordsPerPage = this.content.metadata.wordsPerPage || 300;
+        return Math.ceil(totalWords / wordsPerPage);
+    }
+
+    // Check if adding content would exceed page limit
+    wouldExceedPageLimit(additionalWordCount = 0) {
+        if (!this.content.metadata.pageLimit) {
+            return false; // No limit set
+        }
+        
+        const currentWords = this.getTotalWordCount();
+        const totalWords = currentWords + additionalWordCount;
+        const estimatedPages = Math.ceil(totalWords / (this.content.metadata.wordsPerPage || 300));
+        
+        return estimatedPages > this.content.metadata.pageLimit;
+    }
+
+    // Set page limit
+    setPageLimit(limit) {
+        this.content.metadata.pageLimit = limit > 0 ? limit : null;
+        this.saveContent();
+        console.log(limit > 0 ? `Page limit set to ${limit} pages` : 'Page limit removed');
+    }
+
+    // Get page limit info for display
+    getPageLimitInfo() {
+        const currentPages = this.getEstimatedPages();
+        const limit = this.content.metadata.pageLimit;
+        const totalWords = this.getTotalWordCount();
+        
+        return {
+            currentPages,
+            pageLimit: limit,
+            totalWords,
+            wordsPerPage: this.content.metadata.wordsPerPage || 300,
+            hasLimit: limit !== null,
+            isAtLimit: limit !== null && currentPages >= limit
+        };
     }
 
     selectClaudeChat(chatId) {
