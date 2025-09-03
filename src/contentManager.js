@@ -125,6 +125,14 @@ export class ContentManager {
         return text.replace(/<[^>]*>/g, ' ').split(/\s+/).filter(word => word.length > 0).length;
     }
 
+    _findClaudeChat(chatId) {
+        const chat = this.content.claudeChats.find(c => c.id === chatId);
+        if (!chat) {
+            console.error(`Chat with ID ${chatId} not found.`);
+        }
+        return chat;
+    }
+
     // Calculate total word count from all content
     getTotalWordCount() {
         let totalWords = 0;
@@ -190,35 +198,29 @@ export class ContentManager {
     }
 
     selectClaudeChat(chatId) {
-        const chat = this.content.claudeChats.find(c => c.id === chatId);
+        const chat = this._findClaudeChat(chatId);
         if (chat) {
             chat.selected = true;
             this.saveContent();
             console.log(`Chat "${chat.title}" selected.`);
-        } else {
-            console.error(`Chat with ID ${chatId} not found.`);
         }
     }
 
     deselectClaudeChat(chatId) {
-        const chat = this.content.claudeChats.find(c => c.id === chatId);
+        const chat = this._findClaudeChat(chatId);
         if (chat) {
             chat.selected = false;
             this.saveContent();
             console.log(`Chat "${chat.title}" deselected.`);
-        } else {
-            console.error(`Chat with ID ${chatId} not found.`);
         }
     }
 
     toggleClaudeChatSelection(chatId) {
-        const chat = this.content.claudeChats.find(c => c.id === chatId);
+        const chat = this._findClaudeChat(chatId);
         if (chat) {
             chat.selected = !chat.selected;
             this.saveContent();
             console.log(`Chat "${chat.title}" selection toggled to: ${chat.selected}.`);
-        } else {
-            console.error(`Chat with ID ${chatId} not found.`);
         }
     }
 

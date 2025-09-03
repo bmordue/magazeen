@@ -254,3 +254,128 @@ describe('ContentManager - Claude Chat Import', () => {
         expect(localMockWriteFileSync).not.toHaveBeenCalled();
     });
 });
+
+describe('ContentManager - Claude Chat Selection', () => {
+    let contentManager;
+    let mockWriteFileSync;
+    const mockContentFile = 'out/test-magazine-content.json';
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+
+        const mockExistsSync = jest.fn(() => false);
+        const mockReadFileSync = jest.fn(() => '');
+        mockWriteFileSync = jest.fn();
+
+        contentManager = new ContentManager(mockContentFile, {
+            existsSync: mockExistsSync,
+            readFileSync: mockReadFileSync,
+            writeFileSync: mockWriteFileSync,
+        });
+
+        // Add sample chats for testing
+        contentManager.content.claudeChats = [
+            {
+                id: 'chat-1',
+                title: 'Test Chat 1',
+                selected: false,
+                conversation: [],
+                category: 'Test'
+            },
+            {
+                id: 'chat-2',
+                title: 'Test Chat 2',
+                selected: true,
+                conversation: [],
+                category: 'Test'
+            }
+        ];
+    });
+
+    describe('selectClaudeChat', () => {
+        test('should select a chat that exists', () => {
+            const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+            
+            contentManager.selectClaudeChat('chat-1');
+            
+            expect(contentManager.content.claudeChats[0].selected).toBe(true);
+            expect(mockWriteFileSync).toHaveBeenCalledTimes(1);
+            expect(consoleLogSpy).toHaveBeenCalledWith('Chat "Test Chat 1" selected.');
+            
+            consoleLogSpy.mockRestore();
+        });
+
+        test('should handle selecting non-existent chat', () => {
+            const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+            
+            contentManager.selectClaudeChat('non-existent');
+            
+            expect(consoleErrorSpy).toHaveBeenCalledWith('Chat with ID non-existent not found.');
+            expect(mockWriteFileSync).not.toHaveBeenCalled();
+            
+            consoleErrorSpy.mockRestore();
+        });
+    });
+
+    describe('deselectClaudeChat', () => {
+        test('should deselect a chat that exists', () => {
+            const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+            
+            contentManager.deselectClaudeChat('chat-2');
+            
+            expect(contentManager.content.claudeChats[1].selected).toBe(false);
+            expect(mockWriteFileSync).toHaveBeenCalledTimes(1);
+            expect(consoleLogSpy).toHaveBeenCalledWith('Chat "Test Chat 2" deselected.');
+            
+            consoleLogSpy.mockRestore();
+        });
+
+        test('should handle deselecting non-existent chat', () => {
+            const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+            
+            contentManager.deselectClaudeChat('non-existent');
+            
+            expect(consoleErrorSpy).toHaveBeenCalledWith('Chat with ID non-existent not found.');
+            expect(mockWriteFileSync).not.toHaveBeenCalled();
+            
+            consoleErrorSpy.mockRestore();
+        });
+    });
+
+    describe('toggleClaudeChatSelection', () => {
+        test('should toggle chat selection from false to true', () => {
+            const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+            
+            contentManager.toggleClaudeChatSelection('chat-1');
+            
+            expect(contentManager.content.claudeChats[0].selected).toBe(true);
+            expect(mockWriteFileSync).toHaveBeenCalledTimes(1);
+            expect(consoleLogSpy).toHaveBeenCalledWith('Chat "Test Chat 1" selection toggled to: true.');
+            
+            consoleLogSpy.mockRestore();
+        });
+
+        test('should toggle chat selection from true to false', () => {
+            const consoleLogSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
+            
+            contentManager.toggleClaudeChatSelection('chat-2');
+            
+            expect(contentManager.content.claudeChats[1].selected).toBe(false);
+            expect(mockWriteFileSync).toHaveBeenCalledTimes(1);
+            expect(consoleLogSpy).toHaveBeenCalledWith('Chat "Test Chat 2" selection toggled to: false.');
+            
+            consoleLogSpy.mockRestore();
+        });
+
+        test('should handle toggling non-existent chat', () => {
+            const consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => {});
+            
+            contentManager.toggleClaudeChatSelection('non-existent');
+            
+            expect(consoleErrorSpy).toHaveBeenCalledWith('Chat with ID non-existent not found.');
+            expect(mockWriteFileSync).not.toHaveBeenCalled();
+            
+            consoleErrorSpy.mockRestore();
+        });
+    });
+});
