@@ -39,7 +39,7 @@ export class ContentManager {
             if (this.content.metadata.pageLimit === undefined) {
                 this.content.metadata.pageLimit = null;
             }
-            if (!this.content.metadata.wordsPerPage) {
+            if (this.content.metadata.wordsPerPage === undefined) {
                 this.content.metadata.wordsPerPage = 300;
             }
             // Ensure each chat has a 'selected' field
