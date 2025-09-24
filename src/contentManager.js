@@ -1,4 +1,5 @@
-import * as nodeFs from 'fs'; // Renamed import to avoid conflict if fsUtils is also named fs
+import { promises as fs } from 'fs';
+import * as syncFs from 'fs';
 import { config } from './config.js';
 import { Logger } from './logger.js';
 import { Validator, ValidationError } from './validation.js';
@@ -6,21 +7,40 @@ import { Validator, ValidationError } from './validation.js';
 export class ContentManager {
     constructor(contentFile = null, fsUtils = null) {
         this.contentFile = contentFile || config.paths.contentFile;
-        // Use provided fs utilities or default to Node's actual fs module
+        
+        // Support both sync and async operations for backward compatibility
         this.fsUtils = fsUtils || {
-            existsSync: nodeFs.existsSync,
-            readFileSync: nodeFs.readFileSync,
-            writeFileSync: nodeFs.writeFileSync,
+            // Sync operations (for backward compatibility)
+            existsSync: syncFs.existsSync,
+            readFileSync: syncFs.readFileSync,
+            writeFileSync: syncFs.writeFileSync,
+            // Async operations (preferred)
+            pathExists: async (path) => {
+                try {
+                    await fs.access(path);
+                    return true;
+                } catch {
+                    return false;
+                }
+            },
+            readFile: fs.readFile,
+            writeFile: fs.writeFile,
+            mkdir: fs.mkdir,
         };
+        
         this.logger = Logger.child({ component: 'ContentManager' });
+        this._initialized = false;
+        
+        // Initialize synchronously for backward compatibility
         this.loadContent();
     }
 
+    // Sync version (for backward compatibility)
     loadContent() {
         try {
             if (this.fsUtils.existsSync(this.contentFile)) {
                 this.content = JSON.parse(this.fsUtils.readFileSync(this.contentFile, 'utf8'));
-                this.logger.debug('Content loaded successfully', { 
+                this.logger.debug('Content loaded successfully (sync)', { 
                     file: this.contentFile,
                     articles: this.content.articles?.length || 0,
                     interests: this.content.interests?.length || 0,
@@ -33,55 +53,101 @@ export class ContentManager {
                         title: config.epub.defaults.title,
                         author: config.epub.defaults.author,
                         description: config.epub.defaults.description,
-                        pageLimit: null, // null = no limit, number = max pages
+                        pageLimit: null,
                         wordsPerPage: config.epub.wordsPerPage
                     },
                     articles: [],
                     interests: [],
                     chatHighlights: [],
-                    claudeChats: [] // Add new field for Claude chats
+                    claudeChats: []
                 };
-                this.logger.info('Created new content structure', { file: this.contentFile });
+                this.logger.info('Created new content structure (sync)', { file: this.contentFile });
             }
-            // Ensure claudeChats array exists if loading from an older file
-            if (!this.content.claudeChats) {
-                this.content.claudeChats = [];
-            }
-            // Ensure page limit metadata exists for older files
-            if (this.content.metadata.pageLimit === undefined) {
-                this.content.metadata.pageLimit = null;
-            }
-            if (this.content.metadata.wordsPerPage === undefined) {
-                this.content.metadata.wordsPerPage = config.epub.wordsPerPage;
-            }
-            // Ensure each chat has a 'selected' field
-            this.content.claudeChats.forEach(chat => {
-                if (typeof chat.selected === 'undefined') {
-                    chat.selected = false; // Default to not selected
-                }
-            });
+            
+            this._ensureContentStructure();
+            this._initialized = true;
         } catch (error) {
-            this.logger.error('Failed to load content', error, { file: this.contentFile });
-            this.content = { 
-                metadata: {
-                    title: config.epub.defaults.title,
-                    author: config.epub.defaults.author,
-                    description: config.epub.defaults.description,
-                    pageLimit: null,
-                    wordsPerPage: config.epub.wordsPerPage
-                }, 
-                articles: [], 
-                interests: [], 
-                chatHighlights: [], 
-                claudeChats: [] 
-            };
+            this.logger.error('Failed to load content (sync)', error, { file: this.contentFile });
+            this.content = this._createDefaultContent();
+            this._initialized = true;
         }
     }
 
+    // Async version (preferred)
+    async loadContentAsync() {
+        try {
+            const exists = await this.fsUtils.pathExists(this.contentFile);
+            if (exists) {
+                const data = await this.fsUtils.readFile(this.contentFile, 'utf8');
+                this.content = JSON.parse(data);
+                this.logger.debug('Content loaded successfully (async)', { 
+                    file: this.contentFile,
+                    articles: this.content.articles?.length || 0,
+                    interests: this.content.interests?.length || 0,
+                    chatHighlights: this.content.chatHighlights?.length || 0,
+                    claudeChats: this.content.claudeChats?.length || 0
+                });
+            } else {
+                this.content = this._createDefaultContent();
+                this.logger.info('Created new content structure (async)', { file: this.contentFile });
+            }
+            
+            this._ensureContentStructure();
+            this._initialized = true;
+        } catch (error) {
+            this.logger.error('Failed to load content (async)', error, { file: this.contentFile });
+            this.content = this._createDefaultContent();
+            this._initialized = true;
+        }
+    }
+
+    _createDefaultContent() {
+        return {
+            metadata: {
+                title: config.epub.defaults.title,
+                author: config.epub.defaults.author,
+                description: config.epub.defaults.description,
+                pageLimit: null,
+                wordsPerPage: config.epub.wordsPerPage
+            },
+            articles: [],
+            interests: [],
+            chatHighlights: [],
+            claudeChats: []
+        };
+    }
+
+    _ensureContentStructure() {
+        // Ensure claudeChats array exists if loading from an older file
+        if (!this.content.claudeChats) {
+            this.content.claudeChats = [];
+        }
+        // Ensure page limit metadata exists for older files
+        if (this.content.metadata.pageLimit === undefined) {
+            this.content.metadata.pageLimit = null;
+        }
+        if (this.content.metadata.wordsPerPage === undefined) {
+            this.content.metadata.wordsPerPage = config.epub.wordsPerPage;
+        }
+        // Ensure each chat has a 'selected' field
+        this.content.claudeChats.forEach(chat => {
+            if (typeof chat.selected === 'undefined') {
+                chat.selected = false;
+            }
+        });
+    }
+
+    async _ensureInitialized() {
+        if (!this._initialized) {
+            await this.loadContentAsync();
+        }
+    }
+
+    // Sync version (for backward compatibility)
     saveContent() {
         try {
             this.fsUtils.writeFileSync(this.contentFile, JSON.stringify(this.content, null, 2));
-            this.logger.info('Content saved successfully', { 
+            this.logger.info('Content saved successfully (sync)', { 
                 file: this.contentFile,
                 articles: this.content.articles.length,
                 interests: this.content.interests.length,
@@ -89,14 +155,36 @@ export class ContentManager {
                 claudeChats: this.content.claudeChats.length
             });
         } catch (error) {
-            this.logger.error('Failed to save content', error, { file: this.contentFile });
+            this.logger.error('Failed to save content (sync)', error, { file: this.contentFile });
             throw new Error(`Failed to save content: ${error.message}`);
         }
     }
 
+    // Async version (preferred)
+    async saveContentAsync() {
+        try {
+            // Ensure directory exists
+            const { dirname } = await import('path');
+            const dir = dirname(this.contentFile);
+            await this.fsUtils.mkdir(dir, { recursive: true });
+            
+            await this.fsUtils.writeFile(this.contentFile, JSON.stringify(this.content, null, 2));
+            this.logger.info('Content saved successfully (async)', { 
+                file: this.contentFile,
+                articles: this.content.articles.length,
+                interests: this.content.interests.length,
+                chatHighlights: this.content.chatHighlights.length,
+                claudeChats: this.content.claudeChats.length
+            });
+        } catch (error) {
+            this.logger.error('Failed to save content (async)', error, { file: this.contentFile });
+            throw new Error(`Failed to save content: ${error.message}`);
+        }
+    }
+
+    // Sync version (for backward compatibility)
     addArticle(title, content, category = "General", author = null, tags = []) {
         try {
-            // Validate input
             const articleData = {
                 title,
                 content,
@@ -109,15 +197,10 @@ export class ContentManager {
             
             const wordCount = this.countWords(content);
             
-            // Check page limit before adding
             if (this.wouldExceedPageLimit(wordCount)) {
                 const pageInfo = this.getPageLimitInfo();
                 const errorMessage = `Cannot add article "${title}": would exceed page limit of ${pageInfo.pageLimit} pages (currently ${pageInfo.currentPages} pages, would become ${Math.ceil((pageInfo.totalWords + wordCount) / pageInfo.wordsPerPage)} pages)`;
-                this.logger.error(errorMessage, null, { 
-                    title,
-                    wordCount,
-                    pageInfo
-                });
+                this.logger.error(errorMessage, null, { title, wordCount, pageInfo });
                 return null;
             }
             
@@ -158,35 +241,138 @@ export class ContentManager {
         }
     }
 
-    addInterest(topic, description, priority = "medium") {
-        const interest = {
-            id: Date.now().toString(),
-            topic,
-            description,
-            priority,
-            dateAdded: new Date().toISOString()
-        };
+    // Async version (preferred for new code)
+    async addArticleAsync(title, content, category = "General", author = null, tags = []) {
+        await this._ensureInitialized();
+        
+        try {
+            const articleData = {
+                title,
+                content,
+                category: category || config.content.defaultCategory,
+                author,
+                tags: tags || []
+            };
+            
+            Validator.validateArticle(articleData);
+            
+            const wordCount = this.countWords(content);
+            
+            if (this.wouldExceedPageLimit(wordCount)) {
+                const pageInfo = this.getPageLimitInfo();
+                const errorMessage = `Cannot add article "${title}": would exceed page limit of ${pageInfo.pageLimit} pages (currently ${pageInfo.currentPages} pages, would become ${Math.ceil((pageInfo.totalWords + wordCount) / pageInfo.wordsPerPage)} pages)`;
+                this.logger.error(errorMessage, null, { title, wordCount, pageInfo });
+                return null;
+            }
+            
+            const article = {
+                id: Date.now().toString(),
+                title: articleData.title,
+                content: articleData.content,
+                category: articleData.category,
+                author: articleData.author,
+                tags: articleData.tags,
+                dateAdded: new Date().toISOString(),
+                wordCount
+            };
+            
+            this.content.articles.push(article);
+            await this.saveContentAsync();
+            
+            this.logger.info(`Added article: "${title}" (${wordCount} words)`, {
+                id: article.id,
+                category: article.category,
+                wordCount,
+                totalArticles: this.content.articles.length
+            });
+            
+            return article.id;
+        } catch (error) {
+            if (error instanceof ValidationError) {
+                this.logger.warn('Article validation failed', { 
+                    title,
+                    error: error.message,
+                    field: error.field
+                });
+                throw error;
+            } else {
+                this.logger.error('Failed to add article', error, { title });
+                throw new Error(`Failed to add article: ${error.message}`);
+            }
+        }
+    }
 
-        this.content.interests.push(interest);
-        this.saveContent();
-        console.log(`Added interest: "${topic}"`);
-        return interest.id;
+    addInterest(topic, description, priority = "medium") {
+        try {
+            Validator.validateInterest({ topic, description, priority });
+            
+            const interest = {
+                id: Date.now().toString(),
+                topic,
+                description,
+                priority,
+                dateAdded: new Date().toISOString()
+            };
+
+            this.content.interests.push(interest);
+            this.saveContent();
+            this.logger.info(`Added interest: "${topic}"`, {
+                id: interest.id,
+                priority,
+                totalInterests: this.content.interests.length
+            });
+            console.log(`Added interest: "${topic}"`);
+            return interest.id;
+        } catch (error) {
+            if (error instanceof ValidationError) {
+                this.logger.warn('Interest validation failed', { 
+                    topic,
+                    error: error.message,
+                    field: error.field
+                });
+                throw error;
+            } else {
+                this.logger.error('Failed to add interest', error, { topic });
+                throw new Error(`Failed to add interest: ${error.message}`);
+            }
+        }
     }
 
     addChatHighlight(title, conversation, insights, category = "General") {
-        const highlight = {
-            id: Date.now().toString(),
-            title,
-            conversation,
-            insights,
-            category,
-            dateAdded: new Date().toISOString()
-        };
+        try {
+            Validator.validateChatHighlight({ title, conversation, insights, category });
+            
+            const highlight = {
+                id: Date.now().toString(),
+                title,
+                conversation,
+                insights,
+                category,
+                dateAdded: new Date().toISOString()
+            };
 
-        this.content.chatHighlights.push(highlight);
-        this.saveContent();
-        console.log(`Added chat highlight: "${title}"`);
-        return highlight.id;
+            this.content.chatHighlights.push(highlight);
+            this.saveContent();
+            this.logger.info(`Added chat highlight: "${title}"`, {
+                id: highlight.id,
+                category,
+                totalHighlights: this.content.chatHighlights.length
+            });
+            console.log(`Added chat highlight: "${title}"`);
+            return highlight.id;
+        } catch (error) {
+            if (error instanceof ValidationError) {
+                this.logger.warn('Chat highlight validation failed', { 
+                    title,
+                    error: error.message,
+                    field: error.field
+                });
+                throw error;
+            } else {
+                this.logger.error('Failed to add chat highlight', error, { title });
+                throw new Error(`Failed to add chat highlight: ${error.message}`);
+            }
+        }
     }
 
     countWords(text) {
@@ -244,9 +430,22 @@ export class ContentManager {
 
     // Set page limit
     setPageLimit(limit) {
-        this.content.metadata.pageLimit = limit > 0 ? limit : null;
-        this.saveContent();
-        console.log(limit > 0 ? `Page limit set to ${limit} pages` : 'Page limit removed');
+        try {
+            // Allow 0, null, undefined to disable limit
+            if (limit !== null && limit !== undefined && limit !== 0) {
+                Validator.validatePageLimit(limit);
+            }
+            
+            this.content.metadata.pageLimit = limit > 0 ? limit : null;
+            this.saveContent();
+            
+            const message = limit > 0 ? `Page limit set to ${limit} pages` : 'Page limit removed';
+            this.logger.info(message, { pageLimit: limit });
+            console.log(message);
+        } catch (error) {
+            this.logger.error('Failed to set page limit', error, { limit });
+            throw error;
+        }
     }
 
     // Get page limit info for display
@@ -270,7 +469,10 @@ export class ContentManager {
         if (chat) {
             chat.selected = true;
             this.saveContent();
+            this.logger.info(`Chat "${chat.title}" selected`, { chatId });
             console.log(`Chat "${chat.title}" selected.`);
+        } else {
+            this.logger.warn('Chat not found for selection', { chatId });
         }
     }
 
@@ -279,7 +481,10 @@ export class ContentManager {
         if (chat) {
             chat.selected = false;
             this.saveContent();
+            this.logger.info(`Chat "${chat.title}" deselected`, { chatId });
             console.log(`Chat "${chat.title}" deselected.`);
+        } else {
+            this.logger.warn('Chat not found for deselection', { chatId });
         }
     }
 
@@ -288,7 +493,13 @@ export class ContentManager {
         if (chat) {
             chat.selected = !chat.selected;
             this.saveContent();
+            this.logger.info(`Chat "${chat.title}" selection toggled`, { 
+                chatId, 
+                selected: chat.selected 
+            });
             console.log(`Chat "${chat.title}" selection toggled to: ${chat.selected}.`);
+        } else {
+            this.logger.warn('Chat not found for toggle', { chatId });
         }
     }
 

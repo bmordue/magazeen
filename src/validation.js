@@ -228,8 +228,8 @@ export class Validator {
       throw new ValidationError('Page limit must be a positive integer or null', 'pageLimit', limit);
     }
     
-    if (limit < 1) {
-      throw new ValidationError('Page limit must be at least 1', 'pageLimit', limit);
+    if (limit <= 0) {
+      throw new ValidationError('Page limit must be a positive integer or null', 'pageLimit', limit);
     }
     
     if (limit > 1000) {
