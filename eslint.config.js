@@ -7,6 +7,7 @@ export default [
     languageOptions: {
       globals: {
         ...globals.node,
+        performance: "readonly",
       },
       ecmaVersion: "latest",
       sourceType: "module",
@@ -22,7 +23,8 @@ export default [
     },
      languageOptions: {
         globals: {
-            ...globals.jest
+            ...globals.jest,
+            performance: "readonly",
         }
      }
   }

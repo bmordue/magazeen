@@ -1,14 +1,18 @@
 import * as nodeFs from 'fs'; // Renamed import to avoid conflict if fsUtils is also named fs
+import { config } from './config.js';
+import { Logger } from './logger.js';
+import { Validator, ValidationError } from './validation.js';
 
 export class ContentManager {
-    constructor(contentFile = 'out/magazine-content.json', fsUtils = null) {
-        this.contentFile = contentFile;
+    constructor(contentFile = null, fsUtils = null) {
+        this.contentFile = contentFile || config.paths.contentFile;
         // Use provided fs utilities or default to Node's actual fs module
         this.fsUtils = fsUtils || {
             existsSync: nodeFs.existsSync,
             readFileSync: nodeFs.readFileSync,
             writeFileSync: nodeFs.writeFileSync,
         };
+        this.logger = Logger.child({ component: 'ContentManager' });
         this.loadContent();
     }
 
@@ -16,20 +20,28 @@ export class ContentManager {
         try {
             if (this.fsUtils.existsSync(this.contentFile)) {
                 this.content = JSON.parse(this.fsUtils.readFileSync(this.contentFile, 'utf8'));
+                this.logger.debug('Content loaded successfully', { 
+                    file: this.contentFile,
+                    articles: this.content.articles?.length || 0,
+                    interests: this.content.interests?.length || 0,
+                    chatHighlights: this.content.chatHighlights?.length || 0,
+                    claudeChats: this.content.claudeChats?.length || 0
+                });
             } else {
                 this.content = {
                     metadata: {
-                        title: "My Personal Magazine",
-                        author: "Your Name",
-                        description: "A monthly compilation of my interests, discoveries, and insights.",
+                        title: config.epub.defaults.title,
+                        author: config.epub.defaults.author,
+                        description: config.epub.defaults.description,
                         pageLimit: null, // null = no limit, number = max pages
-                        wordsPerPage: 300 // Average words per EPUB page
+                        wordsPerPage: config.epub.wordsPerPage
                     },
                     articles: [],
                     interests: [],
                     chatHighlights: [],
                     claudeChats: [] // Add new field for Claude chats
                 };
+                this.logger.info('Created new content structure', { file: this.contentFile });
             }
             // Ensure claudeChats array exists if loading from an older file
             if (!this.content.claudeChats) {
@@ -40,7 +52,7 @@ export class ContentManager {
                 this.content.metadata.pageLimit = null;
             }
             if (this.content.metadata.wordsPerPage === undefined) {
-                this.content.metadata.wordsPerPage = 300;
+                this.content.metadata.wordsPerPage = config.epub.wordsPerPage;
             }
             // Ensure each chat has a 'selected' field
             this.content.claudeChats.forEach(chat => {
@@ -49,45 +61,101 @@ export class ContentManager {
                 }
             });
         } catch (error) {
-            console.error('Error loading content:', error);
-            this.content = { metadata: {}, articles: [], interests: [], chatHighlights: [], claudeChats: [] };
+            this.logger.error('Failed to load content', error, { file: this.contentFile });
+            this.content = { 
+                metadata: {
+                    title: config.epub.defaults.title,
+                    author: config.epub.defaults.author,
+                    description: config.epub.defaults.description,
+                    pageLimit: null,
+                    wordsPerPage: config.epub.wordsPerPage
+                }, 
+                articles: [], 
+                interests: [], 
+                chatHighlights: [], 
+                claudeChats: [] 
+            };
         }
     }
 
     saveContent() {
         try {
             this.fsUtils.writeFileSync(this.contentFile, JSON.stringify(this.content, null, 2));
-            console.log('Content saved successfully!');
+            this.logger.info('Content saved successfully', { 
+                file: this.contentFile,
+                articles: this.content.articles.length,
+                interests: this.content.interests.length,
+                chatHighlights: this.content.chatHighlights.length,
+                claudeChats: this.content.claudeChats.length
+            });
         } catch (error) {
-            console.error('Error saving content:', error);
+            this.logger.error('Failed to save content', error, { file: this.contentFile });
+            throw new Error(`Failed to save content: ${error.message}`);
         }
     }
 
     addArticle(title, content, category = "General", author = null, tags = []) {
-        const wordCount = this.countWords(content);
-        
-        // Check page limit before adding
-        if (this.wouldExceedPageLimit(wordCount)) {
-            const pageInfo = this.getPageLimitInfo();
-            console.error(`Cannot add article "${title}": would exceed page limit of ${pageInfo.pageLimit} pages (currently ${pageInfo.currentPages} pages, would become ${Math.ceil((pageInfo.totalWords + wordCount) / pageInfo.wordsPerPage)} pages)`);
-            return null;
+        try {
+            // Validate input
+            const articleData = {
+                title,
+                content,
+                category: category || config.content.defaultCategory,
+                author,
+                tags: tags || []
+            };
+            
+            Validator.validateArticle(articleData);
+            
+            const wordCount = this.countWords(content);
+            
+            // Check page limit before adding
+            if (this.wouldExceedPageLimit(wordCount)) {
+                const pageInfo = this.getPageLimitInfo();
+                const errorMessage = `Cannot add article "${title}": would exceed page limit of ${pageInfo.pageLimit} pages (currently ${pageInfo.currentPages} pages, would become ${Math.ceil((pageInfo.totalWords + wordCount) / pageInfo.wordsPerPage)} pages)`;
+                this.logger.error(errorMessage, null, { 
+                    title,
+                    wordCount,
+                    pageInfo
+                });
+                return null;
+            }
+            
+            const article = {
+                id: Date.now().toString(),
+                title: articleData.title,
+                content: articleData.content,
+                category: articleData.category,
+                author: articleData.author,
+                tags: articleData.tags,
+                dateAdded: new Date().toISOString(),
+                wordCount
+            };
+            
+            this.content.articles.push(article);
+            this.saveContent();
+            
+            this.logger.info(`Added article: "${title}" (${wordCount} words)`, {
+                id: article.id,
+                category: article.category,
+                wordCount,
+                totalArticles: this.content.articles.length
+            });
+            
+            return article.id;
+        } catch (error) {
+            if (error instanceof ValidationError) {
+                this.logger.warn('Article validation failed', { 
+                    title,
+                    error: error.message,
+                    field: error.field
+                });
+                throw error;
+            } else {
+                this.logger.error('Failed to add article', error, { title });
+                throw new Error(`Failed to add article: ${error.message}`);
+            }
         }
-        
-        const article = {
-            id: Date.now().toString(),
-            title,
-            content,
-            category,
-            author,
-            tags,
-            dateAdded: new Date().toISOString(),
-            wordCount
-        };
-
-        this.content.articles.push(article);
-        this.saveContent();
-        console.log(`Added article: "${title}" (${article.wordCount} words)`);
-        return article.id;
     }
 
     addInterest(topic, description, priority = "medium") {
