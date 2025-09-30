@@ -24,11 +24,11 @@ describe('ArticleGenerator HTML Sanitization', () => {
 
     describe('XSS Protection', () => {
         test('should remove script tags from interest topics', () => {
-            // Add a malicious interest
+            // Add a malicious interest - correct parameter order: (topic, description, priority)
             contentManager.addInterest(
                 '<script>alert("XSS")</script>Malicious Topic',
-                'high',
-                'A topic with embedded JavaScript'
+                'A topic with embedded JavaScript',
+                'high'
             );
 
             const articleId = articleGenerator.generateInterestArticle();
@@ -43,8 +43,8 @@ describe('ArticleGenerator HTML Sanitization', () => {
         test('should remove dangerous event handlers', () => {
             contentManager.addInterest(
                 'Normal Topic',
-                'high', 
-                '<img onerror="alert(1)" src="invalid">Dangerous description with event handler'
+                '<img onerror="alert(1)" src="invalid">Dangerous description with event handler',
+                'high'
             );
 
             const articleId = articleGenerator.generateInterestArticle();
@@ -60,9 +60,12 @@ describe('ArticleGenerator HTML Sanitization', () => {
         test('should handle CSS-based XSS attempts', () => {
             contentManager.addChatHighlight(
                 'XSS Test',
-                'security',
-                'Testing CSS XSS',
-                '<div style="background:url(javascript:alert(1))">CSS XSS attempt</div>'
+                [
+                    { sender: 'human', text: 'Testing CSS XSS' },
+                    { sender: 'assistant', text: 'This is a test response' }
+                ],
+                '<div style="background:url(javascript:alert(1))">CSS XSS attempt</div>',
+                'security'
             );
 
             const articleId = articleGenerator.generateChatHighlightsArticle();
@@ -77,8 +80,8 @@ describe('ArticleGenerator HTML Sanitization', () => {
         test('should preserve safe HTML elements', () => {
             contentManager.addInterest(
                 'Safe HTML Topic',
-                'medium',
-                'This has <strong>bold</strong> and <em>italic</em> text with a <a href="https://example.com">safe link</a>'
+                'This has <strong>bold</strong> and <em>italic</em> text with a <a href="https://example.com">safe link</a>',
+                'medium'
             );
 
             const articleId = articleGenerator.generateInterestArticle();
@@ -96,8 +99,8 @@ describe('ArticleGenerator HTML Sanitization', () => {
             
             contentManager.addInterest(
                 'Unicode Test',
-                'low',
-                unicodeXSS + 'Regular content'
+                unicodeXSS + 'Regular content',
+                'low'
             );
 
             const articleId = articleGenerator.generateInterestArticle();
@@ -113,9 +116,12 @@ describe('ArticleGenerator HTML Sanitization', () => {
         test('should sanitize nested XSS attempts', () => {
             contentManager.addChatHighlight(
                 'Nested XSS',
-                'test',
-                'Testing nested attacks',
-                '<div><span onclick="alert(1)"><img onerror="alert(2)" src="x"><script>alert(3)</script></span></div>'
+                [
+                    { sender: 'human', text: 'Testing nested attacks' },
+                    { sender: 'assistant', text: 'This is a response' }
+                ],
+                '<div><span onclick="alert(1)"><img onerror="alert(2)" src="x"><script>alert(3)</script></span></div>',
+                'test'
             );
 
             const articleId = articleGenerator.generateChatHighlightsArticle();
@@ -133,8 +139,8 @@ describe('ArticleGenerator HTML Sanitization', () => {
         test('should handle normal text without HTML', () => {
             contentManager.addInterest(
                 'Normal Topic',
-                'high',
-                'This is just normal text without any HTML'
+                'This is just normal text without any HTML',
+                'high'
             );
 
             const articleId = articleGenerator.generateInterestArticle();
@@ -147,8 +153,8 @@ describe('ArticleGenerator HTML Sanitization', () => {
         test('should escape basic HTML entities like the old sanitizer', () => {
             contentManager.addInterest(
                 'Topic with & ampersand',
-                'medium',
-                'Description with < less than and > greater than and "quotes"'
+                'Description with < less than and > greater than and "quotes"',
+                'medium'
             );
 
             const articleId = articleGenerator.generateInterestArticle();
