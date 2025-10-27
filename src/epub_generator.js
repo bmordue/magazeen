@@ -132,7 +132,8 @@ class EPUBMagazineGenerator {
 <package xmlns="http://www.idpf.org/2007/opf" unique-identifier="bookid" version="3.0">
     <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
         <dc:title>${this.title} - Issue ${this.issueNumber}</dc:title>
-        <dc:creator>${this.author}</dc:creator>
+        <dc:creator id="creator">${this.author}</dc:creator>
+        <meta refines="#creator" property="role" scheme="marc:relators">aut</meta>
         <dc:identifier id="bookid">${this.generateUUID()}</dc:identifier>
         <dc:language>en</dc:language>
         <dc:date>${this.currentDate.toISOString().split('T')[0]}</dc:date>
