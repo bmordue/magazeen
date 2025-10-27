@@ -78,6 +78,7 @@ class EPUBMagazineGenerator {
         // Generate content files
         this.oebps.file("content.opf", this.generateOPF());
         this.oebps.file("toc.ncx", this.generateNCX());
+        this.oebps.file("nav.xhtml", this.generateNavXHTML());
         this.oebps.file("index.xhtml", this.generateIndexXHTML());
         this.oebps.file("toc.xhtml", this.generateTOCXHTML());
         
@@ -104,6 +105,7 @@ class EPUBMagazineGenerator {
     generateOPF() {
         const manifestItems = [
             '<item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>',
+            '<item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>',
             '<item id="css" href="styles.css" media-type="text/css"/>',
             '<item id="index" href="index.xhtml" media-type="application/xhtml+xml"/>',
             '<item id="toc" href="toc.xhtml" media-type="application/xhtml+xml"/>'
@@ -127,10 +129,11 @@ class EPUBMagazineGenerator {
         });
 
         return `<?xml version="1.0" encoding="UTF-8"?>
-<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="bookid" version="2.0">
+<package xmlns="http://www.idpf.org/2007/opf" unique-identifier="bookid" version="3.0">
     <metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
         <dc:title>${this.title} - Issue ${this.issueNumber}</dc:title>
-        <dc:creator opf:role="aut">${this.author}</dc:creator>
+        <dc:creator id="creator">${this.author}</dc:creator>
+        <meta refines="#creator" property="role" scheme="marc:relators">aut</meta>
         <dc:identifier id="bookid">${this.generateUUID()}</dc:identifier>
         <dc:language>en</dc:language>
         <dc:date>${this.currentDate.toISOString().split('T')[0]}</dc:date>
@@ -231,6 +234,31 @@ class EPUBMagazineGenerator {
             ${tocItems}
         </ul>
     </div>
+</body>
+</html>`;
+    }
+
+    generateNavXHTML() {
+        const navItems = this.chapters.map(chapter => 
+            `<li><a href="${chapter.filename}">${chapter.title}</a></li>`
+        ).join('\n                ');
+
+        return `<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops">
+<head>
+    <title>Navigation</title>
+    <meta charset="utf-8"/>
+</head>
+<body>
+    <nav epub:type="toc" id="toc">
+        <h1>Table of Contents</h1>
+        <ol>
+            <li><a href="index.xhtml">Cover</a></li>
+            <li><a href="toc.xhtml">Table of Contents</a></li>
+            ${navItems}
+        </ol>
+    </nav>
 </body>
 </html>`;
     }
