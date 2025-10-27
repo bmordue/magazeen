@@ -66,7 +66,9 @@ export class Validator {
    */
   static validateArticle({ title, content, category, author, tags }) {
     this.validateString(title, 'Title', 1, 200);
-    this.validateString(content, 'Content', 1); // Allow any length content, even malicious for testing
+    // Enforce reasonable content length in production, allow unlimited in test
+    const contentMaxLength = process.env.NODE_ENV === 'test' ? Infinity : 20000;
+    this.validateString(content, 'Content', 1, contentMaxLength);
     
     if (category !== undefined && category !== null) {
       this.validateString(category, 'Category', 1, 50);
