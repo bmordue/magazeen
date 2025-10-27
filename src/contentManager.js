@@ -321,7 +321,6 @@ export class ContentManager {
                 priority,
                 totalInterests: this.content.interests.length
             });
-            console.log(`Added interest: "${topic}"`);
             return interest.id;
         } catch (error) {
             if (error instanceof ValidationError) {
