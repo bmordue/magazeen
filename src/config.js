@@ -49,7 +49,7 @@ export const config = {
   // Content processing
   content: {
     /** Maximum number of recent interests to display */
-    maxRecentInterests: parseInt(process.env.MAX_RECENT_INTERESTS) || 5,
+    maxRecentInterests: (v => !isNaN(v) ? v : 5)(parseInt(process.env.MAX_RECENT_INTERESTS)),
     /** Maximum number of chat highlights to display */
     maxChatHighlights: parseInt(process.env.MAX_CHAT_HIGHLIGHTS) || 10,
     /** Default content category */
