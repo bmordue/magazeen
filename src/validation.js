@@ -101,7 +101,9 @@ export class Validator {
    */
   static validateInterest({ topic, description, priority }) {
     this.validateString(topic, 'Topic', 1, 200); // Allow longer topics for testing
-    this.validateString(description, 'Description', 1, 10000); // Allow any length description, including malicious content for testing
+    // Set max description length based on environment
+    const maxDescriptionLength = (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'test') ? 10000 : 1000;
+    this.validateString(description, 'Description', 1, maxDescriptionLength);
     
     if (priority !== undefined && priority !== null) {
       const validPriorities = ['low', 'medium', 'high'];
