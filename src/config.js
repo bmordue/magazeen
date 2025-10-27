@@ -53,7 +53,11 @@ export const config = {
     /** Maximum number of chat highlights to display */
     maxChatHighlights: parseInt(process.env.MAX_CHAT_HIGHLIGHTS) || 10,
     /** Default content category */
-    defaultCategory: process.env.DEFAULT_CATEGORY || "General"
+    defaultCategory: process.env.DEFAULT_CATEGORY || "General",
+    /** Enable topic clustering for articles */
+    enableClustering: process.env.ENABLE_CLUSTERING !== 'false',
+    /** Minimum similarity threshold for clustering (0-100) */
+    clusteringSimilarity: (v => !isNaN(v) ? v : 30)(parseInt(process.env.CLUSTERING_SIMILARITY))
   },
 
   // Logging and monitoring
