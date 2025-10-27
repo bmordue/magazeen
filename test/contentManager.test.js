@@ -57,9 +57,15 @@ describe('ContentManager - Claude Chat Import', () => {
 
         // Configure the mock implementations for fs functions - now async
         mockExistsSync.mockImplementation(async filePath => {
-            if (filePath === mockContentFile) throw new Error('ENOENT');
+            if (filePath === mockContentFile) {
+                const error = new Error('ENOENT');
+                error.code = 'ENOENT';
+                throw error;
+            }
             if (filePath === sampleClaudeExportPath) return true;
-            throw new Error('ENOENT');
+            const error = new Error('ENOENT');
+            error.code = 'ENOENT';
+            throw error;
         });
         // Default readFileSync mock - now async
         mockReadFileSync.mockImplementation(async filePath => {
