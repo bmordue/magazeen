@@ -43,6 +43,44 @@ This will start the server on `http://localhost:3000`.
 
 **Note:** The web interface currently supports the Claude JSON export format. Uploaded files are processed and then deleted from the server; generated EPUBs are also deleted after download.
 
+## Features
+
+### Smart Topic Clustering
+
+Magazeen automatically groups related articles and conversations by topic similarity, making your magazine easier to read and more organized.
+
+**How it works:**
+- Analyzes article content and keywords to identify related topics
+- Groups similar articles into themed sections
+- Orders content so related stories appear sequentially
+- Generates intelligent section names (e.g., "Python & Programming", "Cooking & Recipes")
+
+**Configuration:**
+```javascript
+// Enable/disable clustering (enabled by default)
+magazineGenerator.generateMagazine({ 
+    enableClustering: true,
+    minSimilarity: 30  // Similarity threshold (0-100, default: 30)
+});
+```
+
+You can also configure clustering in your `magazine-content.json` metadata:
+```json
+{
+  "metadata": {
+    "title": "My Magazine",
+    "enableClustering": true,
+    "clusteringSimilarity": 30
+  }
+}
+```
+
+Or via environment variables:
+```bash
+ENABLE_CLUSTERING=true
+CLUSTERING_SIMILARITY=30
+```
+
 ## File Structure
 ```
 magazeen/
@@ -51,6 +89,7 @@ magazeen/
 │   ├── contentManager.js      # Manages content (articles, interests, highlights)
 │   ├── magazineGenerator.js   # Core EPUB generation logic
 │   ├── articleGenerator.js    # Handles article formatting for EPUB
+│   ├── contentClusterer.js    # Groups related articles by topic
 │   └── templateManager.js     # Manages the content template
 ├── out/
 │   ├── magazine-content.json  # Your content database (default location)
