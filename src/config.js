@@ -37,7 +37,7 @@ export const config = {
   // Web server settings
   server: {
     /** Server port */
-    port: parseInt(process.env.PORT) || 3000,
+    port: (v => !isNaN(v) ? v : 3000)(parseInt(process.env.PORT)),
     /** Upload directory for temporary files */
     uploadDir: process.env.UPLOAD_DIR || 'uploads',
     /** Session timeout in seconds */
