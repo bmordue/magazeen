@@ -214,13 +214,7 @@ export function runCli() {
             if (filePathIndex < args.length && args[filePathIndex] && !args[filePathIndex].startsWith('--')) {
                 const filePath = args[filePathIndex];
                 console.log(`Importing Claude chats from: ${filePath}`);
-                const importedCount = contentManager.importClaudeChatsFromFile(filePath);
-                const importedCount = contentManager.importClaudeChatsFromFile(filePath);
-                // if (importedCount > 0) {
-                //     console.log(`Successfully imported ${importedCount} chats.`);
-                // } else {
-                //     console.log('No new chats were imported or an error occurred.');
-                // }
+                contentManager.importClaudeChatsFromFile(filePath);
             } else {
                 console.error('Error: --import-claude option requires a file path.');
                 console.log('Usage: node src/cli.js --import-claude <path_to_claude_export.json>');
