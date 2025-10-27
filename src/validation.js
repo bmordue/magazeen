@@ -155,7 +155,15 @@ export class Validator {
     });
     
     if (insights !== undefined && insights !== null) {
-      this.validateString(insights, 'Insights', 0, 10000); // Allow malicious content in insights for testing
+      this.validateString(insights, 'Insights', 0, 10000);
+      // In production, reject dangerous content in insights
+      if (process.env.NODE_ENV === 'production') {
+        // Simple check for script/iframe tags; consider using a sanitization library for more robust protection
+        const dangerousPattern = /<(script|iframe|object|embed|link|style|img|svg|math|base|form|input|button|textarea|select)[^>]*>/i;
+        if (dangerousPattern.test(insights)) {
+          throw new ValidationError('Insights contains potentially dangerous HTML content', 'insights', insights);
+        }
+      }
     }
     
     if (category !== undefined && category !== null) {
