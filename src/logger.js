@@ -26,7 +26,15 @@ const LOG_LEVELS = {
 /**
  * Current log level threshold
  */
-const currentLogLevel = LOG_LEVELS[config.logging.level] ?? LOG_LEVELS.info;
+let currentLogLevel;
+if (Object.prototype.hasOwnProperty.call(LOG_LEVELS, config.logging.level)) {
+  currentLogLevel = LOG_LEVELS[config.logging.level];
+} else {
+  console.warn(
+    `[Magazeen] Invalid log level "${config.logging.level}" in config.logging.level. Falling back to "info". Valid levels: ${Object.keys(LOG_LEVELS).join(', ')}`
+  );
+  currentLogLevel = LOG_LEVELS.info;
+}
 
 /**
  * Logger class providing structured logging capabilities
