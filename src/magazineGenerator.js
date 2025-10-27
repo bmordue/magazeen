@@ -63,6 +63,9 @@ export class MagazineGenerator {
         const outputPath = `${outputDir}/magazine-${date.getFullYear()}-${(date.getMonth() + 1).toString().padStart(2, '0')}.epub`;
 
         // Ensure the output directory exists
+        try {
+            await fs.mkdir(outputDir, { recursive: true });
+        } catch (error) {
             console.error(`Failed to create output directory at ${outputDir}:`, error);
             throw error;
         }
