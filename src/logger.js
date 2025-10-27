@@ -66,7 +66,7 @@ export class Logger {
 
     return config.logging.structured 
       ? JSON.stringify(logEntry)
-      : `[${logEntry.timestamp}] ${level.toUpperCase()}: ${message}${error ? ` - ${error.message}` : ''}`;
+      : `[${logEntry.timestamp}] ${level.toUpperCase()}: ${message}${Object.keys(meta).length ? ` ${JSON.stringify(meta)}` : ''}${error ? ` - ${error.message}` : ''}`;
   }
 
   /**
