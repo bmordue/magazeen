@@ -357,7 +357,7 @@ export class ContentManager {
                 category,
                 totalHighlights: this.content.chatHighlights.length
             });
-            console.log(`Added chat highlight: "${title}"`);
+            
             return highlight.id;
         } catch (error) {
             if (error instanceof ValidationError) {
