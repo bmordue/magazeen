@@ -25,7 +25,7 @@ export const config = {
     /** Average words per EPUB page */
     wordsPerPage: parseInt(process.env.WORDS_PER_PAGE) || 300,
     /** Maximum file size for uploads (bytes) */
-    maxFileSize: parseInt(process.env.MAX_FILE_SIZE) || 10 * 1024 * 1024,
+    maxFileSize: (v => !isNaN(v) ? v : 10 * 1024 * 1024)(parseInt(process.env.MAX_FILE_SIZE)),
     /** Default EPUB metadata */
     defaults: {
       title: process.env.DEFAULT_TITLE || "My Personal Magazine",
