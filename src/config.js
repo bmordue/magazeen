@@ -41,7 +41,7 @@ export const config = {
     /** Upload directory for temporary files */
     uploadDir: process.env.UPLOAD_DIR || 'uploads',
     /** Session timeout in seconds */
-    sessionTimeout: parseInt(process.env.SESSION_TIMEOUT) || 900, // 15 minutes
+    sessionTimeout: (v => !isNaN(v) ? v : 900)(parseInt(process.env.SESSION_TIMEOUT)), // 15 minutes
     /** Enable development mode */
     isDevelopment: process.env.NODE_ENV !== 'production'
   },
