@@ -12,6 +12,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
+      with:
+        fetch-depth: 0  # Shallow clones should be disabled for better SonarCloud analysis
 
     - name: Set up Node.js
       uses: actions/setup-node@v3
@@ -26,6 +28,12 @@ jobs:
 
     - name: Lint
       run: npm run lint
+
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
     - name: Upload coverage artifact
       uses: actions/upload-artifact@v4
