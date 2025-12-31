@@ -138,3 +138,7 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 out/
+
+# Magazeen scratch files
+*.scratch.txt
+magazine-scratch.txt
