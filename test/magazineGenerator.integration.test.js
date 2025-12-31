@@ -72,11 +72,13 @@ describe('MagazineGenerator - Integration with Claude Chats', () => {
             'Normal Article', 'Some text', 'Author1', 'Tech'
         );
         expect(mockEpubInstance.addArticle).toHaveBeenCalledWith(
-            'Selected Chat', expect.stringContaining('<h2>Selected Chat</h2>'), 'Claude Conversation', 'Tech Chat'
+            'Selected Chat', expect.stringContaining('<strong>You</strong>'), 'Claude Conversation', 'Tech Chat'
         );
         const selectedChatContentCall = mockEpubInstance.addArticle.mock.calls.find(call => call[0] === 'Selected Chat');
         expect(selectedChatContentCall[1]).toContain('<strong>You</strong>');
         expect(selectedChatContentCall[1]).toContain('Hello');
+        // Title should NOT be duplicated in content
+        expect(selectedChatContentCall[1]).not.toContain('<h2>Selected Chat</h2>');
 
         expect(mockEpubInstance.addArticle).not.toHaveBeenCalledWith(
             'Unselected Chat', expect.any(String), expect.any(String), expect.any(String)
