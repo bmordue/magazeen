@@ -1,7 +1,6 @@
 import { promises as fs } from 'fs';
 import * as syncFs from 'fs';
 import { Logger } from './logger.js';
-import { config } from './config.js';
 
 /**
  * Manages scratch file for editing chat selection and sequence offline
