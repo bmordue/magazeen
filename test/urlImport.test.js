@@ -1,4 +1,3 @@
-import { jest } from '@jest/globals';
 import { ContentManager } from '../src/contentManager.js';
 import http from 'http';
 import { readFileSync } from 'fs';
@@ -69,7 +68,7 @@ describe('URL Import Functionality', () => {
             if (fs.existsSync(testFile)) {
                 fs.unlinkSync(testFile);
             }
-        } catch (e) {
+        } catch {
             // Ignore cleanup errors
         }
         contentManager = new ContentManager(testFile);
@@ -83,7 +82,7 @@ describe('URL Import Functionality', () => {
             if (fs.existsSync(testFile)) {
                 fs.unlinkSync(testFile);
             }
-        } catch (e) {
+        } catch {
             // Ignore cleanup errors
         }
     });

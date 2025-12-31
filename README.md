@@ -22,6 +22,9 @@ magazeen --generate
 
 # Import Claude chat logs from a JSON export
 magazeen --import-claude ./path/to/your/claude_export.json
+
+# Import Claude chat logs from a URL
+magazeen --import-claude-url https://example.com/claude_export.json
 ```
 
 ## Web Interface (New)
@@ -42,6 +45,40 @@ This will start the server on `http://localhost:3000`.
 - Click "Generate EPUB". The EPUB file will be compiled and downloaded by your browser.
 
 **Note:** The web interface currently supports the Claude JSON export format. Uploaded files are processed and then deleted from the server; generated EPUBs are also deleted after download.
+
+## Importing Claude Chats
+
+Magazeen supports importing Claude chat conversations from JSON export files. You can import from either local files or remote URLs.
+
+### From Local File
+
+```bash
+magazeen --import-claude ./path/to/claude_export.json
+```
+
+### From URL
+
+```bash
+magazeen --import-claude-url https://example.com/claude_export.json
+magazeen --import-claude-url http://localhost:8000/claude_export.json
+```
+
+The URL import feature:
+- Supports both HTTP and HTTPS URLs
+- Automatically follows redirects
+- Has a 30-second timeout for downloads
+- Validates the JSON format before importing
+- Skips malformed chat entries while importing valid ones
+- Prevents duplicate imports (based on chat UUID)
+
+**Example:**
+```bash
+# Start a local file server (for testing)
+python3 -m http.server 8000
+
+# Import from the local server
+magazeen --import-claude-url http://localhost:8000/claude_export.json
+```
 
 ## Features
 
