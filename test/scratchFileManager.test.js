@@ -388,9 +388,6 @@ invalid line without proper format
 
             const result = await scratchFileManager.applyFromScratchFileAsync('out/test-async.txt');
 
-            if (!result.success) {
-                console.log('Result:', result);
-            }
             expect(result.success).toBe(true);
             expect(result.totalChats).toBe(3);
             expect(mockWriteFile).toHaveBeenCalled(); // saveContentAsync is called
