@@ -201,6 +201,24 @@ invalid line without proper format
             expect(result.errors[0]).toContain('Invalid format');
         });
 
+        test('should reject entries with missing titles', () => {
+            const scratchContent = `# Magazine Scratch File
++ [12345678] First Chat - Selected
++ [87654321]
+- [abcdef12] Third Chat
+`;
+
+            mockExistsSync.mockReturnValue(true);
+            mockReadFileSync.mockReturnValue(scratchContent);
+
+            const result = scratchFileManager.applyFromScratchFile('out/test-scratch.txt');
+
+            expect(result.success).toBe(false);
+            expect(result.errors).toBeDefined();
+            expect(result.errors.length).toBeGreaterThan(0);
+            expect(result.errors[0]).toContain('Missing title');
+        });
+
         test('should skip comment and empty lines', () => {
             const scratchContent = `# Magazine Scratch File
 # This is a comment
@@ -280,6 +298,120 @@ invalid line without proper format
             const chats = contentManager.content.claudeChats;
             expect(chats.find(c => c.id.startsWith('12345678')).selected).toBe(false);
             expect(chats.find(c => c.id.startsWith('87654321')).selected).toBe(true);
+        });
+    });
+
+    describe('async methods', () => {
+        let mockPathExists;
+        let mockReadFile;
+        let mockWriteFile;
+        let mockMkdir;
+
+        beforeEach(() => {
+            // Add async mocks
+            mockPathExists = jest.fn();
+            mockReadFile = jest.fn();
+            mockWriteFile = jest.fn();
+            mockMkdir = jest.fn().mockResolvedValue(undefined);
+
+            // Re-create content manager with async mocks
+            contentManager = new ContentManager('out/test-content.json', {
+                existsSync: mockExistsSync,
+                readFileSync: mockReadFileSync,
+                writeFileSync: mockWriteFileSync,
+                pathExists: mockPathExists,
+                readFile: mockReadFile,
+                writeFile: mockWriteFile,
+                mkdir: mockMkdir,
+            });
+
+            // Re-add sample chats
+            contentManager.content.claudeChats = [
+                {
+                    id: '12345678-1234-1234-1234-123456789abc',
+                    title: 'First Chat - Selected',
+                    conversation: [{ sender: 'human', text: 'Hello' }],
+                    selected: true,
+                    category: 'General',
+                    dateAdded: '2023-01-01T00:00:00.000Z'
+                },
+                {
+                    id: '87654321-4321-4321-4321-cba987654321',
+                    title: 'Second Chat - Not Selected',
+                    conversation: [{ sender: 'human', text: 'Hi there' }],
+                    selected: false,
+                    category: 'General',
+                    dateAdded: '2023-01-02T00:00:00.000Z'
+                },
+                {
+                    id: 'abcdef12-abcd-abcd-abcd-abcdef123456',
+                    title: 'Third Chat - Selected',
+                    conversation: [{ sender: 'human', text: 'Hey' }],
+                    selected: true,
+                    category: 'Tech',
+                    dateAdded: '2023-01-03T00:00:00.000Z'
+                }
+            ];
+
+            // Re-create scratch file manager with async mocks
+            scratchFileManager = new ScratchFileManager(contentManager, {
+                existsSync: mockExistsSync,
+                readFileSync: mockReadFileSync,
+                writeFileSync: mockWriteFileSync,
+                pathExists: mockPathExists,
+                readFile: mockReadFile,
+                writeFile: mockWriteFile,
+                mkdir: mockMkdir,
+            });
+        });
+
+        test('should export chats using async method', async () => {
+            mockWriteFile.mockResolvedValue(undefined);
+
+            const result = await scratchFileManager.exportToScratchFileAsync('out/test-async.txt');
+
+            expect(result.success).toBe(true);
+            expect(result.totalChats).toBe(3);
+            expect(result.selectedChats).toBe(2);
+            expect(mockWriteFile).toHaveBeenCalledWith('out/test-async.txt', expect.any(String), 'utf8');
+        });
+
+        test('should apply scratch file using async method', async () => {
+            const scratchContent = `# Magazine Scratch File
++ [12345678] First Chat - Selected
++ [87654321] Second Chat - Not Selected
++ [abcdef12] Third Chat - Selected
+`;
+            mockPathExists.mockResolvedValue(true);
+            mockReadFile.mockResolvedValue(scratchContent);
+            mockWriteFile.mockResolvedValue(undefined);
+
+            const result = await scratchFileManager.applyFromScratchFileAsync('out/test-async.txt');
+
+            if (!result.success) {
+                console.log('Result:', result);
+            }
+            expect(result.success).toBe(true);
+            expect(result.totalChats).toBe(3);
+            expect(mockWriteFile).toHaveBeenCalled(); // saveContentAsync is called
+        });
+
+        test('should return error when file not found in async method', async () => {
+            mockPathExists.mockResolvedValue(false);
+
+            const result = await scratchFileManager.applyFromScratchFileAsync('out/missing.txt');
+
+            expect(result.success).toBe(false);
+            expect(result.message).toContain('not found');
+        });
+
+        test('should handle export errors in async method', async () => {
+            mockWriteFile.mockRejectedValue(new Error('Write failed'));
+
+            const result = await scratchFileManager.exportToScratchFileAsync('out/test-async.txt');
+
+            expect(result.success).toBe(false);
+            expect(result.message).toContain('Write failed');
         });
     });
 });

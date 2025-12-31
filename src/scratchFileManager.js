@@ -100,14 +100,20 @@ export class ScratchFileManager {
             }
 
             // Parse format: [+/-] [chat-id] Title
-            const match = trimmed.match(/^([+-])\s*\[([^\]]+)\]\s*(.+)$/);
+            const match = trimmed.match(/^([+-])\s*\[([^\]]+)\]\s*(.*)$/);
             
             if (!match) {
-                errors.push(`Line ${index + 1}: Invalid format - "${trimmed}"`);
+                errors.push(`Line ${index + 1}: Invalid format - expected "[+/-] [chat-id] Title" but got "${trimmed}"`);
                 return;
             }
 
             const [, prefix, shortId, title] = match;
+            
+            // Validate that title is not empty
+            if (!title || title.trim().length === 0) {
+                errors.push(`Line ${index + 1}: Missing title after chat ID [${shortId}]`);
+                return;
+            }
             const selected = prefix === '+';
             
             parsedEntries.push({
@@ -132,6 +138,18 @@ export class ScratchFileManager {
         // Create map of short ID to full chat
         chats.forEach(chat => {
             const shortId = chat.id.substring(0, 8);
+            
+            // Detect and warn about duplicate short IDs
+            if (chatMap.has(shortId)) {
+                const existingChat = chatMap.get(shortId);
+                this.logger.warn('Duplicate short chat ID prefix detected; keeping first occurrence', {
+                    shortId,
+                    existingChatId: existingChat.id,
+                    duplicateChatId: chat.id
+                });
+                return;
+            }
+            
             chatMap.set(shortId, chat);
         });
 

@@ -255,6 +255,20 @@ function applyScratchFile(rl) {
     });
 }
 
+/**
+ * Helper function to parse optional file path argument
+ * @param {Array} args - Command line arguments
+ * @param {string} optionName - Option name (e.g., '--export-scratch')
+ * @param {string} defaultPath - Default path if not provided
+ * @returns {string} File path
+ */
+function parseOptionalFilePath(args, optionName, defaultPath) {
+    const filePathIndex = args.indexOf(optionName) + 1;
+    return (filePathIndex < args.length && args[filePathIndex] && !args[filePathIndex].startsWith('--')) 
+        ? args[filePathIndex] 
+        : defaultPath;
+}
+
 function manageClaudeChats(rl, page = 1, pageSize = 10) {
     const chats = contentManager.content.claudeChats;
     const totalPages = Math.ceil(chats.length / pageSize);
@@ -364,10 +378,7 @@ export function runCli() {
                 console.log('Usage: node src/cli.js --import-claude <path_to_claude_export.json>');
             }
         } else if (args.includes('--export-scratch')) {
-            const filePathIndex = args.indexOf('--export-scratch') + 1;
-            const filePath = (filePathIndex < args.length && args[filePathIndex] && !args[filePathIndex].startsWith('--')) 
-                ? args[filePathIndex] 
-                : 'out/magazine-scratch.txt';
+            const filePath = parseOptionalFilePath(args, '--export-scratch', 'out/magazine-scratch.txt');
             
             console.log(`Exporting scratch file to: ${filePath}`);
             const result = scratchFileManager.exportToScratchFile(filePath);
@@ -379,10 +390,7 @@ export function runCli() {
                 console.error(`❌ Failed: ${result.message}`);
             }
         } else if (args.includes('--apply-scratch')) {
-            const filePathIndex = args.indexOf('--apply-scratch') + 1;
-            const filePath = (filePathIndex < args.length && args[filePathIndex] && !args[filePathIndex].startsWith('--')) 
-                ? args[filePathIndex] 
-                : 'out/magazine-scratch.txt';
+            const filePath = parseOptionalFilePath(args, '--apply-scratch', 'out/magazine-scratch.txt');
             
             console.log(`Applying scratch file from: ${filePath}`);
             const result = scratchFileManager.applyFromScratchFile(filePath);
