@@ -17,9 +17,6 @@ Use 'bd' for task tracking. Beads is a git-backed, distributed task and issue tr
 ### Quick Start
 
 ```bash
-# Initialize beads in the project (run once)
-bd init
-
 # Create a new task
 bd create "Task description"
 
