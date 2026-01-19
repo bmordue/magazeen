@@ -1,5 +1,15 @@
 # Agent Instructions
 
+## Documentation Maintenance
+
+**ALWAYS keep the project README up to date.** When making changes to:
+- Project features or functionality
+- Development workflows or tools
+- Installation or setup procedures
+- Configuration options or environment variables
+
+You MUST update the README.md file to reflect these changes. The README is the primary documentation for users and contributors.
+
 ## Task Tracking
 
 Use 'bd' for task tracking. Beads is a git-backed, distributed task and issue tracker designed for AI-assisted development.

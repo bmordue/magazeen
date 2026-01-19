@@ -97,6 +97,26 @@ magazeen/
 ├── package.json              # Node.js dependencies
 ```
 
+## Development
+
+### Task Tracking
+
+This project uses [Beads](https://github.com/steveyegge/beads) for task tracking. Beads is a git-backed, distributed task tracker designed for AI-assisted development workflows.
+
+To get started with beads:
+```bash
+# Install beads (if not already installed)
+curl -fsSL https://raw.githubusercontent.com/steveyegge/beads/main/scripts/install.sh | bash
+
+# View available tasks
+bd ready
+
+# Create a new task
+bd create "Task description"
+```
+
+Tasks are stored in the `.beads/` directory and versioned with git, providing persistent memory across development sessions.
+
 ## Advanced Usage
 
 ### Direct Programming
