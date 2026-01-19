@@ -246,7 +246,7 @@ function manageClaudeChats(rl, page = 1, pageSize = 10) {
 
 
 // Main CLI logic
-export function runCli() {
+export async function runCli() {
     const thisFile = resolve(fileURLToPath(import.meta.url));
     const pathPassedToNode = resolve(process.argv[1]);
 
@@ -310,17 +310,16 @@ export function runCli() {
             if (urlIndex < args.length && args[urlIndex] && !args[urlIndex].startsWith('--')) {
                 const url = args[urlIndex];
                 console.log(`Importing Claude chats from URL: ${url}`);
-                contentManager.importClaudeChatsFromUrl(url)
-                    .then(importedCount => {
-                        if (importedCount > 0) {
-                            console.log(`Successfully imported ${importedCount} chats.`);
-                        } else {
-                            console.log('No new chats were imported or an error occurred.');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error importing from URL:', error.message);
-                    });
+                try {
+                    const importedCount = await contentManager.importClaudeChatsFromUrl(url);
+                    if (importedCount > 0) {
+                        console.log(`Successfully imported ${importedCount} chats.`);
+                    } else {
+                        console.log('No new chats were imported or an error occurred.');
+                    }
+                } catch (error) {
+                    console.error('Error importing from URL:', error.message);
+                }
             } else {
                 console.error('Error: --import-claude-url option requires a URL.');
                 console.log('Usage: node src/cli.js --import-claude-url <url>');

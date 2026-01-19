@@ -1,6 +1,6 @@
 import { ContentManager } from '../src/contentManager.js';
 import http from 'http';
-import { readFileSync } from 'fs';
+import { readFileSync, existsSync, unlinkSync } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -64,9 +64,8 @@ describe('URL Import Functionality', () => {
         
         // Clean up test file before each test
         try {
-            const fs = require('fs');
-            if (fs.existsSync(testFile)) {
-                fs.unlinkSync(testFile);
+            if (existsSync(testFile)) {
+                unlinkSync(testFile);
             }
         } catch {
             // Ignore cleanup errors
@@ -77,10 +76,9 @@ describe('URL Import Functionality', () => {
     afterEach(() => {
         // Clean up test file
         try {
-            const fs = require('fs');
             const testFile = `out/test-url-import-${testFileCounter}.json`;
-            if (fs.existsSync(testFile)) {
-                fs.unlinkSync(testFile);
+            if (existsSync(testFile)) {
+                unlinkSync(testFile);
             }
         } catch {
             // Ignore cleanup errors
@@ -88,10 +86,6 @@ describe('URL Import Functionality', () => {
     });
 
     test('importClaudeChatsFromUrl should successfully import chats from a valid URL', async () => {
-        // Verify server is running by making a direct fetch
-        const testFetch = await contentManager._fetchFromUrl(TEST_URL);
-        expect(testFetch).toBeDefined();
-        
         const importedCount = await contentManager.importClaudeChatsFromUrl(TEST_URL);
         
         expect(importedCount).toBe(2); // Based on sampleClaudeExport.json
@@ -166,28 +160,29 @@ describe('URL Import Functionality', () => {
         expect(contentManager.content.claudeChats.length).toBe(firstCount);
     });
 
-    test('_fetchFromUrl should return data from HTTP server', async () => {
-        const data = await contentManager._fetchFromUrl(TEST_URL);
+    test('importClaudeChatsFromUrl should successfully fetch and import from HTTP server', async () => {
+        const importedCount = await contentManager.importClaudeChatsFromUrl(TEST_URL);
         
-        expect(data).toBeDefined();
-        expect(typeof data).toBe('string');
-        expect(() => JSON.parse(data)).not.toThrow();
+        expect(importedCount).toBeGreaterThan(0);
+        expect(contentManager.content.claudeChats.length).toBeGreaterThan(0);
     });
 
-    test('_fetchFromUrl should reject on HTTP error', async () => {
-        await expect(
-            contentManager._fetchFromUrl(`http://localhost:${TEST_PORT}/not-found`)
-        ).rejects.toThrow();
+    test('importClaudeChatsFromUrl should handle HTTP error status codes', async () => {
+        const importedCount = await contentManager.importClaudeChatsFromUrl(
+            `http://localhost:${TEST_PORT}/not-found`
+        );
+        
+        expect(importedCount).toBe(0);
     });
 
-    test('_fetchFromUrl should support HTTPS URLs', async () => {
-        // This test just validates URL parsing - actual HTTPS requires a real server
+    test('importClaudeChatsFromUrl should support HTTPS URLs', async () => {
+        // This test validates that HTTPS URLs are accepted and errors are handled gracefully
         const httpsUrl = 'https://example.com/test.json';
         
-        // We expect this to fail with network error since we don't have a real HTTPS server
-        // but we're just checking it doesn't fail on URL parsing
-        await expect(
-            contentManager._fetchFromUrl(httpsUrl)
-        ).rejects.toThrow();
+        const importedCount = await contentManager.importClaudeChatsFromUrl(httpsUrl);
+        
+        // We don't expect any chats to be imported from this URL in tests,
+        // but the call should complete without throwing synchronously.
+        expect(importedCount).toBe(0);
     });
 });

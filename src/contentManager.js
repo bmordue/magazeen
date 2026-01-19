@@ -504,6 +504,59 @@ export class ContentManager {
         }
     }
 
+    /**
+     * Process and import chats from parsed JSON data
+     * @param {Array} importedChats - Array of chat objects to process
+     * @returns {number} - Number of successfully imported chats
+     * @private
+     */
+    _processClaudeChats(importedChats) {
+        if (!Array.isArray(importedChats)) {
+            console.error('Error: Expected an array of chats from the JSON file.');
+            return 0;
+        }
+
+        let successfullyImportedCount = 0;
+        for (const chat of importedChats) {
+            if (chat && chat.uuid && chat.name && Array.isArray(chat.chat_messages)) {
+                const conversation = chat.chat_messages.map(msg => ({
+                    sender: msg.sender,
+                    text: msg.text,
+                    timestamp: msg.created_at
+                }));
+
+                const newClaudeChat = {
+                    id: chat.uuid,
+                    title: chat.name,
+                    conversation: conversation,
+                    insights: "",
+                    category: "Claude Import",
+                    dateAdded: chat.created_at || new Date().toISOString(),
+                    originalImportDate: new Date().toISOString(),
+                    selected: false
+                };
+
+                const existingChat = this.content.claudeChats.find(existingChat => existingChat.id === newClaudeChat.id);
+                if (!existingChat) {
+                    this.content.claudeChats.push(newClaudeChat);
+                    successfullyImportedCount++;
+                } else {
+                    // Update existing chat but preserve selection status
+                    existingChat.title = newClaudeChat.title;
+                    existingChat.conversation = newClaudeChat.conversation;
+                    existingChat.insights = newClaudeChat.insights;
+                    existingChat.category = newClaudeChat.category;
+                    existingChat.dateAdded = newClaudeChat.dateAdded;
+                    existingChat.originalImportDate = newClaudeChat.originalImportDate;
+                }
+            } else {
+                console.warn('Skipping chat due to missing essential fields (uuid, name, or chat_messages):', chat);
+            }
+        }
+
+        return successfullyImportedCount;
+    }
+
     importClaudeChatsFromFile(filePath) {
         try {
             if (!this.fsUtils.existsSync(filePath)) {
@@ -514,53 +567,7 @@ export class ContentManager {
             const fileContent = this.fsUtils.readFileSync(filePath, 'utf8');
             const importedChats = JSON.parse(fileContent);
 
-            if (!Array.isArray(importedChats)) {
-                console.error('Error: Expected an array of chats from the JSON file.');
-                return 0;
-            }
-
-            let successfullyImportedCount = 0;
-            for (const chat of importedChats) {
-                if (chat && chat.uuid && chat.name && Array.isArray(chat.chat_messages)) {
-                    const conversation = chat.chat_messages.map(msg => ({
-                        sender: msg.sender,
-                        text: msg.text,
-                        timestamp: msg.created_at
-                    }));
-
-                    const newClaudeChat = {
-                        id: chat.uuid, // Use Claude's UUID as the ID
-                        title: chat.name,
-                        conversation: conversation,
-                        // Assuming 'insights' and 'category' might be added later or manually
-                        insights: "", // Default or to be filled manually
-                        category: "Claude Import", // Default category
-                        dateAdded: chat.created_at || new Date().toISOString(), // Use Claude's creation date
-                        originalImportDate: new Date().toISOString(), // Mark when it was imported
-                        selected: false // Initialize as not selected
-                    };
-
-                    // Avoid duplicates based on ID
-                    const existingChat = this.content.claudeChats.find(existingChat => existingChat.id === newClaudeChat.id);
-                    if (!existingChat) {
-                        this.content.claudeChats.push(newClaudeChat);
-                        successfullyImportedCount++;
-                    } else {
-                        // If chat already exists, update its fields but preserve selection status
-                        if (existingChat) {
-                            existingChat.title = newClaudeChat.title;
-                            existingChat.conversation = newClaudeChat.conversation;
-                            existingChat.insights = newClaudeChat.insights;
-                            existingChat.category = newClaudeChat.category;
-                            existingChat.dateAdded = newClaudeChat.dateAdded;
-                            existingChat.originalImportDate = newClaudeChat.originalImportDate;
-                            // Do not change existingChat.selected
-                        }
-                    }
-                } else {
-                    console.warn('Skipping chat due to missing essential fields (uuid, name, or chat_messages):', chat);
-                }
-            }
+            const successfullyImportedCount = this._processClaudeChats(importedChats);
 
             if (successfullyImportedCount > 0) {
                 this.saveContent();
@@ -648,49 +655,7 @@ export class ContentManager {
             const fileContent = await this._fetchFromUrl(url);
             const importedChats = JSON.parse(fileContent);
 
-            if (!Array.isArray(importedChats)) {
-                console.error('Error: Expected an array of chats from the JSON file.');
-                return 0;
-            }
-
-            let successfullyImportedCount = 0;
-            for (const chat of importedChats) {
-                if (chat && chat.uuid && chat.name && Array.isArray(chat.chat_messages)) {
-                    const conversation = chat.chat_messages.map(msg => ({
-                        sender: msg.sender,
-                        text: msg.text,
-                        timestamp: msg.created_at
-                    }));
-
-                    const newClaudeChat = {
-                        id: chat.uuid,
-                        title: chat.name,
-                        conversation: conversation,
-                        insights: "",
-                        category: "Claude Import",
-                        dateAdded: chat.created_at || new Date().toISOString(),
-                        originalImportDate: new Date().toISOString(),
-                        selected: false
-                    };
-
-                    const existingChat = this.content.claudeChats.find(existingChat => existingChat.id === newClaudeChat.id);
-                    if (!existingChat) {
-                        this.content.claudeChats.push(newClaudeChat);
-                        successfullyImportedCount++;
-                    } else {
-                        if (existingChat) {
-                            existingChat.title = newClaudeChat.title;
-                            existingChat.conversation = newClaudeChat.conversation;
-                            existingChat.insights = newClaudeChat.insights;
-                            existingChat.category = newClaudeChat.category;
-                            existingChat.dateAdded = newClaudeChat.dateAdded;
-                            existingChat.originalImportDate = newClaudeChat.originalImportDate;
-                        }
-                    }
-                } else {
-                    console.warn('Skipping chat due to missing essential fields (uuid, name, or chat_messages):', chat);
-                }
-            }
+            const successfullyImportedCount = this._processClaudeChats(importedChats);
 
             if (successfullyImportedCount > 0) {
                 this.saveContent();
