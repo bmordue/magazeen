@@ -26,8 +26,11 @@ npm test -- path/to/test.test.js
 ## Test Structure
 
 - **Unit Tests**: Test individual functions and classes in isolation
-- **Integration Tests**: Test how components work together (e.g., `*.integration.test.js`)
-- **Naming Convention**: `<component>.test.js` for unit tests, `<component>.integration-test.js` or `<component>.integration.test.js` for integration tests
+- **Integration Tests**: Test how components work together
+- **Naming Convention**: 
+  - Unit tests: `<component>.test.js`
+  - Integration tests: `<component>.integration.test.js` (preferred) or `<component>.integration-test.js` (legacy)
+  - Note: The codebase currently uses both integration test patterns; new tests should use `.integration.test.js`
 
 ## Test Patterns
 
@@ -47,4 +50,4 @@ npm test -- path/to/test.test.js
 
 - `jest.mock()` for mocking modules
 - `jest.spyOn()` for spying on methods
-- Supertest for HTTP endpoint testing (see `server.integration-test.js`)
+- Supertest for HTTP endpoint testing (see `server.integration-test.js` and other integration tests)
