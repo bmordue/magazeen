@@ -18,7 +18,6 @@ pkgs.mkShell {
       echo "To install beads for task tracking, run:"
       echo "  curl -fsSL https://raw.githubusercontent.com/steveyegge/beads/main/scripts/install.sh | bash"
       echo ""
-      echo "After installation, initialize with: bd init"
       echo "See AGENTS.md for usage instructions."
     else
       echo "✓ Beads task tracker (bd) is available"
