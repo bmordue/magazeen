@@ -10,5 +10,18 @@ pkgs.mkShell {
 
   shellHook = ''
     echo "Nix shell for JavaScript development with Foliate is ready."
+    
+    # Check if beads (bd) is installed
+    if ! command -v bd &> /dev/null; then
+      echo ""
+      echo "📋 Beads task tracker is not installed."
+      echo "To install beads for task tracking, run:"
+      echo "  curl -fsSL https://raw.githubusercontent.com/steveyegge/beads/main/scripts/install.sh | bash"
+      echo ""
+      echo "After installation, initialize with: bd init"
+      echo "See AGENTS.md for usage instructions."
+    else
+      echo "✓ Beads task tracker (bd) is available"
+    fi
   '';
 }
