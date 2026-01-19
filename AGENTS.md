@@ -21,7 +21,7 @@ Use 'bd' for task tracking. Beads is a git-backed, distributed task and issue tr
 bd init
 
 # Create a new task
-bd create "Task description" -p 0
+bd create "Task description"
 
 # List ready tasks
 bd ready
