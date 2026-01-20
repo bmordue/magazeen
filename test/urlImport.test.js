@@ -15,55 +15,59 @@ describe('URL Import Functionality', () => {
     const TEST_URL = `http://localhost:${TEST_PORT}/chats.json`;
     const connections = new Set();
 
-    beforeAll((done) => {
-        // Start a simple HTTP server for testing
-        server = http.createServer((req, res) => {
-            if (req.url === '/chats.json') {
-                const sampleData = readFileSync(
-                    path.join(__dirname, 'fixtures/sampleClaudeExport.json'),
-                    'utf8'
-                );
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(sampleData);
-            } else if (req.url === '/invalid.json') {
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end('not valid json');
-            } else if (req.url === '/not-array.json') {
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ key: 'value' }));
-            } else if (req.url === '/redirect') {
-                res.writeHead(302, { 'Location': '/chats.json' });
-                res.end();
-            } else if (req.url === '/timeout') {
-                // Don't respond to simulate timeout
-            } else if (req.url === '/not-found') {
-                res.writeHead(404);
-                res.end('Not Found');
-            } else {
-                res.writeHead(404);
-                res.end();
-            }
-        });
-
-        // Track connections so we can close them all
-        server.on('connection', (conn) => {
-            connections.add(conn);
-            conn.on('close', () => {
-                connections.delete(conn);
+    beforeAll(() => {
+        return new Promise((resolve) => {
+            // Start a simple HTTP server for testing
+            server = http.createServer((req, res) => {
+                if (req.url === '/chats.json') {
+                    const sampleData = readFileSync(
+                        path.join(__dirname, 'fixtures/sampleClaudeExport.json'),
+                        'utf8'
+                    );
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(sampleData);
+                } else if (req.url === '/invalid.json') {
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end('not valid json');
+                } else if (req.url === '/not-array.json') {
+                    res.writeHead(200, { 'Content-Type': 'application/json' });
+                    res.end(JSON.stringify({ key: 'value' }));
+                } else if (req.url === '/redirect') {
+                    res.writeHead(302, { 'Location': '/chats.json' });
+                    res.end();
+                } else if (req.url === '/timeout') {
+                    // Don't respond to simulate timeout
+                } else if (req.url === '/not-found') {
+                    res.writeHead(404);
+                    res.end('Not Found');
+                } else {
+                    res.writeHead(404);
+                    res.end();
+                }
             });
-        });
 
-        server.listen(TEST_PORT, done);
+            // Track connections so we can close them all
+            server.on('connection', (conn) => {
+                connections.add(conn);
+                conn.on('close', () => {
+                    connections.delete(conn);
+                });
+            });
+
+            server.listen(TEST_PORT, resolve);
+        });
     });
 
-    afterAll((done) => {
-        // Close all active connections
-        for (const conn of connections) {
-            conn.destroy();
-        }
-        connections.clear();
-        
-        server.close(done);
+    afterAll(() => {
+        return new Promise((resolve) => {
+            // Close all active connections
+            for (const conn of connections) {
+                conn.destroy();
+            }
+            connections.clear();
+            
+            server.close(resolve);
+        });
     });
 
     beforeEach(() => {
