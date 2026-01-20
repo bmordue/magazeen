@@ -1,73 +1,45 @@
-# Agent Instructions
+# GitHub Copilot Configuration
 
-## Documentation Maintenance
+This repository is configured with GitHub Copilot custom instructions and agents to provide context-aware assistance.
 
-**ALWAYS keep the project README up to date.** When making changes to:
-- Project features or functionality
-- Development workflows or tools
-- Installation or setup procedures
-- Configuration options or environment variables
+## Structure
 
-You MUST update the README.md file to reflect these changes. The README is the primary documentation for users and contributors.
+### `.github/copilot-instructions.md`
+Repository-wide instructions that provide context about:
+- Project overview and architecture
+- Build, test, and deployment procedures
+- Critical timing and performance expectations
+- Validation scenarios and workflows
+- Common tasks and development patterns
+- Coding standards and security guidelines
 
-## Task Tracking
+### `.github/agents/`
+Custom agent definitions for specialized assistance:
+- **coding.agent.md**: Main coding agent with project-specific workflows, documentation maintenance requirements, task tracking integration, and session completion procedures
 
-Use 'bd' for task tracking. Beads is a git-backed, distributed task and issue tracker designed for AI-assisted development.
+### `.github/instructions/`
+Path-specific instructions for different parts of the codebase:
+- **testing.instructions.md**: Testing guidelines, patterns, and best practices for the test suite
 
-### Quick Start
+## For Contributors
 
-```bash
-# Create a new task
-bd create "Task description"
+When working on this project, GitHub Copilot will automatically use these instructions to provide more relevant and accurate assistance. The instructions cover:
 
-# List ready tasks
-bd ready
+1. **Development Environment**: How to set up, build, and test the project
+2. **Coding Standards**: ES modules, security practices, and code style
+3. **Testing**: Test structure, patterns, and coverage expectations
+4. **Workflows**: Task tracking with Beads, session completion procedures
 
-# Close a task
-bd close <task-id>
+## Updating Instructions
 
-# Sync changes
-bd sync
-```
+If you notice that Copilot instructions are outdated or could be improved:
 
-### Common Commands
+1. Update the relevant file in `.github/`
+2. Keep instructions concise and actionable
+3. Focus on information that can't easily be inferred from the code
+4. Test that the updated instructions improve Copilot's assistance
 
-- `bd create <description>` - Create a new task
-- `bd list` - List all tasks
-- `bd ready` - Show tasks that are ready to work on
-- `bd show <id>` - Show task details
-- `bd close <id>` - Mark task as complete
-- `bd dep add <child> <parent>` - Add dependency between tasks
-- `bd sync` - Synchronize with git
+## Learn More
 
-### Integration
-
-Beads tasks are stored in `.beads/` directory and versioned with git. This provides persistent memory across sessions and helps track project state.
-
-For more information, see: https://github.com/steveyegge/beads
-
-## Landing the Plane (Session Completion)
-
-**When ending a work session**, you MUST complete ALL steps below. Work is NOT complete until `git push` succeeds.
-
-**MANDATORY WORKFLOW:**
-
-1. **File issues for remaining work** - Create issues for anything that needs follow-up
-2. **Run quality gates** (if code changed) - Tests, linters, builds
-3. **Update issue status** - Close finished work, update in-progress items
-4. **PUSH TO REMOTE** - This is MANDATORY:
-   ```bash
-   git pull --rebase
-   bd sync
-   git push
-   git status  # MUST show "up to date with origin"
-   ```
-5. **Clean up** - Clear stashes, prune remote branches
-6. **Verify** - All changes committed AND pushed
-7. **Hand off** - Provide context for next session
-
-**CRITICAL RULES:**
-- Work is NOT complete until `git push` succeeds
-- NEVER stop before pushing - that leaves work stranded locally
-- NEVER say "ready to push when you are" - YOU must push
-- If push fails, resolve and retry until it succeeds
+- [GitHub Copilot Custom Instructions Documentation](https://docs.github.com/en/copilot/how-tos/configure-custom-instructions/add-repository-instructions)
+- [Custom Agents Configuration](https://docs.github.com/en/copilot/reference/custom-agents-configuration)

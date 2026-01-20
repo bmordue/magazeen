@@ -117,6 +117,16 @@ bd create "Task description"
 
 Tasks are stored in the `.beads/` directory and versioned with git, providing persistent memory across development sessions.
 
+### GitHub Copilot Setup
+
+This repository is configured with GitHub Copilot custom instructions and agents to provide context-aware assistance during development. The configuration includes:
+
+- **Repository-wide instructions** in `.github/copilot-instructions.md` - Provides project overview, build/test procedures, coding standards, and security guidelines
+- **Custom coding agent** in `.github/agents/coding.agent.md` - Specialized agent for Magazeen development with workflow automation
+- **Path-specific instructions** in `.github/instructions/` - Testing guidelines and best practices
+
+For more details, see [AGENTS.md](AGENTS.md).
+
 ## Advanced Usage
 
 ### Direct Programming

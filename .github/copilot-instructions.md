@@ -147,3 +147,33 @@ src/
 - **Coverage Upload:** Coverage reports uploaded as artifacts for review
 
 Always run `npm run lint` before committing changes or the CI pipeline will show warnings.
+
+## Coding Standards
+
+### JavaScript/ES Modules
+- **Module System:** This project uses ES modules (`"type": "module"` in package.json)
+- **Import Syntax:** Always use `import/export` syntax, never `require()`
+- **File Extensions:** Always include `.js` extension in import statements
+- **Async/Await:** Prefer async/await over raw promises for better readability
+- **Error Handling:** Always handle errors appropriately; don't let promises reject silently
+
+### Code Style
+- **Linting:** Follow ESLint configuration in `eslint.config.js`
+- **Naming Conventions:**
+  - Use `camelCase` for variables and functions
+  - Use `PascalCase` for classes
+  - Use descriptive names that convey intent
+- **Comments:** Add comments only when necessary to explain "why" not "what"
+- **Dependencies:** Keep dependencies minimal; justify any new dependency additions
+
+### Security
+- **Input Sanitization:** All user-provided HTML content MUST be sanitized using DOMPurify (see `articleGenerator.js`)
+- **No Secrets in Code:** Never commit API keys, tokens, or sensitive data
+- **File Uploads:** Uploaded files are validated and cleaned up after processing (see `server.js`)
+- **XSS Prevention:** All content rendered to EPUB is sanitized to prevent cross-site scripting
+
+### Testing Requirements
+- Write tests for all new features and bug fixes
+- Maintain test coverage above 80% for core modules
+- Use descriptive test names that explain what is being tested
+- Keep tests isolated and independent
