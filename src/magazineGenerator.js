@@ -48,7 +48,7 @@ export class MagazineGenerator {
         // Add selected Claude chats
         this.contentManager.content.claudeChats.forEach(chat => {
             if (chat.selected) {
-                let chatContent = `<h2>${chat.title}</h2>`;
+                let chatContent = '';
                 chat.conversation.forEach(message => {
                     const messageDate = message.timestamp ? new Date(message.timestamp).toLocaleString('en-US', { year: 'numeric', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }) : 'N/A';
                     chatContent += `
