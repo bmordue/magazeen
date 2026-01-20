@@ -1,0 +1,1852 @@
+
+> magazeen@1.0.0 test
+> node --experimental-vm-modules node_modules/jest/bin/jest.js --coverage
+
+(node:2189) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS test/contentClusterer.test.js
+  ● Console
+
+    console.log
+      [2026-01-20T14:17:02.505Z] INFO: Articles clustered {"component":"ContentClusterer","totalArticles":4,"clusterCount":2,"averageClusterSize":"2.0"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:02.552Z] INFO: Articles clustered {"component":"ContentClusterer","totalArticles":1,"clusterCount":1,"averageClusterSize":"1.0"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:02.555Z] INFO: Articles clustered {"component":"ContentClusterer","totalArticles":3,"clusterCount":3,"averageClusterSize":"1.0"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:02.556Z] INFO: Articles clustered {"component":"ContentClusterer","totalArticles":3,"clusterCount":2,"averageClusterSize":"1.5"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:02.557Z] INFO: Articles clustered {"component":"ContentClusterer","totalArticles":5,"clusterCount":1,"averageClusterSize":"5.0"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:02.562Z] INFO: Articles clustered {"component":"ContentClusterer","totalArticles":3,"clusterCount":2,"averageClusterSize":"1.5"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:02.562Z] INFO: Generated clustered content {"component":"ContentClusterer","sectionCount":2,"sections":[{"name":"Programming","articleCount":2},{"name":"Food","articleCount":1}]}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:02.572Z] INFO: Articles clustered {"component":"ContentClusterer","totalArticles":4,"clusterCount":2,"averageClusterSize":"2.0"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:02.573Z] INFO: Generated clustered content {"component":"ContentClusterer","sectionCount":2,"sections":[{"name":"Technology","articleCount":3},{"name":"Food","articleCount":1}]}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:02.576Z] INFO: Articles clustered {"component":"ContentClusterer","totalArticles":3,"clusterCount":3,"averageClusterSize":"1.0"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:02.576Z] INFO: Generated clustered content {"component":"ContentClusterer","sectionCount":3,"sections":[{"name":"Cat1","articleCount":1},{"name":"Cat2","articleCount":1},{"name":"Cat3","articleCount":1}]}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:02.577Z] INFO: Articles clustered {"component":"ContentClusterer","totalArticles":3,"clusterCount":1,"averageClusterSize":"3.0"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:02.580Z] INFO: Generated clustered content {"component":"ContentClusterer","sectionCount":1,"sections":[{"name":"Content","articleCount":3}]}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+(node:2190) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS test/contentManager.test.js
+  ● Console
+
+    console.log
+      [2026-01-20T14:17:02.725Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"out/test-magazine-content.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:02.794Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"out/test-magazine-content.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.warn
+      Skipping chat due to missing essential fields (uuid, name, or chat_messages): {
+        uuid: 'malformed-chat-no-messages',
+        name: 'Malformed Chat - No Messages',
+        created_at: '2023-09-16T10:00:00.000000Z'
+      }
+
+    [0m [90m 551 |[39m                 }
+     [90m 552 |[39m             } [36melse[39m {
+    [31m[1m>[22m[39m[90m 553 |[39m                 console[33m.[39mwarn([32m'Skipping chat due to missing essential fields (uuid, name, or chat_messages):'[39m[33m,[39m chat)[33m;[39m
+     [90m     |[39m                         [31m[1m^[22m[39m
+     [90m 554 |[39m             }
+     [90m 555 |[39m         }
+     [90m 556 |[39m[0m
+
+      at ContentManager.warn [as _processClaudeChats] (src/contentManager.js:553:25)
+      at ContentManager._processClaudeChats [as importClaudeChatsFromFile] (src/contentManager.js:570:52)
+      at Object.<anonymous> (test/contentManager.test.js:90:44)
+
+    console.warn
+      Skipping chat due to missing essential fields (uuid, name, or chat_messages): {
+        name: 'Malformed Chat - No UUID',
+        created_at: '2023-09-17T10:00:00.000000Z',
+        chat_messages: []
+      }
+
+    [0m [90m 551 |[39m                 }
+     [90m 552 |[39m             } [36melse[39m {
+    [31m[1m>[22m[39m[90m 553 |[39m                 console[33m.[39mwarn([32m'Skipping chat due to missing essential fields (uuid, name, or chat_messages):'[39m[33m,[39m chat)[33m;[39m
+     [90m     |[39m                         [31m[1m^[22m[39m
+     [90m 554 |[39m             }
+     [90m 555 |[39m         }
+     [90m 556 |[39m[0m
+
+      at ContentManager.warn [as _processClaudeChats] (src/contentManager.js:553:25)
+      at ContentManager._processClaudeChats [as importClaudeChatsFromFile] (src/contentManager.js:570:52)
+      at Object.<anonymous> (test/contentManager.test.js:90:44)
+
+    console.log
+      [2026-01-20T14:17:02.799Z] INFO: Content saved successfully (sync) {"component":"ContentManager","file":"out/test-magazine-content.json","articles":0,"interests":0,"chatHighlights":0,"claudeChats":2}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      Successfully imported 2 Claude chats from test/fixtures/sampleClaudeExport.json.
+
+      at ContentManager.log [as importClaudeChatsFromFile] (src/contentManager.js:574:25)
+
+    console.log
+      [2026-01-20T14:17:02.803Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"out/test-magazine-content.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.warn
+      Skipping chat due to missing essential fields (uuid, name, or chat_messages): {
+        uuid: 'malformed-chat-no-messages',
+        name: 'Malformed Chat - No Messages',
+        created_at: '2023-09-16T10:00:00.000000Z'
+      }
+
+    [0m [90m 551 |[39m                 }
+     [90m 552 |[39m             } [36melse[39m {
+    [31m[1m>[22m[39m[90m 553 |[39m                 console[33m.[39mwarn([32m'Skipping chat due to missing essential fields (uuid, name, or chat_messages):'[39m[33m,[39m chat)[33m;[39m
+     [90m     |[39m                         [31m[1m^[22m[39m
+     [90m 554 |[39m             }
+     [90m 555 |[39m         }
+     [90m 556 |[39m[0m
+
+      at ContentManager.warn [as _processClaudeChats] (src/contentManager.js:553:25)
+      at ContentManager._processClaudeChats [as importClaudeChatsFromFile] (src/contentManager.js:570:52)
+      at Object.<anonymous> (test/contentManager.test.js:114:24)
+
+    console.warn
+      Skipping chat due to missing essential fields (uuid, name, or chat_messages): {
+        name: 'Malformed Chat - No UUID',
+        created_at: '2023-09-17T10:00:00.000000Z',
+        chat_messages: []
+      }
+
+    [0m [90m 551 |[39m                 }
+     [90m 552 |[39m             } [36melse[39m {
+    [31m[1m>[22m[39m[90m 553 |[39m                 console[33m.[39mwarn([32m'Skipping chat due to missing essential fields (uuid, name, or chat_messages):'[39m[33m,[39m chat)[33m;[39m
+     [90m     |[39m                         [31m[1m^[22m[39m
+     [90m 554 |[39m             }
+     [90m 555 |[39m         }
+     [90m 556 |[39m[0m
+
+      at ContentManager.warn [as _processClaudeChats] (src/contentManager.js:553:25)
+      at ContentManager._processClaudeChats [as importClaudeChatsFromFile] (src/contentManager.js:570:52)
+      at Object.<anonymous> (test/contentManager.test.js:114:24)
+
+    console.log
+      [2026-01-20T14:17:02.805Z] INFO: Content saved successfully (sync) {"component":"ContentManager","file":"out/test-magazine-content.json","articles":0,"interests":0,"chatHighlights":0,"claudeChats":2}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      Successfully imported 2 Claude chats from test/fixtures/sampleClaudeExport.json.
+
+      at ContentManager.log [as importClaudeChatsFromFile] (src/contentManager.js:574:25)
+
+    console.warn
+      Skipping chat due to missing essential fields (uuid, name, or chat_messages): {
+        uuid: 'malformed-chat-no-messages',
+        name: 'Malformed Chat - No Messages',
+        created_at: '2023-09-16T10:00:00.000000Z'
+      }
+
+    [0m [90m 551 |[39m                 }
+     [90m 552 |[39m             } [36melse[39m {
+    [31m[1m>[22m[39m[90m 553 |[39m                 console[33m.[39mwarn([32m'Skipping chat due to missing essential fields (uuid, name, or chat_messages):'[39m[33m,[39m chat)[33m;[39m
+     [90m     |[39m                         [31m[1m^[22m[39m
+     [90m 554 |[39m             }
+     [90m 555 |[39m         }
+     [90m 556 |[39m[0m
+
+      at ContentManager.warn [as _processClaudeChats] (src/contentManager.js:553:25)
+      at ContentManager._processClaudeChats [as importClaudeChatsFromFile] (src/contentManager.js:570:52)
+      at Object.<anonymous> (test/contentManager.test.js:115:50)
+
+    console.warn
+      Skipping chat due to missing essential fields (uuid, name, or chat_messages): {
+        name: 'Malformed Chat - No UUID',
+        created_at: '2023-09-17T10:00:00.000000Z',
+        chat_messages: []
+      }
+
+    [0m [90m 551 |[39m                 }
+     [90m 552 |[39m             } [36melse[39m {
+    [31m[1m>[22m[39m[90m 553 |[39m                 console[33m.[39mwarn([32m'Skipping chat due to missing essential fields (uuid, name, or chat_messages):'[39m[33m,[39m chat)[33m;[39m
+     [90m     |[39m                         [31m[1m^[22m[39m
+     [90m 554 |[39m             }
+     [90m 555 |[39m         }
+     [90m 556 |[39m[0m
+
+      at ContentManager.warn [as _processClaudeChats] (src/contentManager.js:553:25)
+      at ContentManager._processClaudeChats [as importClaudeChatsFromFile] (src/contentManager.js:570:52)
+      at Object.<anonymous> (test/contentManager.test.js:115:50)
+
+    console.log
+      No new Claude chats were imported from test/fixtures/sampleClaudeExport.json.
+
+      at ContentManager.log [as importClaudeChatsFromFile] (src/contentManager.js:576:25)
+
+    console.log
+      [2026-01-20T14:17:02.810Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"out/test-magazine-content.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:02.812Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"out/test-magazine-content.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:02.815Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"out/test-magazine-content.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      No new Claude chats were imported from test/fixtures/sampleClaudeExport.json.
+
+      at ContentManager.log [as importClaudeChatsFromFile] (src/contentManager.js:576:25)
+
+    console.log
+      [2026-01-20T14:17:02.817Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"out/test-magazine-content.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:02.818Z] INFO: Content saved successfully (sync) {"component":"ContentManager","file":"out/test-magazine-content.json","articles":0,"interests":0,"chatHighlights":0,"claudeChats":2}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      Successfully imported 2 Claude chats from test/fixtures/sampleClaudeExport.json.
+
+      at ContentManager.log [as importClaudeChatsFromFile] (src/contentManager.js:574:25)
+
+    console.log
+      [2026-01-20T14:17:02.821Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"out/test-magazine-content.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:02.822Z] INFO: Content saved successfully (sync) {"component":"ContentManager","file":"out/test-magazine-content.json","articles":0,"interests":0,"chatHighlights":0,"claudeChats":1}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      Successfully imported 1 Claude chats from test/fixtures/sampleClaudeExport.json.
+
+      at ContentManager.log [as importClaudeChatsFromFile] (src/contentManager.js:574:25)
+
+    console.log
+      [2026-01-20T14:17:02.824Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"out/test-magazine-content.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:02.827Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"out/test-magazine-content.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:02.829Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"out/test-magazine-content.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.warn
+      [2026-01-20T14:17:02.830Z] WARN: Chat not found for selection {"component":"ContentManager","chatId":"non-existent"}
+
+    [0m [90m  97 |[39m         [36mbreak[39m[33m;[39m
+     [90m  98 |[39m       [36mcase[39m [32m'warn'[39m[33m:[39m
+    [31m[1m>[22m[39m[90m  99 |[39m         console[33m.[39mwarn(formattedLog)[33m;[39m
+     [90m     |[39m                 [31m[1m^[22m[39m
+     [90m 100 |[39m         [36mbreak[39m[33m;[39m
+     [90m 101 |[39m       [36mcase[39m [32m'debug'[39m[33m:[39m
+     [90m 102 |[39m         console[33m.[39mdebug(formattedLog)[33m;[39m[0m
+
+      at Function.warn (src/logger.js:99:17)
+      at Function._log (src/logger.js:125:10)
+      at Object.warn (src/logger.js:156:14)
+      at ContentManager.warn [as selectClaudeChat] (src/contentManager.js:476:25)
+      at Object.<anonymous> (test/contentManager.test.js:311:28)
+
+    console.log
+      [2026-01-20T14:17:02.832Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"out/test-magazine-content.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:02.834Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"out/test-magazine-content.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.warn
+      [2026-01-20T14:17:02.835Z] WARN: Chat not found for deselection {"component":"ContentManager","chatId":"non-existent"}
+
+    [0m [90m  97 |[39m         [36mbreak[39m[33m;[39m
+     [90m  98 |[39m       [36mcase[39m [32m'warn'[39m[33m:[39m
+    [31m[1m>[22m[39m[90m  99 |[39m         console[33m.[39mwarn(formattedLog)[33m;[39m
+     [90m     |[39m                 [31m[1m^[22m[39m
+     [90m 100 |[39m         [36mbreak[39m[33m;[39m
+     [90m 101 |[39m       [36mcase[39m [32m'debug'[39m[33m:[39m
+     [90m 102 |[39m         console[33m.[39mdebug(formattedLog)[33m;[39m[0m
+
+      at Function.warn (src/logger.js:99:17)
+      at Function._log (src/logger.js:125:10)
+      at Object.warn (src/logger.js:156:14)
+      at ContentManager.warn [as deselectClaudeChat] (src/contentManager.js:488:25)
+      at Object.<anonymous> (test/contentManager.test.js:336:28)
+
+    console.log
+      [2026-01-20T14:17:02.836Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"out/test-magazine-content.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:02.838Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"out/test-magazine-content.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:02.840Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"out/test-magazine-content.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.warn
+      [2026-01-20T14:17:02.840Z] WARN: Chat not found for toggle {"component":"ContentManager","chatId":"non-existent"}
+
+    [0m [90m  97 |[39m         [36mbreak[39m[33m;[39m
+     [90m  98 |[39m       [36mcase[39m [32m'warn'[39m[33m:[39m
+    [31m[1m>[22m[39m[90m  99 |[39m         console[33m.[39mwarn(formattedLog)[33m;[39m
+     [90m     |[39m                 [31m[1m^[22m[39m
+     [90m 100 |[39m         [36mbreak[39m[33m;[39m
+     [90m 101 |[39m       [36mcase[39m [32m'debug'[39m[33m:[39m
+     [90m 102 |[39m         console[33m.[39mdebug(formattedLog)[33m;[39m[0m
+
+      at Function.warn (src/logger.js:99:17)
+      at Function._log (src/logger.js:125:10)
+      at Object.warn (src/logger.js:156:14)
+      at ContentManager.warn [as toggleClaudeChatSelection] (src/contentManager.js:503:25)
+      at Object.<anonymous> (test/contentManager.test.js:373:28)
+
+(node:2191) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+PASS test/clustering.integration.test.js
+  ● Console
+
+    console.log
+      Generating magazine...
+
+      at MagazineGenerator.log [as generateMagazine] (src/magazineGenerator.js:15:17)
+
+    console.log
+      Clustering 4 items by topic...
+
+      at MagazineGenerator.log [as generateMagazine] (src/magazineGenerator.js:74:21)
+
+    console.log
+      [2026-01-20T14:17:03.604Z] INFO: Articles clustered {"component":"ContentClusterer","totalArticles":4,"clusterCount":2,"averageClusterSize":"2.0"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.618Z] INFO: Generated clustered content {"component":"ContentClusterer","sectionCount":2,"sections":[{"name":"Food","articleCount":2},{"name":"Tech","articleCount":2}]}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+        Section: "Food" (2 items)
+
+      at log (src/magazineGenerator.js:82:25)
+          at Array.forEach (<anonymous>)
+
+    console.log
+        Section: "Tech" (2 items)
+
+      at log (src/magazineGenerator.js:82:25)
+          at Array.forEach (<anonymous>)
+
+    console.log
+      Generating magazine...
+
+      at MagazineGenerator.log [as generateMagazine] (src/magazineGenerator.js:15:17)
+
+    console.log
+      Clustering 4 items by topic...
+
+      at MagazineGenerator.log [as generateMagazine] (src/magazineGenerator.js:74:21)
+
+    console.log
+      [2026-01-20T14:17:03.626Z] INFO: Articles clustered {"component":"ContentClusterer","totalArticles":4,"clusterCount":2,"averageClusterSize":"2.0"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.627Z] INFO: Generated clustered content {"component":"ContentClusterer","sectionCount":2,"sections":[{"name":"Food","articleCount":2},{"name":"Tech","articleCount":2}]}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+        Section: "Food" (2 items)
+
+      at log (src/magazineGenerator.js:82:25)
+          at Array.forEach (<anonymous>)
+
+    console.log
+        Section: "Tech" (2 items)
+
+      at log (src/magazineGenerator.js:82:25)
+          at Array.forEach (<anonymous>)
+
+    console.log
+      Generating magazine...
+
+      at MagazineGenerator.log [as generateMagazine] (src/magazineGenerator.js:15:17)
+
+    console.log
+      Generating magazine...
+
+      at MagazineGenerator.log [as generateMagazine] (src/magazineGenerator.js:15:17)
+
+    console.log
+      Clustering 4 items by topic...
+
+      at MagazineGenerator.log [as generateMagazine] (src/magazineGenerator.js:74:21)
+
+    console.log
+      [2026-01-20T14:17:03.634Z] INFO: Articles clustered {"component":"ContentClusterer","totalArticles":4,"clusterCount":2,"averageClusterSize":"2.0"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.635Z] INFO: Generated clustered content {"component":"ContentClusterer","sectionCount":2,"sections":[{"name":"Food","articleCount":2},{"name":"Tech","articleCount":2}]}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+        Section: "Food" (2 items)
+
+      at log (src/magazineGenerator.js:82:25)
+          at Array.forEach (<anonymous>)
+
+    console.log
+        Section: "Tech" (2 items)
+
+      at log (src/magazineGenerator.js:82:25)
+          at Array.forEach (<anonymous>)
+
+    console.log
+      Generating magazine...
+
+      at MagazineGenerator.log [as generateMagazine] (src/magazineGenerator.js:15:17)
+
+    console.log
+      Generating magazine...
+
+      at MagazineGenerator.log [as generateMagazine] (src/magazineGenerator.js:15:17)
+
+    console.log
+      Clustering 2 items by topic...
+
+      at MagazineGenerator.log [as generateMagazine] (src/magazineGenerator.js:74:21)
+
+    console.log
+      [2026-01-20T14:17:03.654Z] INFO: Articles clustered {"component":"ContentClusterer","totalArticles":2,"clusterCount":1,"averageClusterSize":"2.0"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.654Z] INFO: Generated clustered content {"component":"ContentClusterer","sectionCount":1,"sections":[{"name":"Tech","articleCount":2}]}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+        Section: "Tech" (2 items)
+
+      at log (src/magazineGenerator.js:82:25)
+          at Array.forEach (<anonymous>)
+
+PASS test/articleGenerator.sanitization.test.js
+  ● Console
+
+    console.log
+      [2026-01-20T14:17:03.617Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"/tmp/test-content.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.627Z] INFO: Content saved successfully (sync) {"component":"ContentManager","file":"/tmp/test-content.json","articles":0,"interests":1,"chatHighlights":0,"claudeChats":0}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.627Z] INFO: Added interest: "<script>alert("XSS")</script>Malicious Topic" {"component":"ContentManager","id":"1768918623626","priority":"high","totalInterests":1}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.647Z] INFO: Content saved successfully (sync) {"component":"ContentManager","file":"/tmp/test-content.json","articles":1,"interests":1,"chatHighlights":0,"claudeChats":0}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.648Z] INFO: Added article: "Current Interests & Explorations" (43 words) {"component":"ContentManager","id":"1768918623646","category":"Personal Growth","wordCount":43,"totalArticles":1}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.652Z] INFO: Content saved successfully (sync) {"component":"ContentManager","file":"/tmp/test-content.json","articles":1,"interests":2,"chatHighlights":0,"claudeChats":0}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.652Z] INFO: Added interest: "Normal Topic" {"component":"ContentManager","id":"1768918623652","priority":"high","totalInterests":2}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.664Z] INFO: Content saved successfully (sync) {"component":"ContentManager","file":"/tmp/test-content.json","articles":2,"interests":2,"chatHighlights":0,"claudeChats":0}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.665Z] INFO: Added article: "Current Interests & Explorations" (54 words) {"component":"ContentManager","id":"1768918623664","category":"Personal Growth","wordCount":54,"totalArticles":2}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.667Z] INFO: Content saved successfully (sync) {"component":"ContentManager","file":"/tmp/test-content.json","articles":2,"interests":2,"chatHighlights":1,"claudeChats":0}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.668Z] INFO: Added chat highlight: "XSS Test" {"component":"ContentManager","id":"1768918623667","category":"security","totalHighlights":1}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.718Z] INFO: Content saved successfully (sync) {"component":"ContentManager","file":"/tmp/test-content.json","articles":3,"interests":2,"chatHighlights":1,"claudeChats":0}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.719Z] INFO: Added article: "Insights from AI Conversations" (54 words) {"component":"ContentManager","id":"1768918623718","category":"AI & Learning","wordCount":54,"totalArticles":3}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.721Z] INFO: Content saved successfully (sync) {"component":"ContentManager","file":"/tmp/test-content.json","articles":3,"interests":3,"chatHighlights":1,"claudeChats":0}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.722Z] INFO: Added interest: "Safe HTML Topic" {"component":"ContentManager","id":"1768918623721","priority":"medium","totalInterests":3}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.738Z] INFO: Content saved successfully (sync) {"component":"ContentManager","file":"/tmp/test-content.json","articles":4,"interests":3,"chatHighlights":1,"claudeChats":0}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.739Z] INFO: Added article: "Current Interests & Explorations" (72 words) {"component":"ContentManager","id":"1768918623738","category":"Personal Growth","wordCount":72,"totalArticles":4}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.741Z] INFO: Content saved successfully (sync) {"component":"ContentManager","file":"/tmp/test-content.json","articles":4,"interests":4,"chatHighlights":1,"claudeChats":0}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.741Z] INFO: Added interest: "Unicode Test" {"component":"ContentManager","id":"1768918623740","priority":"low","totalInterests":4}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.753Z] INFO: Content saved successfully (sync) {"component":"ContentManager","file":"/tmp/test-content.json","articles":5,"interests":4,"chatHighlights":1,"claudeChats":0}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.753Z] INFO: Added article: "Current Interests & Explorations" (80 words) {"component":"ContentManager","id":"1768918623753","category":"Personal Growth","wordCount":80,"totalArticles":5}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.759Z] INFO: Content saved successfully (sync) {"component":"ContentManager","file":"/tmp/test-content.json","articles":5,"interests":4,"chatHighlights":2,"claudeChats":0}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.759Z] INFO: Added chat highlight: "Nested XSS" {"component":"ContentManager","id":"1768918623758","category":"test","totalHighlights":2}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.783Z] INFO: Content saved successfully (sync) {"component":"ContentManager","file":"/tmp/test-content.json","articles":6,"interests":4,"chatHighlights":2,"claudeChats":0}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.783Z] INFO: Added article: "Insights from AI Conversations" (65 words) {"component":"ContentManager","id":"1768918623782","category":"AI & Learning","wordCount":65,"totalArticles":6}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.788Z] INFO: Content saved successfully (sync) {"component":"ContentManager","file":"/tmp/test-content.json","articles":6,"interests":5,"chatHighlights":2,"claudeChats":0}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.788Z] INFO: Added interest: "Normal Topic" {"component":"ContentManager","id":"1768918623787","priority":"high","totalInterests":5}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.800Z] INFO: Content saved successfully (sync) {"component":"ContentManager","file":"/tmp/test-content.json","articles":7,"interests":5,"chatHighlights":2,"claudeChats":0}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.800Z] INFO: Added article: "Current Interests & Explorations" (94 words) {"component":"ContentManager","id":"1768918623799","category":"Personal Growth","wordCount":94,"totalArticles":7}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.802Z] INFO: Content saved successfully (sync) {"component":"ContentManager","file":"/tmp/test-content.json","articles":7,"interests":6,"chatHighlights":2,"claudeChats":0}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.803Z] INFO: Added interest: "Topic with & ampersand" {"component":"ContentManager","id":"1768918623802","priority":"medium","totalInterests":6}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.812Z] INFO: Content saved successfully (sync) {"component":"ContentManager","file":"/tmp/test-content.json","articles":8,"interests":6,"chatHighlights":2,"claudeChats":0}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.813Z] INFO: Added article: "Current Interests & Explorations" (104 words) {"component":"ContentManager","id":"1768918623812","category":"Personal Growth","wordCount":104,"totalArticles":8}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+PASS test/config.test.js
+PASS test/magazineGenerator.integration.test.js
+  ● Console
+
+    console.log
+      Generating magazine...
+
+      at MagazineGenerator.log [as generateMagazine] (src/magazineGenerator.js:15:17)
+
+    console.log
+      Clustering 2 items by topic...
+
+      at MagazineGenerator.log [as generateMagazine] (src/magazineGenerator.js:74:21)
+
+    console.log
+      [2026-01-20T14:17:04.341Z] INFO: Articles clustered {"component":"ContentClusterer","totalArticles":2,"clusterCount":2,"averageClusterSize":"1.0"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:04.343Z] INFO: Generated clustered content {"component":"ContentClusterer","sectionCount":2,"sections":[{"name":"Tech","articleCount":1},{"name":"Tech Chat","articleCount":1}]}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+        Section: "Tech" (1 items)
+
+      at log (src/magazineGenerator.js:82:25)
+          at Array.forEach (<anonymous>)
+
+    console.log
+        Section: "Tech Chat" (1 items)
+
+      at log (src/magazineGenerator.js:82:25)
+          at Array.forEach (<anonymous>)
+
+    console.log
+      Generating magazine...
+
+      at MagazineGenerator.log [as generateMagazine] (src/magazineGenerator.js:15:17)
+
+PASS test/epub3.navigation.test.js
+PASS test/cli.test.js
+PASS test/validation.test.js
+PASS test/pageLimit.test.js
+  ● Console
+
+    console.log
+      [2026-01-20T14:17:04.799Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"test-page-limit-content.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:04.803Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"test-page-limit-content.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:04.804Z] INFO: Content saved successfully (sync) {"component":"ContentManager","file":"test-page-limit-content.json","articles":0,"interests":0,"chatHighlights":0,"claudeChats":0}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:04.804Z] INFO: Page limit set to 10 pages {"component":"ContentManager","pageLimit":10}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      Page limit set to 10 pages
+
+      at ContentManager.log [as setPageLimit] (src/contentManager.js:445:21)
+
+    console.log
+      [2026-01-20T14:17:04.805Z] INFO: Content saved successfully (sync) {"component":"ContentManager","file":"test-page-limit-content.json","articles":0,"interests":0,"chatHighlights":0,"claudeChats":0}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:04.805Z] INFO: Page limit removed {"component":"ContentManager","pageLimit":0}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      Page limit removed
+
+      at ContentManager.log [as setPageLimit] (src/contentManager.js:445:21)
+
+    console.log
+      [2026-01-20T14:17:04.806Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"test-page-limit-content.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:04.808Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"test-page-limit-content.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:04.809Z] INFO: Content saved successfully (sync) {"component":"ContentManager","file":"test-page-limit-content.json","articles":1,"interests":0,"chatHighlights":0,"claudeChats":0}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:04.809Z] INFO: Added article: "Article 1" (4 words) {"component":"ContentManager","id":"1768918624809","category":"Test","wordCount":4,"totalArticles":1}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:04.810Z] INFO: Content saved successfully (sync) {"component":"ContentManager","file":"test-page-limit-content.json","articles":2,"interests":0,"chatHighlights":0,"claudeChats":0}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:04.810Z] INFO: Added article: "Article 2" (4 words) {"component":"ContentManager","id":"1768918624810","category":"Test","wordCount":4,"totalArticles":2}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:04.811Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"test-page-limit-content.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:04.812Z] INFO: Content saved successfully (sync) {"component":"ContentManager","file":"test-page-limit-content.json","articles":1,"interests":0,"chatHighlights":0,"claudeChats":0}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:04.813Z] INFO: Added article: "Long Article" (600 words) {"component":"ContentManager","id":"1768918624812","category":"Test","wordCount":600,"totalArticles":1}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:04.814Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"test-page-limit-content.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:04.814Z] INFO: Content saved successfully (sync) {"component":"ContentManager","file":"test-page-limit-content.json","articles":0,"interests":0,"chatHighlights":0,"claudeChats":0}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:04.815Z] INFO: Page limit set to 1 pages {"component":"ContentManager","pageLimit":1}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      Page limit set to 1 pages
+
+      at ContentManager.log [as setPageLimit] (src/contentManager.js:445:21)
+
+    console.log
+      [2026-01-20T14:17:04.816Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"test-page-limit-content.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:04.817Z] INFO: Content saved successfully (sync) {"component":"ContentManager","file":"test-page-limit-content.json","articles":0,"interests":0,"chatHighlights":0,"claudeChats":0}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:04.817Z] INFO: Page limit set to 1 pages {"component":"ContentManager","pageLimit":1}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      Page limit set to 1 pages
+
+      at ContentManager.log [as setPageLimit] (src/contentManager.js:445:21)
+
+    console.log
+      [2026-01-20T14:17:04.818Z] INFO: Content saved successfully (sync) {"component":"ContentManager","file":"test-page-limit-content.json","articles":1,"interests":0,"chatHighlights":0,"claudeChats":0}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:04.819Z] INFO: Added article: "Small Article" (250 words) {"component":"ContentManager","id":"1768918624818","category":"Test","wordCount":250,"totalArticles":1}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.error
+      [2026-01-20T14:17:04.819Z] ERROR: Cannot add article "Big Article": would exceed page limit of 1 pages (currently 1 pages, would become 2 pages) {"component":"ContentManager","title":"Big Article","wordCount":100,"pageInfo":{"currentPages":1,"pageLimit":1,"totalWords":250,"wordsPerPage":300,"hasLimit":true,"isAtLimit":true}}
+
+    [0m [90m 94 |[39m     [36mswitch[39m (level) {
+     [90m 95 |[39m       [36mcase[39m [32m'error'[39m[33m:[39m
+    [31m[1m>[22m[39m[90m 96 |[39m         console[33m.[39merror(formattedLog)[33m;[39m
+     [90m    |[39m                 [31m[1m^[22m[39m
+     [90m 97 |[39m         [36mbreak[39m[33m;[39m
+     [90m 98 |[39m       [36mcase[39m [32m'warn'[39m[33m:[39m
+     [90m 99 |[39m         console[33m.[39mwarn(formattedLog)[33m;[39m[0m
+
+      at Function.error [as _log] (src/logger.js:96:17)
+      at Function._log [as error] (src/logger.js:116:10)
+      at Object.error (src/logger.js:154:14)
+      at ContentManager.error [as addArticle] (src/contentManager.js:205:29)
+      at Object.<anonymous> (test/pageLimit.test.js:67:40)
+
+    console.log
+      [2026-01-20T14:17:04.820Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"test-page-limit-content.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:04.821Z] INFO: Content saved successfully (sync) {"component":"ContentManager","file":"test-page-limit-content.json","articles":0,"interests":0,"chatHighlights":0,"claudeChats":0}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:04.821Z] INFO: Page limit set to 5 pages {"component":"ContentManager","pageLimit":5}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      Page limit set to 5 pages
+
+      at ContentManager.log [as setPageLimit] (src/contentManager.js:445:21)
+
+    console.log
+      [2026-01-20T14:17:04.823Z] INFO: Content saved successfully (sync) {"component":"ContentManager","file":"test-page-limit-content.json","articles":1,"interests":0,"chatHighlights":0,"claudeChats":0}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:04.824Z] INFO: Added article: "Test Article" (600 words) {"component":"ContentManager","id":"1768918624823","category":"Test","wordCount":600,"totalArticles":1}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:04.832Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"test-page-limit-content.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:04.834Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"test-page-limit-content.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:04.834Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"test-page-limit-content.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+PASS test/logger.test.js
+PASS test/templateRenderer.test.js
+  ● Console
+
+    console.error
+      Error rendering template non-existent-template: Error: ENOENT: no such file or directory, open '/home/runner/work/magazeen/magazeen/src/templates/non-existent-template.html'
+          at Object.openSync (node:fs:596:3)
+          at readFileSync (node:fs:464:35)
+          at readFileSync (/home/runner/work/magazeen/magazeen/src/templateRenderer.js:20:16)
+          at /home/runner/work/magazeen/magazeen/test/templateRenderer.test.js:37:7
+          at Object.<anonymous> (/home/runner/work/magazeen/magazeen/node_modules/expect/build/index.js:1824:9)
+          at Object.throwingMatcher [as toThrow] (/home/runner/work/magazeen/magazeen/node_modules/expect/build/index.js:2235:93)
+          at Object.<anonymous> (/home/runner/work/magazeen/magazeen/test/templateRenderer.test.js:38:8)
+          at Promise.finally.completed (/home/runner/work/magazeen/magazeen/node_modules/jest-circus/build/jestAdapterInit.js:1556:28)
+          at new Promise (<anonymous>)
+          at callAsyncCircusFn (/home/runner/work/magazeen/magazeen/node_modules/jest-circus/build/jestAdapterInit.js:1496:10)
+          at _callCircusTest (/home/runner/work/magazeen/magazeen/node_modules/jest-circus/build/jestAdapterInit.js:1006:40)
+          at processTicksAndRejections (node:internal/process/task_queues:95:5)
+          at _runTest (/home/runner/work/magazeen/magazeen/node_modules/jest-circus/build/jestAdapterInit.js:946:3)
+          at _runTestsForDescribeBlock (/home/runner/work/magazeen/magazeen/node_modules/jest-circus/build/jestAdapterInit.js:839:13)
+          at _runTestsForDescribeBlock (/home/runner/work/magazeen/magazeen/node_modules/jest-circus/build/jestAdapterInit.js:829:11)
+          at run (/home/runner/work/magazeen/magazeen/node_modules/jest-circus/build/jestAdapterInit.js:757:3)
+          at runAndTransformResultsToJestFormat (/home/runner/work/magazeen/magazeen/node_modules/jest-circus/build/jestAdapterInit.js:1917:21)
+          at jestAdapter (/home/runner/work/magazeen/magazeen/node_modules/jest-circus/build/runner.js:101:19)
+          at runTestInternal (/home/runner/work/magazeen/magazeen/node_modules/jest-runner/build/testWorker.js:275:16)
+          at runTest (/home/runner/work/magazeen/magazeen/node_modules/jest-runner/build/testWorker.js:343:7)
+          at Object.worker (/home/runner/work/magazeen/magazeen/node_modules/jest-runner/build/testWorker.js:497:12) {
+        errno: -2,
+        syscall: 'open',
+        code: 'ENOENT',
+        path: '/home/runner/work/magazeen/magazeen/src/templates/non-existent-template.html'
+      }
+
+    [0m [90m 29 |[39m     [36mreturn[39m html[33m;[39m
+     [90m 30 |[39m   } [36mcatch[39m (error) {
+    [31m[1m>[22m[39m[90m 31 |[39m     console[33m.[39merror([32m`Error rendering template ${templateName}:`[39m[33m,[39m error)[33m;[39m
+     [90m    |[39m             [31m[1m^[22m[39m
+     [90m 32 |[39m     [36mthrow[39m [36mnew[39m [33mError[39m([32m`Failed to render template: ${templateName}`[39m)[33m;[39m
+     [90m 33 |[39m   }
+     [90m 34 |[39m }[0m
+
+      at error (src/templateRenderer.js:31:13)
+      at test/templateRenderer.test.js:37:7
+      at Object.<anonymous> (node_modules/expect/build/index.js:1824:9)
+      at Object.throwingMatcher [as toThrow] (node_modules/expect/build/index.js:2235:93)
+      at Object.<anonymous> (test/templateRenderer.test.js:38:8)
+
+FAIL test/urlImport.test.js (30.632 s)
+  ● Console
+
+    console.log
+      [2026-01-20T14:17:03.286Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"out/test-url-import-1.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.298Z] INFO: Fetching Claude chats from URL {"component":"ContentManager","url":"http://localhost:8765/chats.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      Fetching Claude chats from: http://localhost:8765/chats.json
+
+      at ContentManager.log [as importClaudeChatsFromUrl] (src/contentManager.js:653:21)
+
+    console.warn
+      Skipping chat due to missing essential fields (uuid, name, or chat_messages): {
+        uuid: 'malformed-chat-no-messages',
+        name: 'Malformed Chat - No Messages',
+        created_at: '2023-09-16T10:00:00.000000Z'
+      }
+
+    [0m [90m 551 |[39m                 }
+     [90m 552 |[39m             } [36melse[39m {
+    [31m[1m>[22m[39m[90m 553 |[39m                 console[33m.[39mwarn([32m'Skipping chat due to missing essential fields (uuid, name, or chat_messages):'[39m[33m,[39m chat)[33m;[39m
+     [90m     |[39m                         [31m[1m^[22m[39m
+     [90m 554 |[39m             }
+     [90m 555 |[39m         }
+     [90m 556 |[39m[0m
+
+      at ContentManager.warn [as _processClaudeChats] (src/contentManager.js:553:25)
+      at ContentManager._processClaudeChats [as importClaudeChatsFromUrl] (src/contentManager.js:658:52)
+      at Object.<anonymous> (test/urlImport.test.js:89:31)
+
+    console.warn
+      Skipping chat due to missing essential fields (uuid, name, or chat_messages): {
+        name: 'Malformed Chat - No UUID',
+        created_at: '2023-09-17T10:00:00.000000Z',
+        chat_messages: []
+      }
+
+    [0m [90m 551 |[39m                 }
+     [90m 552 |[39m             } [36melse[39m {
+    [31m[1m>[22m[39m[90m 553 |[39m                 console[33m.[39mwarn([32m'Skipping chat due to missing essential fields (uuid, name, or chat_messages):'[39m[33m,[39m chat)[33m;[39m
+     [90m     |[39m                         [31m[1m^[22m[39m
+     [90m 554 |[39m             }
+     [90m 555 |[39m         }
+     [90m 556 |[39m[0m
+
+      at ContentManager.warn [as _processClaudeChats] (src/contentManager.js:553:25)
+      at ContentManager._processClaudeChats [as importClaudeChatsFromUrl] (src/contentManager.js:658:52)
+      at Object.<anonymous> (test/urlImport.test.js:89:31)
+
+    console.error
+      [2026-01-20T14:17:03.331Z] ERROR: Failed to save content (sync) {"component":"ContentManager","file":"out/test-url-import-1.json"} - ENOENT: no such file or directory, open 'out/test-url-import-1.json'
+
+    [0m [90m 94 |[39m     [36mswitch[39m (level) {
+     [90m 95 |[39m       [36mcase[39m [32m'error'[39m[33m:[39m
+    [31m[1m>[22m[39m[90m 96 |[39m         console[33m.[39merror(formattedLog)[33m;[39m
+     [90m    |[39m                 [31m[1m^[22m[39m
+     [90m 97 |[39m         [36mbreak[39m[33m;[39m
+     [90m 98 |[39m       [36mcase[39m [32m'warn'[39m[33m:[39m
+     [90m 99 |[39m         console[33m.[39mwarn(formattedLog)[33m;[39m[0m
+
+      at Function.error [as _log] (src/logger.js:96:17)
+      at Function._log [as error] (src/logger.js:116:10)
+      at Object.error (src/logger.js:154:14)
+      at ContentManager.error [as saveContent] (src/contentManager.js:160:25)
+      at ContentManager.saveContent [as importClaudeChatsFromUrl] (src/contentManager.js:661:22)
+      at Object.<anonymous> (test/urlImport.test.js:89:31)
+
+    console.error
+      [2026-01-20T14:17:03.332Z] ERROR: Error importing Claude chats from URL {"component":"ContentManager","url":"http://localhost:8765/chats.json"} - Failed to save content: ENOENT: no such file or directory, open 'out/test-url-import-1.json'
+
+    [0m [90m 94 |[39m     [36mswitch[39m (level) {
+     [90m 95 |[39m       [36mcase[39m [32m'error'[39m[33m:[39m
+    [31m[1m>[22m[39m[90m 96 |[39m         console[33m.[39merror(formattedLog)[33m;[39m
+     [90m    |[39m                 [31m[1m^[22m[39m
+     [90m 97 |[39m         [36mbreak[39m[33m;[39m
+     [90m 98 |[39m       [36mcase[39m [32m'warn'[39m[33m:[39m
+     [90m 99 |[39m         console[33m.[39mwarn(formattedLog)[33m;[39m[0m
+
+      at Function.error [as _log] (src/logger.js:96:17)
+      at Function._log [as error] (src/logger.js:116:10)
+      at Object.error (src/logger.js:154:14)
+      at ContentManager.error [as importClaudeChatsFromUrl] (src/contentManager.js:669:25)
+      at Object.<anonymous> (test/urlImport.test.js:89:31)
+
+    console.error
+      Error importing Claude chats from http://localhost:8765/chats.json: Failed to save content: ENOENT: no such file or directory, open 'out/test-url-import-1.json'
+
+    [0m [90m 668 |[39m         } [36mcatch[39m (error) {
+     [90m 669 |[39m             [36mthis[39m[33m.[39mlogger[33m.[39merror([32m'Error importing Claude chats from URL'[39m[33m,[39m error[33m,[39m { url })[33m;[39m
+    [31m[1m>[22m[39m[90m 670 |[39m             console[33m.[39merror([32m`Error importing Claude chats from ${url}:`[39m[33m,[39m error[33m.[39mmessage)[33m;[39m
+     [90m     |[39m                     [31m[1m^[22m[39m
+     [90m 671 |[39m             [36mreturn[39m [35m0[39m[33m;[39m
+     [90m 672 |[39m         }
+     [90m 673 |[39m     }[0m
+
+      at ContentManager.error [as importClaudeChatsFromUrl] (src/contentManager.js:670:21)
+      at Object.<anonymous> (test/urlImport.test.js:89:31)
+
+    console.log
+      [2026-01-20T14:17:03.404Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"out/test-url-import-2.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.error
+      [2026-01-20T14:17:03.405Z] ERROR: Invalid URL format {"component":"ContentManager","url":"not-a-url"}
+
+    [0m [90m 94 |[39m     [36mswitch[39m (level) {
+     [90m 95 |[39m       [36mcase[39m [32m'error'[39m[33m:[39m
+    [31m[1m>[22m[39m[90m 96 |[39m         console[33m.[39merror(formattedLog)[33m;[39m
+     [90m    |[39m                 [31m[1m^[22m[39m
+     [90m 97 |[39m         [36mbreak[39m[33m;[39m
+     [90m 98 |[39m       [36mcase[39m [32m'warn'[39m[33m:[39m
+     [90m 99 |[39m         console[33m.[39mwarn(formattedLog)[33m;[39m[0m
+
+      at Function.error [as _log] (src/logger.js:96:17)
+      at Function._log [as error] (src/logger.js:116:10)
+      at Object.error (src/logger.js:154:14)
+      at ContentManager.error [as importClaudeChatsFromUrl] (src/contentManager.js:644:29)
+      at Object.<anonymous> (test/urlImport.test.js:98:52)
+
+    console.error
+      Error: Invalid URL format: not-a-url
+
+    [0m [90m 643 |[39m             } [36mcatch[39m {
+     [90m 644 |[39m                 [36mthis[39m[33m.[39mlogger[33m.[39merror([32m'Invalid URL format'[39m[33m,[39m [36mnull[39m[33m,[39m { url })[33m;[39m
+    [31m[1m>[22m[39m[90m 645 |[39m                 console[33m.[39merror([32m`Error: Invalid URL format: ${url}`[39m)[33m;[39m
+     [90m     |[39m                         [31m[1m^[22m[39m
+     [90m 646 |[39m                 [36mreturn[39m [35m0[39m[33m;[39m
+     [90m 647 |[39m             }
+     [90m 648 |[39m[0m
+
+      at ContentManager.error [as importClaudeChatsFromUrl] (src/contentManager.js:645:25)
+      at Object.<anonymous> (test/urlImport.test.js:98:52)
+
+    console.log
+      [2026-01-20T14:17:03.407Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"out/test-url-import-3.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.408Z] INFO: Fetching Claude chats from URL {"component":"ContentManager","url":"http://localhost:8765/not-found"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      Fetching Claude chats from: http://localhost:8765/not-found
+
+      at ContentManager.log [as importClaudeChatsFromUrl] (src/contentManager.js:653:21)
+
+    console.error
+      [2026-01-20T14:17:03.411Z] ERROR: Error importing Claude chats from URL {"component":"ContentManager","url":"http://localhost:8765/not-found"} - HTTP 404: Not Found
+
+    [0m [90m 94 |[39m     [36mswitch[39m (level) {
+     [90m 95 |[39m       [36mcase[39m [32m'error'[39m[33m:[39m
+    [31m[1m>[22m[39m[90m 96 |[39m         console[33m.[39merror(formattedLog)[33m;[39m
+     [90m    |[39m                 [31m[1m^[22m[39m
+     [90m 97 |[39m         [36mbreak[39m[33m;[39m
+     [90m 98 |[39m       [36mcase[39m [32m'warn'[39m[33m:[39m
+     [90m 99 |[39m         console[33m.[39mwarn(formattedLog)[33m;[39m[0m
+
+      at Function.error [as _log] (src/logger.js:96:17)
+      at Function._log [as error] (src/logger.js:116:10)
+      at Object.error (src/logger.js:154:14)
+      at ContentManager.error [as importClaudeChatsFromUrl] (src/contentManager.js:669:25)
+      at Object.<anonymous> (test/urlImport.test.js:104:31)
+
+    console.error
+      Error importing Claude chats from http://localhost:8765/not-found: HTTP 404: Not Found
+
+    [0m [90m 668 |[39m         } [36mcatch[39m (error) {
+     [90m 669 |[39m             [36mthis[39m[33m.[39mlogger[33m.[39merror([32m'Error importing Claude chats from URL'[39m[33m,[39m error[33m,[39m { url })[33m;[39m
+    [31m[1m>[22m[39m[90m 670 |[39m             console[33m.[39merror([32m`Error importing Claude chats from ${url}:`[39m[33m,[39m error[33m.[39mmessage)[33m;[39m
+     [90m     |[39m                     [31m[1m^[22m[39m
+     [90m 671 |[39m             [36mreturn[39m [35m0[39m[33m;[39m
+     [90m 672 |[39m         }
+     [90m 673 |[39m     }[0m
+
+      at ContentManager.error [as importClaudeChatsFromUrl] (src/contentManager.js:670:21)
+      at Object.<anonymous> (test/urlImport.test.js:104:31)
+
+    console.log
+      [2026-01-20T14:17:03.414Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"out/test-url-import-4.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.415Z] INFO: Fetching Claude chats from URL {"component":"ContentManager","url":"http://localhost:8765/invalid.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      Fetching Claude chats from: http://localhost:8765/invalid.json
+
+      at ContentManager.log [as importClaudeChatsFromUrl] (src/contentManager.js:653:21)
+
+    console.error
+      [2026-01-20T14:17:03.418Z] ERROR: Error importing Claude chats from URL {"component":"ContentManager","url":"http://localhost:8765/invalid.json"} - Unexpected token o in JSON at position 1
+
+    [0m [90m 94 |[39m     [36mswitch[39m (level) {
+     [90m 95 |[39m       [36mcase[39m [32m'error'[39m[33m:[39m
+    [31m[1m>[22m[39m[90m 96 |[39m         console[33m.[39merror(formattedLog)[33m;[39m
+     [90m    |[39m                 [31m[1m^[22m[39m
+     [90m 97 |[39m         [36mbreak[39m[33m;[39m
+     [90m 98 |[39m       [36mcase[39m [32m'warn'[39m[33m:[39m
+     [90m 99 |[39m         console[33m.[39mwarn(formattedLog)[33m;[39m[0m
+
+      at Function.error [as _log] (src/logger.js:96:17)
+      at Function._log [as error] (src/logger.js:116:10)
+      at Object.error (src/logger.js:154:14)
+      at ContentManager.error [as importClaudeChatsFromUrl] (src/contentManager.js:669:25)
+      at Object.<anonymous> (test/urlImport.test.js:112:31)
+
+    console.error
+      Error importing Claude chats from http://localhost:8765/invalid.json: Unexpected token o in JSON at position 1
+
+    [0m [90m 668 |[39m         } [36mcatch[39m (error) {
+     [90m 669 |[39m             [36mthis[39m[33m.[39mlogger[33m.[39merror([32m'Error importing Claude chats from URL'[39m[33m,[39m error[33m,[39m { url })[33m;[39m
+    [31m[1m>[22m[39m[90m 670 |[39m             console[33m.[39merror([32m`Error importing Claude chats from ${url}:`[39m[33m,[39m error[33m.[39mmessage)[33m;[39m
+     [90m     |[39m                     [31m[1m^[22m[39m
+     [90m 671 |[39m             [36mreturn[39m [35m0[39m[33m;[39m
+     [90m 672 |[39m         }
+     [90m 673 |[39m     }[0m
+
+      at ContentManager.error [as importClaudeChatsFromUrl] (src/contentManager.js:670:21)
+      at Object.<anonymous> (test/urlImport.test.js:112:31)
+
+    console.log
+      [2026-01-20T14:17:03.420Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"out/test-url-import-5.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.420Z] INFO: Fetching Claude chats from URL {"component":"ContentManager","url":"http://localhost:8765/not-array.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      Fetching Claude chats from: http://localhost:8765/not-array.json
+
+      at ContentManager.log [as importClaudeChatsFromUrl] (src/contentManager.js:653:21)
+
+    console.error
+      Error: Expected an array of chats from the JSON file.
+
+    [0m [90m 513 |[39m     _processClaudeChats(importedChats) {
+     [90m 514 |[39m         [36mif[39m ([33m![39m[33mArray[39m[33m.[39misArray(importedChats)) {
+    [31m[1m>[22m[39m[90m 515 |[39m             console[33m.[39merror([32m'Error: Expected an array of chats from the JSON file.'[39m)[33m;[39m
+     [90m     |[39m                     [31m[1m^[22m[39m
+     [90m 516 |[39m             [36mreturn[39m [35m0[39m[33m;[39m
+     [90m 517 |[39m         }
+     [90m 518 |[39m[0m
+
+      at ContentManager.error [as _processClaudeChats] (src/contentManager.js:515:21)
+      at ContentManager._processClaudeChats [as importClaudeChatsFromUrl] (src/contentManager.js:658:52)
+      at Object.<anonymous> (test/urlImport.test.js:120:31)
+
+    console.log
+      No new Claude chats were imported from http://localhost:8765/not-array.json.
+
+      at ContentManager.log [as importClaudeChatsFromUrl] (src/contentManager.js:664:25)
+
+    console.log
+      [2026-01-20T14:17:03.432Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"out/test-url-import-6.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.436Z] INFO: Fetching Claude chats from URL {"component":"ContentManager","url":"http://localhost:8765/redirect"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      Fetching Claude chats from: http://localhost:8765/redirect
+
+      at ContentManager.log [as importClaudeChatsFromUrl] (src/contentManager.js:653:21)
+
+    console.warn
+      Skipping chat due to missing essential fields (uuid, name, or chat_messages): {
+        uuid: 'malformed-chat-no-messages',
+        name: 'Malformed Chat - No Messages',
+        created_at: '2023-09-16T10:00:00.000000Z'
+      }
+
+    [0m [90m 551 |[39m                 }
+     [90m 552 |[39m             } [36melse[39m {
+    [31m[1m>[22m[39m[90m 553 |[39m                 console[33m.[39mwarn([32m'Skipping chat due to missing essential fields (uuid, name, or chat_messages):'[39m[33m,[39m chat)[33m;[39m
+     [90m     |[39m                         [31m[1m^[22m[39m
+     [90m 554 |[39m             }
+     [90m 555 |[39m         }
+     [90m 556 |[39m[0m
+
+      at ContentManager.warn [as _processClaudeChats] (src/contentManager.js:553:25)
+      at ContentManager._processClaudeChats [as importClaudeChatsFromUrl] (src/contentManager.js:658:52)
+      at Object.<anonymous> (test/urlImport.test.js:128:31)
+
+    console.warn
+      Skipping chat due to missing essential fields (uuid, name, or chat_messages): {
+        name: 'Malformed Chat - No UUID',
+        created_at: '2023-09-17T10:00:00.000000Z',
+        chat_messages: []
+      }
+
+    [0m [90m 551 |[39m                 }
+     [90m 552 |[39m             } [36melse[39m {
+    [31m[1m>[22m[39m[90m 553 |[39m                 console[33m.[39mwarn([32m'Skipping chat due to missing essential fields (uuid, name, or chat_messages):'[39m[33m,[39m chat)[33m;[39m
+     [90m     |[39m                         [31m[1m^[22m[39m
+     [90m 554 |[39m             }
+     [90m 555 |[39m         }
+     [90m 556 |[39m[0m
+
+      at ContentManager.warn [as _processClaudeChats] (src/contentManager.js:553:25)
+      at ContentManager._processClaudeChats [as importClaudeChatsFromUrl] (src/contentManager.js:658:52)
+      at Object.<anonymous> (test/urlImport.test.js:128:31)
+
+    console.error
+      [2026-01-20T14:17:03.448Z] ERROR: Failed to save content (sync) {"component":"ContentManager","file":"out/test-url-import-6.json"} - ENOENT: no such file or directory, open 'out/test-url-import-6.json'
+
+    [0m [90m 94 |[39m     [36mswitch[39m (level) {
+     [90m 95 |[39m       [36mcase[39m [32m'error'[39m[33m:[39m
+    [31m[1m>[22m[39m[90m 96 |[39m         console[33m.[39merror(formattedLog)[33m;[39m
+     [90m    |[39m                 [31m[1m^[22m[39m
+     [90m 97 |[39m         [36mbreak[39m[33m;[39m
+     [90m 98 |[39m       [36mcase[39m [32m'warn'[39m[33m:[39m
+     [90m 99 |[39m         console[33m.[39mwarn(formattedLog)[33m;[39m[0m
+
+      at Function.error [as _log] (src/logger.js:96:17)
+      at Function._log [as error] (src/logger.js:116:10)
+      at Object.error (src/logger.js:154:14)
+      at ContentManager.error [as saveContent] (src/contentManager.js:160:25)
+      at ContentManager.saveContent [as importClaudeChatsFromUrl] (src/contentManager.js:661:22)
+      at Object.<anonymous> (test/urlImport.test.js:128:31)
+
+    console.error
+      [2026-01-20T14:17:03.449Z] ERROR: Error importing Claude chats from URL {"component":"ContentManager","url":"http://localhost:8765/redirect"} - Failed to save content: ENOENT: no such file or directory, open 'out/test-url-import-6.json'
+
+    [0m [90m 94 |[39m     [36mswitch[39m (level) {
+     [90m 95 |[39m       [36mcase[39m [32m'error'[39m[33m:[39m
+    [31m[1m>[22m[39m[90m 96 |[39m         console[33m.[39merror(formattedLog)[33m;[39m
+     [90m    |[39m                 [31m[1m^[22m[39m
+     [90m 97 |[39m         [36mbreak[39m[33m;[39m
+     [90m 98 |[39m       [36mcase[39m [32m'warn'[39m[33m:[39m
+     [90m 99 |[39m         console[33m.[39mwarn(formattedLog)[33m;[39m[0m
+
+      at Function.error [as _log] (src/logger.js:96:17)
+      at Function._log [as error] (src/logger.js:116:10)
+      at Object.error (src/logger.js:154:14)
+      at ContentManager.error [as importClaudeChatsFromUrl] (src/contentManager.js:669:25)
+      at Object.<anonymous> (test/urlImport.test.js:128:31)
+
+    console.error
+      Error importing Claude chats from http://localhost:8765/redirect: Failed to save content: ENOENT: no such file or directory, open 'out/test-url-import-6.json'
+
+    [0m [90m 668 |[39m         } [36mcatch[39m (error) {
+     [90m 669 |[39m             [36mthis[39m[33m.[39mlogger[33m.[39merror([32m'Error importing Claude chats from URL'[39m[33m,[39m error[33m,[39m { url })[33m;[39m
+    [31m[1m>[22m[39m[90m 670 |[39m             console[33m.[39merror([32m`Error importing Claude chats from ${url}:`[39m[33m,[39m error[33m.[39mmessage)[33m;[39m
+     [90m     |[39m                     [31m[1m^[22m[39m
+     [90m 671 |[39m             [36mreturn[39m [35m0[39m[33m;[39m
+     [90m 672 |[39m         }
+     [90m 673 |[39m     }[0m
+
+      at ContentManager.error [as importClaudeChatsFromUrl] (src/contentManager.js:670:21)
+      at Object.<anonymous> (test/urlImport.test.js:128:31)
+
+    console.log
+      [2026-01-20T14:17:03.451Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"out/test-url-import-7.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.451Z] INFO: Fetching Claude chats from URL {"component":"ContentManager","url":"http://this-domain-does-not-exist-12345.com/chats.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      Fetching Claude chats from: http://this-domain-does-not-exist-12345.com/chats.json
+
+      at ContentManager.log [as importClaudeChatsFromUrl] (src/contentManager.js:653:21)
+
+    console.error
+      [2026-01-20T14:17:03.548Z] ERROR: Error importing Claude chats from URL {"component":"ContentManager","url":"http://this-domain-does-not-exist-12345.com/chats.json"} - getaddrinfo ENOTFOUND this-domain-does-not-exist-12345.com
+
+    [0m [90m 94 |[39m     [36mswitch[39m (level) {
+     [90m 95 |[39m       [36mcase[39m [32m'error'[39m[33m:[39m
+    [31m[1m>[22m[39m[90m 96 |[39m         console[33m.[39merror(formattedLog)[33m;[39m
+     [90m    |[39m                 [31m[1m^[22m[39m
+     [90m 97 |[39m         [36mbreak[39m[33m;[39m
+     [90m 98 |[39m       [36mcase[39m [32m'warn'[39m[33m:[39m
+     [90m 99 |[39m         console[33m.[39mwarn(formattedLog)[33m;[39m[0m
+
+      at Function.error [as _log] (src/logger.js:96:17)
+      at Function._log [as error] (src/logger.js:116:10)
+      at Object.error (src/logger.js:154:14)
+      at ContentManager.error [as importClaudeChatsFromUrl] (src/contentManager.js:669:25)
+      at Object.<anonymous> (test/urlImport.test.js:136:31)
+
+    console.error
+      Error importing Claude chats from http://this-domain-does-not-exist-12345.com/chats.json: getaddrinfo ENOTFOUND this-domain-does-not-exist-12345.com
+
+    [0m [90m 668 |[39m         } [36mcatch[39m (error) {
+     [90m 669 |[39m             [36mthis[39m[33m.[39mlogger[33m.[39merror([32m'Error importing Claude chats from URL'[39m[33m,[39m error[33m,[39m { url })[33m;[39m
+    [31m[1m>[22m[39m[90m 670 |[39m             console[33m.[39merror([32m`Error importing Claude chats from ${url}:`[39m[33m,[39m error[33m.[39mmessage)[33m;[39m
+     [90m     |[39m                     [31m[1m^[22m[39m
+     [90m 671 |[39m             [36mreturn[39m [35m0[39m[33m;[39m
+     [90m 672 |[39m         }
+     [90m 673 |[39m     }[0m
+
+      at ContentManager.error [as importClaudeChatsFromUrl] (src/contentManager.js:670:21)
+      at Object.<anonymous> (test/urlImport.test.js:136:31)
+
+    console.log
+      [2026-01-20T14:17:03.550Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"out/test-url-import-8.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:03.551Z] INFO: Fetching Claude chats from URL {"component":"ContentManager","url":"http://localhost:8765/timeout"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      Fetching Claude chats from: http://localhost:8765/timeout
+
+      at ContentManager.log [as importClaudeChatsFromUrl] (src/contentManager.js:653:21)
+
+    console.error
+      [2026-01-20T14:17:33.555Z] ERROR: Error importing Claude chats from URL {"component":"ContentManager","url":"http://localhost:8765/timeout"} - Request timeout after 30 seconds
+
+    [0m [90m 94 |[39m     [36mswitch[39m (level) {
+     [90m 95 |[39m       [36mcase[39m [32m'error'[39m[33m:[39m
+    [31m[1m>[22m[39m[90m 96 |[39m         console[33m.[39merror(formattedLog)[33m;[39m
+     [90m    |[39m                 [31m[1m^[22m[39m
+     [90m 97 |[39m         [36mbreak[39m[33m;[39m
+     [90m 98 |[39m       [36mcase[39m [32m'warn'[39m[33m:[39m
+     [90m 99 |[39m         console[33m.[39mwarn(formattedLog)[33m;[39m[0m
+
+      at Function.error [as _log] (src/logger.js:96:17)
+      at Function._log [as error] (src/logger.js:116:10)
+      at Object.error (src/logger.js:154:14)
+      at ContentManager.error [as importClaudeChatsFromUrl] (src/contentManager.js:669:25)
+      at Object.<anonymous> (test/urlImport.test.js:144:31)
+
+    console.error
+      Error importing Claude chats from http://localhost:8765/timeout: Request timeout after 30 seconds
+
+    [0m [90m 668 |[39m         } [36mcatch[39m (error) {
+     [90m 669 |[39m             [36mthis[39m[33m.[39mlogger[33m.[39merror([32m'Error importing Claude chats from URL'[39m[33m,[39m error[33m,[39m { url })[33m;[39m
+    [31m[1m>[22m[39m[90m 670 |[39m             console[33m.[39merror([32m`Error importing Claude chats from ${url}:`[39m[33m,[39m error[33m.[39mmessage)[33m;[39m
+     [90m     |[39m                     [31m[1m^[22m[39m
+     [90m 671 |[39m             [36mreturn[39m [35m0[39m[33m;[39m
+     [90m 672 |[39m         }
+     [90m 673 |[39m     }[0m
+
+      at ContentManager.error [as importClaudeChatsFromUrl] (src/contentManager.js:670:21)
+      at Object.<anonymous> (test/urlImport.test.js:144:31)
+
+    console.log
+      [2026-01-20T14:17:33.557Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"out/test-url-import-9.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:33.557Z] INFO: Fetching Claude chats from URL {"component":"ContentManager","url":"http://localhost:8765/chats.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      Fetching Claude chats from: http://localhost:8765/chats.json
+
+      at ContentManager.log [as importClaudeChatsFromUrl] (src/contentManager.js:653:21)
+
+    console.warn
+      Skipping chat due to missing essential fields (uuid, name, or chat_messages): {
+        uuid: 'malformed-chat-no-messages',
+        name: 'Malformed Chat - No Messages',
+        created_at: '2023-09-16T10:00:00.000000Z'
+      }
+
+    [0m [90m 551 |[39m                 }
+     [90m 552 |[39m             } [36melse[39m {
+    [31m[1m>[22m[39m[90m 553 |[39m                 console[33m.[39mwarn([32m'Skipping chat due to missing essential fields (uuid, name, or chat_messages):'[39m[33m,[39m chat)[33m;[39m
+     [90m     |[39m                         [31m[1m^[22m[39m
+     [90m 554 |[39m             }
+     [90m 555 |[39m         }
+     [90m 556 |[39m[0m
+
+      at ContentManager.warn [as _processClaudeChats] (src/contentManager.js:553:25)
+      at ContentManager._processClaudeChats [as importClaudeChatsFromUrl] (src/contentManager.js:658:52)
+      at Object.<anonymous> (test/urlImport.test.js:153:9)
+
+    console.warn
+      Skipping chat due to missing essential fields (uuid, name, or chat_messages): {
+        name: 'Malformed Chat - No UUID',
+        created_at: '2023-09-17T10:00:00.000000Z',
+        chat_messages: []
+      }
+
+    [0m [90m 551 |[39m                 }
+     [90m 552 |[39m             } [36melse[39m {
+    [31m[1m>[22m[39m[90m 553 |[39m                 console[33m.[39mwarn([32m'Skipping chat due to missing essential fields (uuid, name, or chat_messages):'[39m[33m,[39m chat)[33m;[39m
+     [90m     |[39m                         [31m[1m^[22m[39m
+     [90m 554 |[39m             }
+     [90m 555 |[39m         }
+     [90m 556 |[39m[0m
+
+      at ContentManager.warn [as _processClaudeChats] (src/contentManager.js:553:25)
+      at ContentManager._processClaudeChats [as importClaudeChatsFromUrl] (src/contentManager.js:658:52)
+      at Object.<anonymous> (test/urlImport.test.js:153:9)
+
+    console.error
+      [2026-01-20T14:17:33.562Z] ERROR: Failed to save content (sync) {"component":"ContentManager","file":"out/test-url-import-9.json"} - ENOENT: no such file or directory, open 'out/test-url-import-9.json'
+
+    [0m [90m 94 |[39m     [36mswitch[39m (level) {
+     [90m 95 |[39m       [36mcase[39m [32m'error'[39m[33m:[39m
+    [31m[1m>[22m[39m[90m 96 |[39m         console[33m.[39merror(formattedLog)[33m;[39m
+     [90m    |[39m                 [31m[1m^[22m[39m
+     [90m 97 |[39m         [36mbreak[39m[33m;[39m
+     [90m 98 |[39m       [36mcase[39m [32m'warn'[39m[33m:[39m
+     [90m 99 |[39m         console[33m.[39mwarn(formattedLog)[33m;[39m[0m
+
+      at Function.error [as _log] (src/logger.js:96:17)
+      at Function._log [as error] (src/logger.js:116:10)
+      at Object.error (src/logger.js:154:14)
+      at ContentManager.error [as saveContent] (src/contentManager.js:160:25)
+      at ContentManager.saveContent [as importClaudeChatsFromUrl] (src/contentManager.js:661:22)
+      at Object.<anonymous> (test/urlImport.test.js:153:9)
+
+    console.error
+      [2026-01-20T14:17:33.563Z] ERROR: Error importing Claude chats from URL {"component":"ContentManager","url":"http://localhost:8765/chats.json"} - Failed to save content: ENOENT: no such file or directory, open 'out/test-url-import-9.json'
+
+    [0m [90m 94 |[39m     [36mswitch[39m (level) {
+     [90m 95 |[39m       [36mcase[39m [32m'error'[39m[33m:[39m
+    [31m[1m>[22m[39m[90m 96 |[39m         console[33m.[39merror(formattedLog)[33m;[39m
+     [90m    |[39m                 [31m[1m^[22m[39m
+     [90m 97 |[39m         [36mbreak[39m[33m;[39m
+     [90m 98 |[39m       [36mcase[39m [32m'warn'[39m[33m:[39m
+     [90m 99 |[39m         console[33m.[39mwarn(formattedLog)[33m;[39m[0m
+
+      at Function.error [as _log] (src/logger.js:96:17)
+      at Function._log [as error] (src/logger.js:116:10)
+      at Object.error (src/logger.js:154:14)
+      at ContentManager.error [as importClaudeChatsFromUrl] (src/contentManager.js:669:25)
+      at Object.<anonymous> (test/urlImport.test.js:153:9)
+
+    console.error
+      Error importing Claude chats from http://localhost:8765/chats.json: Failed to save content: ENOENT: no such file or directory, open 'out/test-url-import-9.json'
+
+    [0m [90m 668 |[39m         } [36mcatch[39m (error) {
+     [90m 669 |[39m             [36mthis[39m[33m.[39mlogger[33m.[39merror([32m'Error importing Claude chats from URL'[39m[33m,[39m error[33m,[39m { url })[33m;[39m
+    [31m[1m>[22m[39m[90m 670 |[39m             console[33m.[39merror([32m`Error importing Claude chats from ${url}:`[39m[33m,[39m error[33m.[39mmessage)[33m;[39m
+     [90m     |[39m                     [31m[1m^[22m[39m
+     [90m 671 |[39m             [36mreturn[39m [35m0[39m[33m;[39m
+     [90m 672 |[39m         }
+     [90m 673 |[39m     }[0m
+
+      at ContentManager.error [as importClaudeChatsFromUrl] (src/contentManager.js:670:21)
+      at Object.<anonymous> (test/urlImport.test.js:153:9)
+
+    console.log
+      [2026-01-20T14:17:33.563Z] INFO: Fetching Claude chats from URL {"component":"ContentManager","url":"http://localhost:8765/chats.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      Fetching Claude chats from: http://localhost:8765/chats.json
+
+      at ContentManager.log [as importClaudeChatsFromUrl] (src/contentManager.js:653:21)
+
+    console.warn
+      Skipping chat due to missing essential fields (uuid, name, or chat_messages): {
+        uuid: 'malformed-chat-no-messages',
+        name: 'Malformed Chat - No Messages',
+        created_at: '2023-09-16T10:00:00.000000Z'
+      }
+
+    [0m [90m 551 |[39m                 }
+     [90m 552 |[39m             } [36melse[39m {
+    [31m[1m>[22m[39m[90m 553 |[39m                 console[33m.[39mwarn([32m'Skipping chat due to missing essential fields (uuid, name, or chat_messages):'[39m[33m,[39m chat)[33m;[39m
+     [90m     |[39m                         [31m[1m^[22m[39m
+     [90m 554 |[39m             }
+     [90m 555 |[39m         }
+     [90m 556 |[39m[0m
+
+      at ContentManager.warn [as _processClaudeChats] (src/contentManager.js:553:25)
+      at ContentManager._processClaudeChats [as importClaudeChatsFromUrl] (src/contentManager.js:658:52)
+      at Object.<anonymous> (test/urlImport.test.js:157:31)
+
+    console.warn
+      Skipping chat due to missing essential fields (uuid, name, or chat_messages): {
+        name: 'Malformed Chat - No UUID',
+        created_at: '2023-09-17T10:00:00.000000Z',
+        chat_messages: []
+      }
+
+    [0m [90m 551 |[39m                 }
+     [90m 552 |[39m             } [36melse[39m {
+    [31m[1m>[22m[39m[90m 553 |[39m                 console[33m.[39mwarn([32m'Skipping chat due to missing essential fields (uuid, name, or chat_messages):'[39m[33m,[39m chat)[33m;[39m
+     [90m     |[39m                         [31m[1m^[22m[39m
+     [90m 554 |[39m             }
+     [90m 555 |[39m         }
+     [90m 556 |[39m[0m
+
+      at ContentManager.warn [as _processClaudeChats] (src/contentManager.js:553:25)
+      at ContentManager._processClaudeChats [as importClaudeChatsFromUrl] (src/contentManager.js:658:52)
+      at Object.<anonymous> (test/urlImport.test.js:157:31)
+
+    console.log
+      No new Claude chats were imported from http://localhost:8765/chats.json.
+
+      at ContentManager.log [as importClaudeChatsFromUrl] (src/contentManager.js:664:25)
+
+    console.log
+      [2026-01-20T14:17:33.567Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"out/test-url-import-10.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:33.568Z] INFO: Fetching Claude chats from URL {"component":"ContentManager","url":"http://localhost:8765/chats.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      Fetching Claude chats from: http://localhost:8765/chats.json
+
+      at ContentManager.log [as importClaudeChatsFromUrl] (src/contentManager.js:653:21)
+
+    console.warn
+      Skipping chat due to missing essential fields (uuid, name, or chat_messages): {
+        uuid: 'malformed-chat-no-messages',
+        name: 'Malformed Chat - No Messages',
+        created_at: '2023-09-16T10:00:00.000000Z'
+      }
+
+    [0m [90m 551 |[39m                 }
+     [90m 552 |[39m             } [36melse[39m {
+    [31m[1m>[22m[39m[90m 553 |[39m                 console[33m.[39mwarn([32m'Skipping chat due to missing essential fields (uuid, name, or chat_messages):'[39m[33m,[39m chat)[33m;[39m
+     [90m     |[39m                         [31m[1m^[22m[39m
+     [90m 554 |[39m             }
+     [90m 555 |[39m         }
+     [90m 556 |[39m[0m
+
+      at ContentManager.warn [as _processClaudeChats] (src/contentManager.js:553:25)
+      at ContentManager._processClaudeChats [as importClaudeChatsFromUrl] (src/contentManager.js:658:52)
+      at Object.<anonymous> (test/urlImport.test.js:164:31)
+
+    console.warn
+      Skipping chat due to missing essential fields (uuid, name, or chat_messages): {
+        name: 'Malformed Chat - No UUID',
+        created_at: '2023-09-17T10:00:00.000000Z',
+        chat_messages: []
+      }
+
+    [0m [90m 551 |[39m                 }
+     [90m 552 |[39m             } [36melse[39m {
+    [31m[1m>[22m[39m[90m 553 |[39m                 console[33m.[39mwarn([32m'Skipping chat due to missing essential fields (uuid, name, or chat_messages):'[39m[33m,[39m chat)[33m;[39m
+     [90m     |[39m                         [31m[1m^[22m[39m
+     [90m 554 |[39m             }
+     [90m 555 |[39m         }
+     [90m 556 |[39m[0m
+
+      at ContentManager.warn [as _processClaudeChats] (src/contentManager.js:553:25)
+      at ContentManager._processClaudeChats [as importClaudeChatsFromUrl] (src/contentManager.js:658:52)
+      at Object.<anonymous> (test/urlImport.test.js:164:31)
+
+    console.error
+      [2026-01-20T14:17:33.571Z] ERROR: Failed to save content (sync) {"component":"ContentManager","file":"out/test-url-import-10.json"} - ENOENT: no such file or directory, open 'out/test-url-import-10.json'
+
+    [0m [90m 94 |[39m     [36mswitch[39m (level) {
+     [90m 95 |[39m       [36mcase[39m [32m'error'[39m[33m:[39m
+    [31m[1m>[22m[39m[90m 96 |[39m         console[33m.[39merror(formattedLog)[33m;[39m
+     [90m    |[39m                 [31m[1m^[22m[39m
+     [90m 97 |[39m         [36mbreak[39m[33m;[39m
+     [90m 98 |[39m       [36mcase[39m [32m'warn'[39m[33m:[39m
+     [90m 99 |[39m         console[33m.[39mwarn(formattedLog)[33m;[39m[0m
+
+      at Function.error [as _log] (src/logger.js:96:17)
+      at Function._log [as error] (src/logger.js:116:10)
+      at Object.error (src/logger.js:154:14)
+      at ContentManager.error [as saveContent] (src/contentManager.js:160:25)
+      at ContentManager.saveContent [as importClaudeChatsFromUrl] (src/contentManager.js:661:22)
+      at Object.<anonymous> (test/urlImport.test.js:164:31)
+
+    console.error
+      [2026-01-20T14:17:33.572Z] ERROR: Error importing Claude chats from URL {"component":"ContentManager","url":"http://localhost:8765/chats.json"} - Failed to save content: ENOENT: no such file or directory, open 'out/test-url-import-10.json'
+
+    [0m [90m 94 |[39m     [36mswitch[39m (level) {
+     [90m 95 |[39m       [36mcase[39m [32m'error'[39m[33m:[39m
+    [31m[1m>[22m[39m[90m 96 |[39m         console[33m.[39merror(formattedLog)[33m;[39m
+     [90m    |[39m                 [31m[1m^[22m[39m
+     [90m 97 |[39m         [36mbreak[39m[33m;[39m
+     [90m 98 |[39m       [36mcase[39m [32m'warn'[39m[33m:[39m
+     [90m 99 |[39m         console[33m.[39mwarn(formattedLog)[33m;[39m[0m
+
+      at Function.error [as _log] (src/logger.js:96:17)
+      at Function._log [as error] (src/logger.js:116:10)
+      at Object.error (src/logger.js:154:14)
+      at ContentManager.error [as importClaudeChatsFromUrl] (src/contentManager.js:669:25)
+      at Object.<anonymous> (test/urlImport.test.js:164:31)
+
+    console.error
+      Error importing Claude chats from http://localhost:8765/chats.json: Failed to save content: ENOENT: no such file or directory, open 'out/test-url-import-10.json'
+
+    [0m [90m 668 |[39m         } [36mcatch[39m (error) {
+     [90m 669 |[39m             [36mthis[39m[33m.[39mlogger[33m.[39merror([32m'Error importing Claude chats from URL'[39m[33m,[39m error[33m,[39m { url })[33m;[39m
+    [31m[1m>[22m[39m[90m 670 |[39m             console[33m.[39merror([32m`Error importing Claude chats from ${url}:`[39m[33m,[39m error[33m.[39mmessage)[33m;[39m
+     [90m     |[39m                     [31m[1m^[22m[39m
+     [90m 671 |[39m             [36mreturn[39m [35m0[39m[33m;[39m
+     [90m 672 |[39m         }
+     [90m 673 |[39m     }[0m
+
+      at ContentManager.error [as importClaudeChatsFromUrl] (src/contentManager.js:670:21)
+      at Object.<anonymous> (test/urlImport.test.js:164:31)
+
+    console.log
+      [2026-01-20T14:17:33.574Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"out/test-url-import-11.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:33.575Z] INFO: Fetching Claude chats from URL {"component":"ContentManager","url":"http://localhost:8765/not-found"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      Fetching Claude chats from: http://localhost:8765/not-found
+
+      at ContentManager.log [as importClaudeChatsFromUrl] (src/contentManager.js:653:21)
+
+    console.error
+      [2026-01-20T14:17:33.577Z] ERROR: Error importing Claude chats from URL {"component":"ContentManager","url":"http://localhost:8765/not-found"} - HTTP 404: Not Found
+
+    [0m [90m 94 |[39m     [36mswitch[39m (level) {
+     [90m 95 |[39m       [36mcase[39m [32m'error'[39m[33m:[39m
+    [31m[1m>[22m[39m[90m 96 |[39m         console[33m.[39merror(formattedLog)[33m;[39m
+     [90m    |[39m                 [31m[1m^[22m[39m
+     [90m 97 |[39m         [36mbreak[39m[33m;[39m
+     [90m 98 |[39m       [36mcase[39m [32m'warn'[39m[33m:[39m
+     [90m 99 |[39m         console[33m.[39mwarn(formattedLog)[33m;[39m[0m
+
+      at Function.error [as _log] (src/logger.js:96:17)
+      at Function._log [as error] (src/logger.js:116:10)
+      at Object.error (src/logger.js:154:14)
+      at ContentManager.error [as importClaudeChatsFromUrl] (src/contentManager.js:669:25)
+      at Object.<anonymous> (test/urlImport.test.js:171:31)
+
+    console.error
+      Error importing Claude chats from http://localhost:8765/not-found: HTTP 404: Not Found
+
+    [0m [90m 668 |[39m         } [36mcatch[39m (error) {
+     [90m 669 |[39m             [36mthis[39m[33m.[39mlogger[33m.[39merror([32m'Error importing Claude chats from URL'[39m[33m,[39m error[33m,[39m { url })[33m;[39m
+    [31m[1m>[22m[39m[90m 670 |[39m             console[33m.[39merror([32m`Error importing Claude chats from ${url}:`[39m[33m,[39m error[33m.[39mmessage)[33m;[39m
+     [90m     |[39m                     [31m[1m^[22m[39m
+     [90m 671 |[39m             [36mreturn[39m [35m0[39m[33m;[39m
+     [90m 672 |[39m         }
+     [90m 673 |[39m     }[0m
+
+      at ContentManager.error [as importClaudeChatsFromUrl] (src/contentManager.js:670:21)
+      at Object.<anonymous> (test/urlImport.test.js:171:31)
+
+    console.log
+      [2026-01-20T14:17:33.578Z] INFO: Created new content structure (sync) {"component":"ContentManager","file":"out/test-url-import-12.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      [2026-01-20T14:17:33.579Z] INFO: Fetching Claude chats from URL {"component":"ContentManager","url":"https://example.com/test.json"}
+
+      at Function.log [as _log] (src/logger.js:105:17)
+
+    console.log
+      Fetching Claude chats from: https://example.com/test.json
+
+      at ContentManager.log [as importClaudeChatsFromUrl] (src/contentManager.js:653:21)
+
+    console.error
+      [2026-01-20T14:17:33.660Z] ERROR: Error importing Claude chats from URL {"component":"ContentManager","url":"https://example.com/test.json"} - HTTP 404: Not Found
+
+    [0m [90m 94 |[39m     [36mswitch[39m (level) {
+     [90m 95 |[39m       [36mcase[39m [32m'error'[39m[33m:[39m
+    [31m[1m>[22m[39m[90m 96 |[39m         console[33m.[39merror(formattedLog)[33m;[39m
+     [90m    |[39m                 [31m[1m^[22m[39m
+     [90m 97 |[39m         [36mbreak[39m[33m;[39m
+     [90m 98 |[39m       [36mcase[39m [32m'warn'[39m[33m:[39m
+     [90m 99 |[39m         console[33m.[39mwarn(formattedLog)[33m;[39m[0m
+
+      at Function.error [as _log] (src/logger.js:96:17)
+      at Function._log [as error] (src/logger.js:116:10)
+      at Object.error (src/logger.js:154:14)
+      at ContentManager.error [as importClaudeChatsFromUrl] (src/contentManager.js:669:25)
+      at Object.<anonymous> (test/urlImport.test.js:182:31)
+
+    console.error
+      Error importing Claude chats from https://example.com/test.json: HTTP 404: Not Found
+
+    [0m [90m 668 |[39m         } [36mcatch[39m (error) {
+     [90m 669 |[39m             [36mthis[39m[33m.[39mlogger[33m.[39merror([32m'Error importing Claude chats from URL'[39m[33m,[39m error[33m,[39m { url })[33m;[39m
+    [31m[1m>[22m[39m[90m 670 |[39m             console[33m.[39merror([32m`Error importing Claude chats from ${url}:`[39m[33m,[39m error[33m.[39mmessage)[33m;[39m
+     [90m     |[39m                     [31m[1m^[22m[39m
+     [90m 671 |[39m             [36mreturn[39m [35m0[39m[33m;[39m
+     [90m 672 |[39m         }
+     [90m 673 |[39m     }[0m
+
+      at ContentManager.error [as importClaudeChatsFromUrl] (src/contentManager.js:670:21)
+      at Object.<anonymous> (test/urlImport.test.js:182:31)
+
+  ● URL Import Functionality › importClaudeChatsFromUrl should successfully import chats from a valid URL
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 2
+    Received: 0
+
+    [0m [90m 89 |[39m         [36mconst[39m importedCount [33m=[39m [36mawait[39m contentManager[33m.[39mimportClaudeChatsFromUrl([33mTEST_URL[39m)[33m;[39m
+     [90m 90 |[39m         
+    [31m[1m>[22m[39m[90m 91 |[39m         expect(importedCount)[33m.[39mtoBe([35m2[39m)[33m;[39m [90m// Based on sampleClaudeExport.json[39m
+     [90m    |[39m                               [31m[1m^[22m[39m
+     [90m 92 |[39m         expect(contentManager[33m.[39mcontent[33m.[39mclaudeChats)[33m.[39mtoHaveLength([35m2[39m)[33m;[39m
+     [90m 93 |[39m         expect(contentManager[33m.[39mcontent[33m.[39mclaudeChats[[35m0[39m][33m.[39mtitle)[33m.[39mtoBeDefined()[33m;[39m
+     [90m 94 |[39m         expect(contentManager[33m.[39mcontent[33m.[39mclaudeChats[[35m0[39m][33m.[39mconversation)[33m.[39mtoBeDefined()[33m;[39m[0m
+
+      at Object.<anonymous> (test/urlImport.test.js:91:31)
+
+  ● URL Import Functionality › importClaudeChatsFromUrl should follow redirects
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 2
+    Received: 0
+
+    [0m [90m 130 |[39m         )[33m;[39m
+     [90m 131 |[39m         
+    [31m[1m>[22m[39m[90m 132 |[39m         expect(importedCount)[33m.[39mtoBe([35m2[39m)[33m;[39m
+     [90m     |[39m                               [31m[1m^[22m[39m
+     [90m 133 |[39m     })[33m;[39m
+     [90m 134 |[39m
+     [90m 135 |[39m     test([32m'importClaudeChatsFromUrl should handle network errors'[39m[33m,[39m [36masync[39m () [33m=>[39m {[0m
+
+      at Object.<anonymous> (test/urlImport.test.js:132:31)
+
+  ● URL Import Functionality › importClaudeChatsFromUrl should successfully fetch and import from HTTP server
+
+    expect(received).toBeGreaterThan(expected)
+
+    Expected: > 0
+    Received:   0
+
+    [0m [90m 164 |[39m         [36mconst[39m importedCount [33m=[39m [36mawait[39m contentManager[33m.[39mimportClaudeChatsFromUrl([33mTEST_URL[39m)[33m;[39m
+     [90m 165 |[39m         
+    [31m[1m>[22m[39m[90m 166 |[39m         expect(importedCount)[33m.[39mtoBeGreaterThan([35m0[39m)[33m;[39m
+     [90m     |[39m                               [31m[1m^[22m[39m
+     [90m 167 |[39m         expect(contentManager[33m.[39mcontent[33m.[39mclaudeChats[33m.[39mlength)[33m.[39mtoBeGreaterThan([35m0[39m)[33m;[39m
+     [90m 168 |[39m     })[33m;[39m
+     [90m 169 |[39m[0m
+
+      at Object.<anonymous> (test/urlImport.test.js:166:31)
+
+----------------------|---------|----------|---------|---------|--------------------------------------------------------------------
+File                  | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s                                                  
+----------------------|---------|----------|---------|---------|--------------------------------------------------------------------
+All files             |   64.78 |    61.28 |   73.29 |   64.26 |                                                                    
+ articleGenerator.js  |   78.57 |       50 |     100 |   78.57 | 33-34,42,70-71,79                                                  
+ cli.js               |   27.35 |    28.15 |   18.18 |   27.61 | 20-22,46-71,77-171,185,188-189,193,200-242,262,266,268-291,309-328 
+ config.js            |      60 |    91.89 |      90 |   52.94 | 79-94                                                              
+ contentClusterer.js  |     100 |    87.17 |     100 |     100 | 68-78,135,179-180,234                                              
+ contentManager.js    |   72.76 |    65.28 |   85.36 |   72.33 | 21-25,72-107,137-144,167-183,232-302,328-337,365-374,447-448,662   
+ epub_generator.js    |   76.62 |    31.25 |   77.27 |   76.31 | 41,70-73,125-128,303-347,362                                       
+ logger.js            |   69.56 |    56.25 |      75 |   71.11 | 10-13,33-36,102-103,171-187,221                                    
+ magazineGenerator.js |   97.22 |       88 |   88.88 |     100 | 10,53,66                                                           
+ templateRenderer.js  |     100 |    66.66 |     100 |     100 | 26                                                                 
+ validation.js        |   57.29 |    60.37 |      60 |   56.84 | 83,133,137,142,146,162-164,180-221,259-279,304-318                 
+----------------------|---------|----------|---------|---------|--------------------------------------------------------------------
+Test Suites: 1 failed, 12 passed, 13 total
+Tests:       3 failed, 145 passed, 148 total
+Snapshots:   0 total
+Time:        32.835 s
+Ran all test suites.

@@ -13,8 +13,9 @@ describe('URL Import Functionality', () => {
     let testFileCounter = 0;
     const TEST_PORT = 8765;
     const TEST_URL = `http://localhost:${TEST_PORT}/chats.json`;
+    const connections = new Set();
 
-    beforeAll(() => {
+    beforeAll((done) => {
         // Start a simple HTTP server for testing
         server = http.createServer((req, res) => {
             if (req.url === '/chats.json') {
@@ -44,18 +45,25 @@ describe('URL Import Functionality', () => {
             }
         });
 
-        return new Promise((resolve) => {
-            server.listen(TEST_PORT, () => {
-                // Give server a moment to fully initialize
-                setTimeout(resolve, 100);
+        // Track connections so we can close them all
+        server.on('connection', (conn) => {
+            connections.add(conn);
+            conn.on('close', () => {
+                connections.delete(conn);
             });
         });
+
+        server.listen(TEST_PORT, done);
     });
 
-    afterAll(() => {
-        return new Promise((resolve) => {
-            server.close(resolve);
-        });
+    afterAll((done) => {
+        // Close all active connections
+        for (const conn of connections) {
+            conn.destroy();
+        }
+        connections.clear();
+        
+        server.close(done);
     });
 
     beforeEach(() => {
