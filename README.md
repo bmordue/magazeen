@@ -25,7 +25,14 @@ magazeen --import-claude ./path/to/your/claude_export.json
 
 # Import Claude chat logs from a URL
 magazeen --import-claude-url https://example.com/claude_export.json
+<<<<<<< HEAD
 
+||||||| merged common ancestors
+||||||||| 14328ed
+=========
+
+=======
+>>>>>>> cd62d1e9828aff9acea3447313c68ed4c778b0c5
 # Export scratch file to edit chat selection and order offline
 magazeen --export-scratch
 

@@ -399,7 +399,14 @@ export async function runCli() {
                 console.log('Examples:');
                 console.log('  magazeen --import-claude-url https://example.com/chats.json');
                 console.log('  magazeen --import-claude-url http://localhost:8000/claude_export.json');
+<<<<<<< HEAD
             }
+||||||| merged common ancestors
+            }
+||||||||| 14328ed
+=========
+=======
+>>>>>>> cd62d1e9828aff9acea3447313c68ed4c778b0c5
         } else if (args.includes('--export-scratch')) {
             const filePath = parseOptionalFilePath(args, '--export-scratch', 'out/magazine-scratch.txt');
             
