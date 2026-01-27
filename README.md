@@ -25,7 +25,38 @@ magazeen --import-claude ./path/to/your/claude_export.json
 
 # Import Claude chat logs from a URL
 magazeen --import-claude-url https://example.com/claude_export.json
+
+# Export scratch file to edit chat selection and order offline
+magazeen --export-scratch
+
+# Apply changes from edited scratch file
+magazeen --apply-scratch
 ```
+
+## Scratch File for Content Selection
+
+The scratch file feature allows you to edit chat selection and sequence "offline" in a text editor, similar to a cut list for video editing.
+
+### How it works:
+
+1. **Export** current chat selection to a scratch file:
+   ```bash
+   magazeen --export-scratch [path]  # Defaults to out/magazine-scratch.txt
+   ```
+
+2. **Edit** the file in your favorite text editor:
+   - Lines starting with `+` are SELECTED for inclusion
+   - Lines starting with `-` are NOT selected
+   - Reorder lines to change the sequence in your magazine
+   - Do not modify the chat IDs in [brackets]
+
+3. **Apply** your changes back to the content:
+   ```bash
+   magazeen --apply-scratch [path]  # Defaults to out/magazine-scratch.txt
+   ```
+
+You can also use the interactive menu (options 8 and 9) to export and apply scratch files.
+
 
 ## Web Interface (New)
 

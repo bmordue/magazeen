@@ -2,6 +2,7 @@ import readline from 'readline';
 import { ContentManager } from './contentManager.js';
 import { ArticleGenerator } from './articleGenerator.js';
 import { MagazineGenerator } from './magazineGenerator.js';
+import { ScratchFileManager } from './scratchFileManager.js';
 import { createTemplate } from './templateManager.js';
 import { resolve } from 'path';
 import { fileURLToPath } from 'url';
@@ -9,6 +10,7 @@ import { fileURLToPath } from 'url';
 const contentManager = new ContentManager();
 const articleGenerator = new ArticleGenerator(contentManager);
 const magazineGenerator = new MagazineGenerator(contentManager, articleGenerator);
+const scratchFileManager = new ScratchFileManager(contentManager);
 
 // Interactive CLI interface
 export function startInteractiveSession() {
@@ -33,14 +35,16 @@ export function startInteractiveSession() {
     console.log('5. Generate magazine');
     console.log('6. View current content');
     console.log('7. Set page limit');
-    console.log('8. Exit');
+    console.log('8. Export scratch file');
+    console.log('9. Apply scratch file');
+    console.log('10. Exit');
 
     const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout
     });
 
-    rl.question('\nEnter your choice (1-8): ', (choice) => {
+    rl.question('\nEnter your choice (1-10): ', (choice) => {
         switch(choice) {
             case '1':
                 promptForArticle(rl);
@@ -73,6 +77,12 @@ export function startInteractiveSession() {
                 promptForPageLimit(rl);
                 break;
             case '8':
+                exportScratchFile(rl);
+                break;
+            case '9':
+                applyScratchFile(rl);
+                break;
+            case '10':
             default:
                 rl.close();
                 break;
@@ -194,6 +204,69 @@ function promptForPageLimit(rl) {
         }
         rl.close();
     });
+}
+
+function exportScratchFile(rl) {
+    rl.question('Scratch file path (press Enter for default "out/magazine-scratch.txt"): ', (path) => {
+        const scratchPath = path.trim() || 'out/magazine-scratch.txt';
+        const result = scratchFileManager.exportToScratchFile(scratchPath);
+        
+        if (result.success) {
+            console.log(`\n✅ Scratch file exported successfully!`);
+            console.log(`   Path: ${result.path}`);
+            console.log(`   Total chats: ${result.totalChats}`);
+            console.log(`   Selected chats: ${result.selectedChats}`);
+            console.log(`\nYou can now edit this file to:`);
+            console.log(`  - Change selection (+ for selected, - for not selected)`);
+            console.log(`  - Reorder chats by moving lines up/down`);
+            console.log(`\nAfter editing, use option 9 to apply your changes.`);
+        } else {
+            console.log(`\n❌ Failed to export scratch file: ${result.message}`);
+        }
+        rl.close();
+    });
+}
+
+function applyScratchFile(rl) {
+    rl.question('Scratch file path (press Enter for default "out/magazine-scratch.txt"): ', (path) => {
+        const scratchPath = path.trim() || 'out/magazine-scratch.txt';
+        const result = scratchFileManager.applyFromScratchFile(scratchPath);
+        
+        if (result.success) {
+            console.log(`\n✅ Scratch file applied successfully!`);
+            console.log(`   Total chats: ${result.totalChats}`);
+            console.log(`   Newly selected: ${result.selectedCount}`);
+            console.log(`   Newly deselected: ${result.deselectedCount}`);
+            
+            if (result.warnings && result.warnings.length > 0) {
+                console.log(`\n⚠️  Warnings:`);
+                result.warnings.forEach(warning => console.log(`   ${warning}`));
+            }
+            
+            console.log(`\nChanges have been saved to magazine-content.json`);
+        } else {
+            console.log(`\n❌ Failed to apply scratch file: ${result.message}`);
+            if (result.errors && result.errors.length > 0) {
+                console.log(`\nErrors found:`);
+                result.errors.forEach(error => console.log(`   ${error}`));
+            }
+        }
+        rl.close();
+    });
+}
+
+/**
+ * Helper function to parse optional file path argument
+ * @param {Array} args - Command line arguments
+ * @param {string} optionName - Option name (e.g., '--export-scratch')
+ * @param {string} defaultPath - Default path if not provided
+ * @returns {string} File path
+ */
+function parseOptionalFilePath(args, optionName, defaultPath) {
+    const filePathIndex = args.indexOf(optionName) + 1;
+    return (filePathIndex < args.length && args[filePathIndex] && !args[filePathIndex].startsWith('--')) 
+        ? args[filePathIndex] 
+        : defaultPath;
 }
 
 function manageClaudeChats(rl, page = 1, pageSize = 10) {
@@ -326,6 +399,36 @@ export async function runCli() {
                 console.log('Examples:');
                 console.log('  magazeen --import-claude-url https://example.com/chats.json');
                 console.log('  magazeen --import-claude-url http://localhost:8000/claude_export.json');
+            }
+        } else if (args.includes('--export-scratch')) {
+            const filePath = parseOptionalFilePath(args, '--export-scratch', 'out/magazine-scratch.txt');
+            
+            console.log(`Exporting scratch file to: ${filePath}`);
+            const result = scratchFileManager.exportToScratchFile(filePath);
+            
+            if (result.success) {
+                console.log(`✅ Success! Exported ${result.selectedChats}/${result.totalChats} chats.`);
+                console.log(`Edit the file and use --apply-scratch to update your selections.`);
+            } else {
+                console.error(`❌ Failed: ${result.message}`);
+            }
+        } else if (args.includes('--apply-scratch')) {
+            const filePath = parseOptionalFilePath(args, '--apply-scratch', 'out/magazine-scratch.txt');
+            
+            console.log(`Applying scratch file from: ${filePath}`);
+            const result = scratchFileManager.applyFromScratchFile(filePath);
+            
+            if (result.success) {
+                console.log(`✅ Success! Updated ${result.totalChats} chats.`);
+                console.log(`   Selected: ${result.selectedCount}, Deselected: ${result.deselectedCount}`);
+                if (result.warnings && result.warnings.length > 0) {
+                    result.warnings.forEach(warning => console.log(`⚠️  ${warning}`));
+                }
+            } else {
+                console.error(`❌ Failed: ${result.message}`);
+                if (result.errors && result.errors.length > 0) {
+                    result.errors.forEach(error => console.error(`   ${error}`));
+                }
             }
         } else {
             startInteractiveSession();
