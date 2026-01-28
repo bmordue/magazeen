@@ -25,19 +25,18 @@ magazeen --import-claude ./path/to/your/claude_export.json
 
 # Import Claude chat logs from a URL
 magazeen --import-claude-url https://example.com/claude_export.json
-<<<<<<< HEAD
 
-||||||| merged common ancestors
-||||||||| 14328ed
-=========
-
-=======
->>>>>>> cd62d1e9828aff9acea3447313c68ed4c778b0c5
 # Export scratch file to edit chat selection and order offline
 magazeen --export-scratch
 
 # Apply changes from edited scratch file
 magazeen --apply-scratch
+
+# Set page limit (e.g., 10 pages)
+magazeen --page-limit 10
+
+# Remove page limit
+magazeen --page-limit 0
 ```
 
 ## Scratch File for Content Selection
@@ -63,6 +62,31 @@ The scratch file feature allows you to edit chat selection and sequence "offline
    ```
 
 You can also use the interactive menu (options 8 and 9) to export and apply scratch files.
+
+
+## Page Limit Feature
+
+Set a maximum page limit for your magazine to control its size:
+
+### Setting a Page Limit
+```bash
+# Set a 10-page limit
+magazeen --page-limit 10
+
+# Remove the page limit
+magazeen --page-limit 0
+```
+
+When a page limit is set:
+- The system tracks your current page count based on word count (default: 300 words per page)
+- You'll receive warnings when approaching the limit
+- Attempts to add content that would exceed the limit will be prevented
+
+### Managing Page Limits in Interactive Mode
+In the interactive menu (option 7), you can view current page statistics and adjust the limit:
+- Shows current pages vs. limit
+- Displays word count information
+- Allows dynamic adjustment of the page limit
 
 
 ## Web Interface (New)
@@ -101,13 +125,15 @@ magazeen --import-claude-url https://example.com/claude_export.json
 magazeen --import-claude-url http://localhost:8000/claude_export.json
 ```
 
-The URL import feature:
-- Supports both HTTP and HTTPS URLs
-- Automatically follows redirects
-- Has a 30-second timeout for downloads
-- Validates the JSON format before importing
-- Skips malformed chat entries while importing valid ones
-- Prevents duplicate imports (based on chat UUID)
+The import features:
+- Support both local files and remote URLs (HTTP/HTTPS)
+- Automatically follow redirects for URL imports
+- Have a 30-second timeout for downloads
+- Validate the JSON format before importing
+- Skip malformed chat entries while importing valid ones
+- Prevent duplicate imports (based on chat UUID)
+- Preserve selection status for existing chats
+- Allow managing chat selection after import (using interactive mode or scratch files)
 
 **Example:**
 ```bash
@@ -117,6 +143,14 @@ python3 -m http.server 8000
 # Import from the local server
 magazeen --import-claude-url http://localhost:8000/claude_export.json
 ```
+
+### Managing Imported Chats
+
+After importing Claude chats, you can manage them in the interactive mode (option 4):
+- Toggle individual chat selection on/off
+- Browse through multiple pages of chats
+- See which chats are currently selected
+- Control which chats are included in the final magazine
 
 ## Features
 
@@ -204,6 +238,21 @@ For more details, see [AGENTS.md](AGENTS.md).
 
 ## Advanced Usage
 
+### Interactive Mode Options
+
+When running `magazeen` without any arguments, you'll enter the interactive mode with these options:
+
+1. **Add an article** - Create a new article with title, category, author, and content
+2. **Add an interest** - Add a topic of interest with description and priority
+3. **Add a chat highlight** - Add highlights from conversations with title, conversation, and insights
+4. **Manage Claude Chats** - Browse, select, and organize imported Claude chats
+5. **Generate magazine** - Create the EPUB magazine from your collected content
+6. **View current content** - See statistics about your content and page limits
+7. **Set page limit** - Configure maximum page count for your magazine
+8. **Export scratch file** - Export chat selections to a text file for offline editing
+9. **Apply scratch file** - Apply changes from an edited scratch file
+10. **Exit** - Close the interactive session
+
 ### Direct Programming
 You can use the modules programmatically to manage content and generate magazines. Make sure the `./out` directory exists or create it.
 
@@ -248,6 +297,7 @@ Process multiple articles from local files (e.g., Markdown files in a directory)
 
 ```javascript
 import * as fs from 'fs';
+import { resolve, join } from 'path';
 import { ContentManager } from './src/contentManager.js';
 
 // Initialize ContentManager (uses 'out/magazine-content.json' by default)
@@ -262,7 +312,7 @@ if (fs.existsSync(articlesDir)) {
     console.log(`Found ${articleFiles.length} markdown files in ${articlesDir}.`);
 
     articleFiles.forEach(file => {
-const filePath = path.join(articlesDir, file);
+        const filePath = join(articlesDir, file);
         const markdownContent = fs.readFileSync(filePath, 'utf8');
         // For simplicity, using filename (without .md) as title.
         // You might parse frontmatter for title, category, author.
