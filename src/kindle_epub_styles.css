@@ -1,0 +1,325 @@
+/* Kindle-Optimized EPUB Magazine Styles */
+
+/* High contrast color scheme for e-ink displays */
+:root {
+    --font-serif: Georgia, "Times New Roman", Times, serif;
+    --font-sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
+    --text-color: #000000;          /* Pure black for maximum contrast */
+    --background-color: #FFFFFF;    /* Pure white background */
+    --heading-color: #000000;       /* Black headings */
+    --subtle-color: #333333;        /* Dark gray for secondary text */
+    --border-color: #000000;        /* Black borders */
+    --spacing-unit: 1.2em;
+}
+
+/* Reset and base styles optimized for e-ink */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-serif);
+    font-size: 1em;                 /* Standard size for e-ink readability */
+    line-height: 1.6;               /* Generous line spacing */
+    color: var(--text-color);
+    max-width: 100%;
+    margin: 0 auto;
+    padding: var(--spacing-unit);
+    background-color: var(--background-color);
+}
+
+/* Cover page styles optimized for e-ink */
+.cover {
+    text-align: center;
+    padding: 2em var(--spacing-unit);
+    background-color: var(--background-color);
+    color: var(--text-color);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cover-container {
+    max-width: 600px;
+}
+
+.magazine-title {
+    font-size: 2.2em;
+    font-weight: bold;
+    margin-bottom: 0.8em;
+    line-height: 1.2;
+    color: var(--heading-color);
+}
+
+.issue-info {
+    margin-bottom: 1.5em;
+}
+
+.issue-number {
+    font-size: 1.3em;
+    font-weight: bold;
+    margin-bottom: 0.5em;
+}
+
+.issue-date {
+    font-size: 1.1em;
+}
+
+.cover-description {
+    font-size: 1.1em;
+    margin-bottom: 1.5em;
+    line-height: 1.6;
+}
+
+.article-count {
+    font-size: 1em;
+    color: var(--subtle-color);
+}
+
+/* Table of Contents optimized for e-ink */
+.toc-container {
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.toc-header {
+    font-size: 1.8em;
+    text-align: center;
+    margin-bottom: 2em;
+    color: var(--heading-color);
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 0.5em;
+}
+
+.toc-list {
+    list-style: none;
+}
+
+.toc-item {
+    margin-bottom: 1em;
+    padding-bottom: 0.8em;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.toc-link {
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.toc-title {
+    display: block;
+    font-size: 1.1em;
+    font-weight: bold;
+    color: var(--heading-color);
+    margin-bottom: 0.3em;
+}
+
+.toc-category {
+    display: inline-block;
+    background-color: var(--text-color);
+    color: var(--background-color);
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.8em;
+    margin-right: 10px;
+}
+
+.toc-author {
+    font-style: italic;
+    color: var(--subtle-color);
+    font-size: 0.9em;
+}
+
+/* Article styles optimized for e-ink */
+.article {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: var(--spacing-unit);
+}
+
+.article-header {
+    margin-bottom: 1.5em;
+    text-align: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 1em;
+}
+
+.article-title {
+    font-size: 1.8em;
+    color: var(--heading-color);
+    margin-bottom: 0.8em;
+    line-height: 1.3;
+}
+
+.article-meta {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-unit);
+    flex-wrap: wrap;
+    font-size: 0.95em;
+}
+
+.article-category {
+    background-color: var(--text-color);
+    color: var(--background-color);
+    padding: 5px 15px;
+    border-radius: 20px;
+    font-size: 0.9em;
+    font-weight: bold;
+}
+
+.article-author {
+    font-style: italic;
+    color: var(--subtle-color);
+    font-size: 1em;
+}
+
+.article-content {
+    font-size: 1em;
+    line-height: 1.6;
+}
+
+.article-content h1, .article-content h2, .article-content h3 {
+    color: var(--heading-color);
+    margin: 1.5em 0 0.8em 0;
+    line-height: 1.3;
+}
+
+.article-content h1 {
+    font-size: 1.6em;
+    border-bottom: 2px solid var(--border-color);
+    padding-bottom: 0.3em;
+}
+
+.article-content h2 {
+    font-size: 1.4em;
+    color: var(--heading-color);
+}
+
+.article-content h3 {
+    font-size: 1.2em;
+    color: var(--heading-color);
+}
+
+.article-content p {
+    margin-bottom: 1em;
+    text-align: justify;
+    line-height: 1.6;
+    orphans: 3;
+    widows: 3;
+}
+
+.article-content blockquote {
+    border-left: 3px solid var(--border-color);
+    padding-left: 1em;
+    margin: 1.5em 0;
+    font-style: italic;
+    background: transparent;
+    padding: 0.8em 1em;
+}
+
+.article-content ul, .article-content ol {
+    margin: 1em 0;
+    padding-left: 1.5em;
+}
+
+.article-content li {
+    margin-bottom: 0.5em;
+    line-height: 1.5;
+}
+
+.article-content code {
+    background-color: #f0f0f0;
+    padding: 2px 6px;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 0.9em;
+}
+
+.article-content pre {
+    background-color: #f0f0f0;
+    padding: 1em;
+    border-radius: 4px;
+    overflow-x: auto;
+    margin: 1.2em 0;
+    border: 1px solid var(--border-color);
+}
+
+.article-content pre code {
+    background: none;
+    padding: 0;
+}
+
+/* Images optimized for e-ink */
+.article-content img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+    margin: 1.5em auto;
+    border-radius: 0; /* Sharp edges work better on e-ink */
+    border: 1px solid var(--border-color);
+}
+
+/* Responsive design for various Kindle screen sizes */
+@media screen and (max-width: 600px) {
+    body {
+        padding: 0.8em;
+        font-size: 0.95em;
+    }
+
+    .magazine-title {
+        font-size: 1.8em;
+    }
+
+    .article-title {
+        font-size: 1.5em;
+    }
+
+    .toc-header {
+        font-size: 1.6em;
+    }
+    
+    .toc-title {
+        font-size: 1.05em;
+    }
+}
+
+/* Larger Kindles */
+@media screen and (min-width: 601px) {
+    body {
+        font-size: 1.05em;
+        max-width: 40em; /* Limit line length for readability */
+        margin: 0 auto;
+    }
+}
+
+/* Print/e-ink specific optimizations */
+@media amzn-kf8, print {
+    body {
+        font-size: 1em;
+        line-height: 1.6;
+        color: var(--text-color);
+        background-color: var(--background-color);
+    }
+
+    .article {
+        page-break-inside: avoid;
+        break-inside: avoid;
+    }
+
+    h1, h2, h3 {
+        page-break-after: avoid;
+        break-after: avoid;
+    }
+    
+    /* Prevent widows and orphans for better pagination */
+    h1, h2, h3, p {
+        orphans: 3;
+        widows: 3;
+    }
+}
