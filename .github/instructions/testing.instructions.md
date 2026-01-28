@@ -27,7 +27,7 @@ npm test -- path/to/test.test.js
 
 - **Unit Tests**: Test individual functions and classes in isolation
 - **Integration Tests**: Test how components work together
-- **Naming Convention**: 
+- **Naming Convention**:
   - Unit tests: `<component>.test.js`
   - Integration tests: `<component>.integration.test.js` (preferred) or `<component>.integration-test.js` (legacy)
   - Note: The codebase currently uses both integration test patterns; new tests should use `.integration.test.js`
@@ -51,3 +51,34 @@ npm test -- path/to/test.test.js
 - `jest.mock()` for mocking modules
 - `jest.spyOn()` for spying on methods
 - Supertest for HTTP endpoint testing (see `server.integration-test.js` and other integration tests)
+
+## Testing Specific Components
+
+### CLI Component Testing
+- Test all command-line options and flags
+- Verify interactive mode functionality
+- Test error handling for invalid inputs
+
+### Content Manager Testing
+- Test CRUD operations for articles, interests, and chat highlights
+- Verify Claude chat import functionality (both file and URL)
+- Test page limit enforcement
+- Test content validation
+
+### Magazine Generation Testing
+- Test EPUB generation with various content types
+- Verify proper formatting and structure
+- Test smart topic clustering functionality
+- Test edge cases with large content volumes
+
+### Web Interface Testing
+- Test file upload functionality
+- Verify chat selection and filtering
+- Test EPUB generation via web interface
+- Test session management and cleanup
+
+### Scratch File Testing
+- Test export and import functionality
+- Verify chat selection preservation
+- Test file format parsing and validation
+- Test error handling for malformed files

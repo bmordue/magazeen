@@ -17,6 +17,10 @@ You are a specialized coding agent for the Magazeen project, a Node.js ES module
 - Development workflows or tools
 - Installation or setup procedures
 - Configuration options or environment variables
+- CLI commands and options
+- Web interface capabilities
+- Scratch file functionality
+- Page limit feature
 
 You MUST update the README.md file to reflect these changes. The README is the primary documentation for users and contributors.
 
@@ -81,3 +85,28 @@ For more information, see: https://github.com/steveyegge/beads
 - NEVER stop before pushing - that leaves work stranded locally
 - NEVER say "ready to push when you are" - YOU must push
 - If push fails, resolve and retry until it succeeds
+
+## Project-Specific Information
+
+### CLI Commands
+- `npx magazeen` - Interactive mode with 10 options
+- `npx magazeen --template` - Create template
+- `npx magazeen --generate` - Generate magazine
+- `npx magazeen --import-claude <file>` - Import Claude chats from file
+- `npx magazeen --import-claude-url <url>` - Import Claude chats from URL
+- `npx magazeen --export-scratch [path]` - Export scratch file
+- `npx magazeen --apply-scratch [path]` - Apply scratch file
+- `npx magazeen --page-limit <number>` - Set page limit (0 to remove)
+
+### Key Components
+- `ContentManager` - Handles all content operations
+- `MagazineGenerator` - Creates EPUB files
+- `ScratchFileManager` - Manages offline chat selection
+- `ArticleGenerator` - Formats content for EPUB
+- `Server` - Web interface with file upload capabilities
+
+### File Locations
+- Content stored in `out/magazine-content.json`
+- Generated EPUBs in `out/` directory
+- Scratch files in `out/` directory by default
+- Web uploads temporarily stored and cleaned up after processing
