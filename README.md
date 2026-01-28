@@ -116,7 +116,14 @@ Magazeen supports importing Claude chat conversations from JSON export files. Yo
 
 ```bash
 magazeen --import-claude ./path/to/claude_export.json
+magazeen --import-claude /absolute/path/to/claude_export.json
+magazeen --import-claude ~/Documents/claude_export.json
 ```
+
+The `--import-claude` option accepts both relative and absolute file paths:
+- **Relative paths**: `./path/to/file.json`, `../folder/file.json`, `filename.json`
+- **Absolute paths**: `/home/user/documents/file.json`, `C:\Users\Name\Documents\file.json`
+- **Home directory paths**: `~/Documents/file.json`
 
 ### From URL
 
@@ -127,6 +134,7 @@ magazeen --import-claude-url http://localhost:8000/claude_export.json
 
 The import features:
 - Support both local files and remote URLs (HTTP/HTTPS)
+- Accept relative and absolute file paths for local imports
 - Automatically follow redirects for URL imports
 - Have a 30-second timeout for downloads
 - Validate the JSON format before importing
