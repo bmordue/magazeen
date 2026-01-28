@@ -57,7 +57,9 @@ export const config = {
     /** Enable topic clustering for articles */
     enableClustering: process.env.ENABLE_CLUSTERING !== 'false',
     /** Minimum similarity threshold for clustering (0-100) */
-    clusteringSimilarity: (v => !isNaN(v) ? v : 30)(parseInt(process.env.CLUSTERING_SIMILARITY))
+    clusteringSimilarity: (v => !isNaN(v) ? v : 30)(parseInt(process.env.CLUSTERING_SIMILARITY)),
+    /** Enable Kindle-optimized EPUB generation */
+    kindleOptimized: process.env.KINDLE_OPTIMIZED === 'true'
   },
 
   // Logging and monitoring
