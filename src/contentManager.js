@@ -3,6 +3,8 @@ import * as syncFs from 'fs';
 import { config } from './config.js';
 import { Logger } from './logger.js';
 import { Validator, ValidationError } from './validation.js';
+import https from 'https';
+import http from 'http';
 
 export class ContentManager {
     constructor(contentFile = null, fsUtils = null) {
@@ -502,6 +504,59 @@ export class ContentManager {
         }
     }
 
+    /**
+     * Process and import chats from parsed JSON data
+     * @param {Array} importedChats - Array of chat objects to process
+     * @returns {number} - Number of successfully imported chats
+     * @private
+     */
+    _processClaudeChats(importedChats) {
+        if (!Array.isArray(importedChats)) {
+            console.error('Error: Expected an array of chats from the JSON file.');
+            return 0;
+        }
+
+        let successfullyImportedCount = 0;
+        for (const chat of importedChats) {
+            if (chat && chat.uuid && chat.name && Array.isArray(chat.chat_messages)) {
+                const conversation = chat.chat_messages.map(msg => ({
+                    sender: msg.sender,
+                    text: msg.text,
+                    timestamp: msg.created_at
+                }));
+
+                const newClaudeChat = {
+                    id: chat.uuid,
+                    title: chat.name,
+                    conversation: conversation,
+                    insights: "",
+                    category: "Claude Import",
+                    dateAdded: chat.created_at || new Date().toISOString(),
+                    originalImportDate: new Date().toISOString(),
+                    selected: false
+                };
+
+                const existingChat = this.content.claudeChats.find(existingChat => existingChat.id === newClaudeChat.id);
+                if (!existingChat) {
+                    this.content.claudeChats.push(newClaudeChat);
+                    successfullyImportedCount++;
+                } else {
+                    // Update existing chat but preserve selection status
+                    existingChat.title = newClaudeChat.title;
+                    existingChat.conversation = newClaudeChat.conversation;
+                    existingChat.insights = newClaudeChat.insights;
+                    existingChat.category = newClaudeChat.category;
+                    existingChat.dateAdded = newClaudeChat.dateAdded;
+                    existingChat.originalImportDate = newClaudeChat.originalImportDate;
+                }
+            } else {
+                console.warn('Skipping chat due to missing essential fields (uuid, name, or chat_messages):', chat);
+            }
+        }
+
+        return successfullyImportedCount;
+    }
+
     importClaudeChatsFromFile(filePath) {
         try {
             if (!this.fsUtils.existsSync(filePath)) {
@@ -512,53 +567,7 @@ export class ContentManager {
             const fileContent = this.fsUtils.readFileSync(filePath, 'utf8');
             const importedChats = JSON.parse(fileContent);
 
-            if (!Array.isArray(importedChats)) {
-                console.error('Error: Expected an array of chats from the JSON file.');
-                return 0;
-            }
-
-            let successfullyImportedCount = 0;
-            for (const chat of importedChats) {
-                if (chat && chat.uuid && chat.name && Array.isArray(chat.chat_messages)) {
-                    const conversation = chat.chat_messages.map(msg => ({
-                        sender: msg.sender,
-                        text: msg.text,
-                        timestamp: msg.created_at
-                    }));
-
-                    const newClaudeChat = {
-                        id: chat.uuid, // Use Claude's UUID as the ID
-                        title: chat.name,
-                        conversation: conversation,
-                        // Assuming 'insights' and 'category' might be added later or manually
-                        insights: "", // Default or to be filled manually
-                        category: "Claude Import", // Default category
-                        dateAdded: chat.created_at || new Date().toISOString(), // Use Claude's creation date
-                        originalImportDate: new Date().toISOString(), // Mark when it was imported
-                        selected: false // Initialize as not selected
-                    };
-
-                    // Avoid duplicates based on ID
-                    const existingChat = this.content.claudeChats.find(existingChat => existingChat.id === newClaudeChat.id);
-                    if (!existingChat) {
-                        this.content.claudeChats.push(newClaudeChat);
-                        successfullyImportedCount++;
-                    } else {
-                        // If chat already exists, update its fields but preserve selection status
-                        if (existingChat) {
-                            existingChat.title = newClaudeChat.title;
-                            existingChat.conversation = newClaudeChat.conversation;
-                            existingChat.insights = newClaudeChat.insights;
-                            existingChat.category = newClaudeChat.category;
-                            existingChat.dateAdded = newClaudeChat.dateAdded;
-                            existingChat.originalImportDate = newClaudeChat.originalImportDate;
-                            // Do not change existingChat.selected
-                        }
-                    }
-                } else {
-                    console.warn('Skipping chat due to missing essential fields (uuid, name, or chat_messages):', chat);
-                }
-            }
+            const successfullyImportedCount = this._processClaudeChats(importedChats);
 
             if (successfullyImportedCount > 0) {
                 this.saveContent();
@@ -570,6 +579,95 @@ export class ContentManager {
 
         } catch (error) {
             console.error(`Error importing Claude chats from ${filePath}:`, error);
+            return 0;
+        }
+    }
+
+    /**
+     * Fetch JSON data from a URL
+     * @param {string} url - The URL to fetch from
+     * @returns {Promise<string>} - The fetched JSON string
+     */
+    async _fetchFromUrl(url) {
+        return new Promise((resolve, reject) => {
+            const urlObj = new URL(url);
+            const protocol = urlObj.protocol === 'https:' ? https : http;
+
+            const request = protocol.get(url, (response) => {
+                // Handle redirects
+                if (response.statusCode >= 300 && response.statusCode < 400 && response.headers.location) {
+                    // Resolve relative redirect URLs
+                    const redirectUrl = new URL(response.headers.location, url).href;
+                    this._fetchFromUrl(redirectUrl)
+                        .then(resolve)
+                        .catch(reject);
+                    return;
+                }
+
+                if (response.statusCode !== 200) {
+                    reject(new Error(`HTTP ${response.statusCode}: ${response.statusMessage}`));
+                    return;
+                }
+
+                let data = '';
+                response.on('data', (chunk) => {
+                    data += chunk;
+                });
+
+                response.on('end', () => {
+                    resolve(data);
+                });
+            });
+
+            request.on('error', (error) => {
+                reject(error);
+            });
+
+            request.setTimeout(30000, () => {
+                request.destroy();
+                reject(new Error('Request timeout after 30 seconds'));
+            });
+        });
+    }
+
+    /**
+     * Import Claude chats from a web URL
+     * @param {string} url - The URL to fetch the JSON export from
+     * @returns {Promise<number>} - Number of successfully imported chats
+     */
+    async importClaudeChatsFromUrl(url) {
+        try {
+            // Validate URL
+            try {
+                new URL(url);
+            } catch {
+                this.logger.error('Invalid URL format', null, { url });
+                console.error(`Error: Invalid URL format: ${url}`);
+                return 0;
+            }
+
+            // Ensure content structure is initialized
+            this._ensureContentStructure();
+
+            this.logger.info('Fetching Claude chats from URL', { url });
+            console.log(`Fetching Claude chats from: ${url}`);
+
+            const fileContent = await this._fetchFromUrl(url);
+            const importedChats = JSON.parse(fileContent);
+
+            const successfullyImportedCount = this._processClaudeChats(importedChats);
+
+            if (successfullyImportedCount > 0) {
+                this.saveContent();
+                console.log(`Successfully imported ${successfullyImportedCount} Claude chats from ${url}.`);
+            } else {
+                console.log(`No new Claude chats were imported from ${url}.`);
+            }
+            return successfullyImportedCount;
+
+        } catch (error) {
+            this.logger.error('Error importing Claude chats from URL', error, { url });
+            console.error(`Error importing Claude chats from ${url}:`, error.message);
             return 0;
         }
     }

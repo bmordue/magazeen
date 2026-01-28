@@ -22,12 +22,28 @@ jobs:
       run: npm install
 
     - name: Run tests and generate coverage
-      run: npm test -- --coverage
+      id: run-tests
+      continue-on-error: true
+      run: |
+        mkdir -p test-results
+        mkdir -p out
+        npm test -- --coverage 2>&1 | tee test-results/test-output.txt
+        exit_code=${PIPESTATUS[0]}
+        echo "test_exit_code=$exit_code" >> $GITHUB_OUTPUT
+        if [ -f junit.xml ]; then mv junit.xml test-results/ || true; fi
+
+    - name: Upload test results artifact
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: test-results
+        path: test-results/
 
     - name: Lint
       run: npm run lint
 
     - name: Upload coverage artifact
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: coverage-report
@@ -37,10 +53,16 @@ jobs:
       if: github.event_name == 'pull_request'
       uses: marocchino/sticky-pull-request-comment@v2
       with:
-        filePath: coverage/lcov-report/index.html # Path to the HTML coverage report for display
+        path: coverage/lcov-report/index.html # Path to the HTML coverage report for display
         message: |
           ## Code Coverage Report
           You can view the full coverage report [here]( ${{ steps.upload-artifact.outputs.artifact-url }} ).
           Coverage summary will be extracted and posted here if you use an action like `romeovs/lcov-reporter-action`.
           For now, please find the lcov.info file in the uploaded artifact.
           *Note: For more detailed inline annotations, a more specific coverage action might be needed depending on your test runner's output format.*
+
+    - name: Fail job on test failures
+      if: steps.run-tests.outputs.test_exit_code != '0'
+      run: |
+        echo "Tests failed (exit code: ${{ steps.run-tests.outputs.test_exit_code }}). Failing job after uploading artifacts."
+        exit 1

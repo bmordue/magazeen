@@ -319,7 +319,7 @@ function manageClaudeChats(rl, page = 1, pageSize = 10) {
 
 
 // Main CLI logic
-export function runCli() {
+export async function runCli() {
     const thisFile = resolve(fileURLToPath(import.meta.url));
     const pathPassedToNode = resolve(process.argv[1]);
 
@@ -360,7 +360,8 @@ export function runCli() {
                 console.log('  magazeen --page-limit 0     # Remove page limit');
                 console.log('  magazeen --template         # Create template');
                 console.log('  magazeen --generate         # Generate magazine');
-                console.log('  magazeen --import-claude <file.json>  # Import Claude chats');
+                console.log('  magazeen --import-claude <file.json>  # Import Claude chats from file');
+                console.log('  magazeen --import-claude-url <url>    # Import Claude chats from URL');
             }
         } else if (args.includes('--import-claude')) {
             const filePathIndex = args.indexOf('--import-claude') + 1;
@@ -376,6 +377,28 @@ export function runCli() {
             } else {
                 console.error('Error: --import-claude option requires a file path.');
                 console.log('Usage: node src/cli.js --import-claude <path_to_claude_export.json>');
+            }
+        } else if (args.includes('--import-claude-url')) {
+            const urlIndex = args.indexOf('--import-claude-url') + 1;
+            if (urlIndex < args.length && args[urlIndex] && !args[urlIndex].startsWith('--')) {
+                const url = args[urlIndex];
+                console.log(`Importing Claude chats from URL: ${url}`);
+                try {
+                    const importedCount = await contentManager.importClaudeChatsFromUrl(url);
+                    if (importedCount > 0) {
+                        console.log(`Successfully imported ${importedCount} chats.`);
+                    } else {
+                        console.log('No new chats were imported or an error occurred.');
+                    }
+                } catch (error) {
+                    console.error('Error importing from URL:', error.message);
+                }
+            } else {
+                console.error('Error: --import-claude-url option requires a URL.');
+                console.log('Usage: node src/cli.js --import-claude-url <url>');
+                console.log('Examples:');
+                console.log('  magazeen --import-claude-url https://example.com/chats.json');
+                console.log('  magazeen --import-claude-url http://localhost:8000/claude_export.json');
             }
         } else if (args.includes('--export-scratch')) {
             const filePath = parseOptionalFilePath(args, '--export-scratch', 'out/magazine-scratch.txt');
