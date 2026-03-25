@@ -11,8 +11,8 @@
   <form action="/upload" method="post" enctype="multipart/form-data">
     <div class="form-group">
       <label for="chatExport">Select your Claude chat export (JSON):</label>
-      <p class="helper-text">You can find this in your Claude account settings under "Export Data".</p>
-      <input type="file" id="chatExport" name="chatExport" accept=".json" required>
+      <p id="chatExportHelp" class="helper-text">You can find this in your Claude account settings under "Export Data".</p>
+      <input type="file" id="chatExport" name="chatExport" accept=".json" required aria-describedby="chatExportHelp">
     </div>
     <button type="submit">Upload and Select Chats</button>
   </form>

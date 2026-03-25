@@ -60,6 +60,7 @@ button[type="submit"]:active {
 
 button[type="submit"]:disabled {
   background-color: #ccc;
+  color: var(--text-color);
   cursor: not-allowed;
   transform: none;
 }
