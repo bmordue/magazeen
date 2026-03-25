@@ -9,7 +9,11 @@
 <body>
   <h1>Upload Chat Export</h1>
   <form action="/upload" method="post" enctype="multipart/form-data">
-    <input type="file" name="chatExport" accept=".json" required>
+    <div class="form-group">
+      <label for="chatExport">Select your Claude chat export (JSON):</label>
+      <p class="helper-text">You can find this in your Claude account settings under "Export Data".</p>
+      <input type="file" id="chatExport" name="chatExport" accept=".json" required>
+    </div>
     <button type="submit">Upload and Select Chats</button>
   </form>
 </body>

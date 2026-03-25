@@ -8,11 +8,37 @@
 </head>
 <body>
   <h1>Select Chats to Include</h1>
-  <form action="/generate-epub" method="post">
+  <form action="/generate-epub" method="post" id="select-chats-form">
     <input type="hidden" name="sessionId" value="{{sessionId}}">
     <input type="hidden" name="originalFilename" value="{{originalFilename}}">
-    {{chatList}}
-    <button type="submit">Generate EPUB</button>
+
+    <div class="select-all-container">
+      <input type="checkbox" id="select-all-chats">
+      <label for="select-all-chats"><strong>Select All Chats</strong></label>
+    </div>
+    <hr>
+
+    <div class="chat-list">
+      {{chatList}}
+    </div>
+
+    <button type="submit" id="generate-button">Generate EPUB</button>
   </form>
+
+  <script>
+    const selectAllCheckbox = document.getElementById('select-all-chats');
+    const chatCheckboxes = document.querySelectorAll('input[name="selectedChats"]');
+    const form = document.getElementById('select-chats-form');
+    const generateButton = document.getElementById('generate-button');
+
+    selectAllCheckbox.addEventListener('change', (e) => {
+      chatCheckboxes.forEach(cb => cb.checked = e.target.checked);
+    });
+
+    form.addEventListener('submit', () => {
+      generateButton.disabled = true;
+      generateButton.textContent = 'Generating...';
+    });
+  </script>
 </body>
 </html>

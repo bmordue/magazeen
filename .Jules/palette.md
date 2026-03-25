@@ -1,0 +1,3 @@
+## 2026-03-25 - [Accessible Forms and Improved Interaction]
+**Learning:** Adding a `<label>` and helper text significantly improves form accessibility for screen readers and new users. Implementing a loading state ("Generating...") on long-running button actions prevents duplicate submissions and provides clear feedback, while a "Select All" feature is a major efficiency gain for bulk list selections.
+**Action:** Always associate inputs with `<label>` using `for` and `id`, and provide immediate visual feedback for any action that takes more than a few hundred milliseconds. Ensure that bulk actions have a "Select All" option to reduce user friction.
