@@ -84,7 +84,7 @@ app.post('/upload', upload.single('chatExport'), async (req, res) => {
     const { sessionId, chats, originalFilename } = await processUploadedFile(req.file.path, req.file.originalname);
 
     const chatListHtml = chats.map(chat => `
-      <div>
+      <div class="chat-item">
         <input type="checkbox" name="selectedChats" value="${chat.id}" id="${chat.id}">
         <label for="${chat.id}">${chat.title}</label>
       </div>

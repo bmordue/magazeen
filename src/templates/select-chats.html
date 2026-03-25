@@ -8,11 +8,67 @@
 </head>
 <body>
   <h1>Select Chats to Include</h1>
-  <form action="/generate-epub" method="post">
+  <form action="/generate-epub" method="post" id="select-chats-form">
     <input type="hidden" name="sessionId" value="{{sessionId}}">
     <input type="hidden" name="originalFilename" value="{{originalFilename}}">
-    {{chatList}}
-    <button type="submit">Generate EPUB</button>
+
+    <div class="select-all-container">
+      <input type="checkbox" id="select-all-chats">
+      <label for="select-all-chats"><strong>Select All Chats</strong></label>
+    </div>
+    <hr>
+
+    <div class="chat-list">
+      {{chatList}}
+    </div>
+
+    <button type="submit" id="generate-button">Generate EPUB</button>
   </form>
+
+  <script>
+    const selectAllCheckbox = document.getElementById('select-all-chats');
+    const chatCheckboxes = document.querySelectorAll('input[name="selectedChats"]');
+    const form = document.getElementById('select-chats-form');
+    const generateButton = document.getElementById('generate-button');
+
+    function updateUIState() {
+      const checkedCount = Array.from(chatCheckboxes).filter(cb => cb.checked).length;
+      const totalCount = chatCheckboxes.length;
+
+      // Update Select All state
+      selectAllCheckbox.checked = checkedCount === totalCount && totalCount > 0;
+      selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < totalCount;
+
+      // Update Generate Button state - disable if nothing is selected
+      generateButton.disabled = checkedCount === 0;
+      if (checkedCount === 0) {
+        generateButton.title = "Select at least one chat to generate EPUB";
+      } else {
+        generateButton.title = "";
+      }
+    }
+
+    selectAllCheckbox.addEventListener('change', (e) => {
+      chatCheckboxes.forEach(cb => cb.checked = e.target.checked);
+      updateUIState();
+    });
+
+    chatCheckboxes.forEach(cb => {
+      cb.addEventListener('change', updateUIState);
+    });
+
+    form.addEventListener('submit', (e) => {
+      const checkedCount = Array.from(chatCheckboxes).filter(cb => cb.checked).length;
+      if (checkedCount === 0) {
+        e.preventDefault();
+        return;
+      }
+      generateButton.disabled = true;
+      generateButton.textContent = 'Generating...';
+    });
+
+    // Initialize state on page load
+    updateUIState();
+  </script>
 </body>
 </html>
