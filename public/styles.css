@@ -60,7 +60,6 @@ button[type="submit"]:active {
 
 button[type="submit"]:disabled {
   background-color: #ccc;
-  color: var(--text-color);
   cursor: not-allowed;
   transform: none;
 }
@@ -102,7 +101,7 @@ hr {
   margin-bottom: 20px;
 }
 
-div {
+.chat-item {
   margin-bottom: 10px;
 }
 

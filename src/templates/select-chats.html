@@ -32,51 +32,28 @@
     const generateButton = document.getElementById('generate-button');
 
     function updateSelectAllState() {
-      const total = chatCheckboxes.length;
-      if (total === 0) {
-        selectAllCheckbox.checked = false;
-        selectAllCheckbox.indeterminate = false;
-        return;
-      }
-
       const checkedCount = Array.from(chatCheckboxes).filter(cb => cb.checked).length;
+      const totalCount = chatCheckboxes.length;
 
-      if (checkedCount === 0) {
-        selectAllCheckbox.checked = false;
-        selectAllCheckbox.indeterminate = false;
-      } else if (checkedCount === total) {
-        selectAllCheckbox.checked = true;
-        selectAllCheckbox.indeterminate = false;
-      } else {
-        selectAllCheckbox.checked = false;
-        selectAllCheckbox.indeterminate = true;
-      }
+      selectAllCheckbox.checked = checkedCount === totalCount && totalCount > 0;
+      selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < totalCount;
     }
 
     selectAllCheckbox.addEventListener('change', (e) => {
-      const isChecked = e.target.checked;
-      selectAllCheckbox.indeterminate = false;
-      chatCheckboxes.forEach(cb => {
-        cb.checked = isChecked;
-      });
+      chatCheckboxes.forEach(cb => cb.checked = e.target.checked);
     });
 
     chatCheckboxes.forEach(cb => {
       cb.addEventListener('change', updateSelectAllState);
     });
 
-    updateSelectAllState();
     form.addEventListener('submit', () => {
       generateButton.disabled = true;
       generateButton.textContent = 'Generating...';
     });
 
-    window.addEventListener('pageshow', (event) => {
-      if (event.persisted) {
-        generateButton.disabled = false;
-        generateButton.textContent = 'Generate EPUB';
-      }
-    });
+    // Initialize state on page load
+    updateSelectAllState();
   </script>
 </body>
 </html>
