@@ -8,13 +8,23 @@
 </head>
 <body>
   <h1>Upload Chat Export</h1>
-  <form action="/upload" method="post" enctype="multipart/form-data">
+  <form action="/upload" method="post" enctype="multipart/form-data" id="upload-form">
     <div class="form-group">
       <label for="chatExport">Select your Claude chat export (JSON):</label>
       <p id="chatExportHelper" class="helper-text">You can find this in your Claude account settings under "Export Data".</p>
       <input type="file" id="chatExport" name="chatExport" accept=".json" required aria-describedby="chatExportHelper">
     </div>
-    <button type="submit">Upload and Select Chats</button>
+    <button type="submit" id="upload-button">Upload and Select Chats</button>
   </form>
+
+  <script>
+    const form = document.getElementById('upload-form');
+    const uploadButton = document.getElementById('upload-button');
+
+    form.addEventListener('submit', () => {
+      uploadButton.disabled = true;
+      uploadButton.textContent = 'Uploading...';
+    });
+  </script>
 </body>
 </html>
