@@ -12,13 +12,23 @@
     <input type="hidden" name="sessionId" value="{{sessionId}}">
     <input type="hidden" name="originalFilename" value="{{originalFilename}}">
 
+    <div class="selection-tools">
+      <div class="search-container">
+        <label for="chat-search" class="visually-hidden">Search chats</label>
+        <input type="text" id="chat-search" placeholder="Filter chats by title..." aria-label="Filter chats by title">
+      </div>
+      <div class="selection-stats">
+        <span id="selection-count">0</span> chats selected
+      </div>
+    </div>
+
     <div class="select-all-container">
       <input type="checkbox" id="select-all-chats">
-      <label for="select-all-chats"><strong>Select All Chats</strong></label>
+      <label for="select-all-chats"><strong>Select All Visible Chats</strong></label>
     </div>
     <hr>
 
-    <div class="chat-list">
+    <div class="chat-list" id="chat-list">
       {{chatList}}
     </div>
 
@@ -30,16 +40,36 @@
     const chatCheckboxes = document.querySelectorAll('input[name="selectedChats"]');
     const form = document.getElementById('select-chats-form');
     const generateButton = document.getElementById('generate-button');
+    const searchInput = document.getElementById('chat-search');
+    const selectionCountSpan = document.getElementById('selection-count');
+    const chatItems = document.querySelectorAll('.chat-item');
 
     function updateUIState() {
-      const checkedCount = Array.from(chatCheckboxes).filter(cb => cb.checked).length;
-      const totalCount = chatCheckboxes.length;
+      const allCheckboxes = Array.from(chatCheckboxes);
+      const checkedCount = allCheckboxes.filter(cb => cb.checked).length;
 
-      // Update Select All state
-      selectAllCheckbox.checked = checkedCount === totalCount && totalCount > 0;
-      selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < totalCount;
+      // Update selection counter
+      selectionCountSpan.textContent = checkedCount;
 
-      // Update Generate Button state - disable if nothing is selected
+      // Get visible checkboxes
+      const visibleCheckboxes = allCheckboxes.filter(cb =>
+        cb.closest('.chat-item').style.display !== 'none'
+      );
+      const visibleCheckedCount = visibleCheckboxes.filter(cb => cb.checked).length;
+      const totalVisibleCount = visibleCheckboxes.length;
+
+      // Update Select All state based on VISIBLE chats
+      if (totalVisibleCount === 0) {
+        selectAllCheckbox.checked = false;
+        selectAllCheckbox.indeterminate = false;
+        selectAllCheckbox.disabled = true;
+      } else {
+        selectAllCheckbox.disabled = false;
+        selectAllCheckbox.checked = visibleCheckedCount === totalVisibleCount;
+        selectAllCheckbox.indeterminate = visibleCheckedCount > 0 && visibleCheckedCount < totalVisibleCount;
+      }
+
+      // Update Generate Button state - disable if nothing is selected (globally)
       generateButton.disabled = checkedCount === 0;
       if (checkedCount === 0) {
         generateButton.title = "Select at least one chat to generate EPUB";
@@ -49,12 +79,31 @@
     }
 
     selectAllCheckbox.addEventListener('change', (e) => {
-      chatCheckboxes.forEach(cb => cb.checked = e.target.checked);
+      const isChecked = e.target.checked;
+      chatCheckboxes.forEach(cb => {
+        const item = cb.closest('.chat-item');
+        if (item.style.display !== 'none') {
+          cb.checked = isChecked;
+        }
+      });
       updateUIState();
     });
 
     chatCheckboxes.forEach(cb => {
       cb.addEventListener('change', updateUIState);
+    });
+
+    searchInput.addEventListener('input', (e) => {
+      const searchTerm = e.target.value.toLowerCase();
+      chatItems.forEach(item => {
+        const title = item.querySelector('label').textContent.toLowerCase();
+        if (title.includes(searchTerm)) {
+          item.style.display = '';
+        } else {
+          item.style.display = 'none';
+        }
+      });
+      updateUIState();
     });
 
     form.addEventListener('submit', (e) => {
