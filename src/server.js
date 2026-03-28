@@ -2,8 +2,26 @@ import express from 'express';
 import multer from 'multer';
 import path from 'path';
 import crypto from 'crypto';
-import { kv } from '@vercel/kv';
 import { tmpdir } from 'os';
+
+import { kv as vercelKv } from '@vercel/kv';
+
+// Mock KV for local development if environment variables are missing
+const store = new Map();
+const mockKv = {
+  get: async (key) => store.get(key),
+  set: async (key, value, options) => {
+    store.set(key, value);
+    if (options?.ex) {
+      setTimeout(() => store.delete(key), options.ex * 1000);
+    }
+  },
+  del: async (key) => store.delete(key)
+};
+
+const kv = (process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN)
+  ? vercelKv
+  : mockKv;
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -23,18 +41,6 @@ app.use(express.static('public'));
 
 // Configure multer for file uploads
 const upload = multer({ dest: tmpdir(), limits: { fileSize: 10 * 1024 * 1024 } }); // e.g., 10MB limit
-
-// WARNING: Simple in-memory storage for chat data.
-// This is NOT production-ready for serverless environments like Vercel. (Comment being removed as global state is removed)
-// Global state `global.uploadedChats` has been replaced with Vercel KV.
-
-// Ensure the /tmp/uploads directory exists if it doesn't.
-// This is generally good practice, though multer might create it.
-// fs.mkdir is not directly used here as multer handles directory creation.
-// However, for Vercel, /tmp is usually available.
-// We should ensure this doesn't cause issues if run locally where /tmp/uploads might not exist
-// or have correct permissions without manual creation. Multer should handle this.
-// For local dev, you might need to create 'uploads/' or '/tmp/uploads/' manually if multer doesn't.
 
 app.get('/', (req, res) => {
   res.send(renderTemplate('home'));
@@ -140,14 +146,8 @@ app.post('/generate-epub', async (req, res) => {
     const articleGenerator = new ArticleGenerator(contentManager);
     const magazineGenerator = new MagazineGenerator(contentManager, articleGenerator);
 
-    // Add selected chats as articles/highlights to contentManager
-    // The existing CLI uses `addChatHighlight(title, conversation, insights, category)`
-    // We need to adapt the Claude chat structure to this.
-    // For now, we'll use the chat name as title and concatenate messages as conversation.
-    // Insights and category can be generic or derived if possible.
     for (const chat of chatsToInclude) {
       const title = chat.title;
-      // Concatenate messages, differentiating human and assistant
       const conversation = chat.originalChatData.chat_messages
         .map(msg => `${msg.sender === 'human' ? 'Human' : 'Assistant'}: ${msg.text}`)
         .join('\n\n');
@@ -159,9 +159,8 @@ app.post('/generate-epub', async (req, res) => {
 
     const epubFilePath = await magazineGenerator.generateMagazine();
 
-    // Data has been used, clean up from KV
     await kv.del(sessionId);
-    kvDataRetrieved = false; // Mark as cleaned up
+    kvDataRetrieved = false;
 
     res.download(epubFilePath, path.basename(epubFilePath), async (err) => {
       if (err) {
@@ -170,7 +169,6 @@ app.post('/generate-epub', async (req, res) => {
             res.status(500).send(renderErrorPage('Error sending the EPUB file.'));
         }
       }
-      // Clean up the generated EPUB file after sending
       try {
         await unlink(epubFilePath);
       } catch (unlinkErr) {
@@ -180,7 +178,6 @@ app.post('/generate-epub', async (req, res) => {
 
   } catch (error) {
     console.error('Error generating EPUB:', error);
-    // If an error occurred and we had retrieved data from KV, try to clean it up
     if (sessionId && kvDataRetrieved) {
       try {
         await kv.del(sessionId);
@@ -197,12 +194,10 @@ function renderErrorPage(message) {
   return renderTemplate('error', { message });
 }
 
-// Start the server only if this script is run directly
-// This allows importing 'app' in test files without starting the server.
-if (process.env.NODE_ENV !== 'test') { // A common way to check, or use import.meta.url
+if (process.env.NODE_ENV !== 'test') {
   app.listen(port, () => {
     console.log(`Server listening at http://localhost:${port}`);
   });
 }
 
-export default app; // Export the app for testing
+export default app;
