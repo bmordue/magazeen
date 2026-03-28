@@ -82,6 +82,15 @@ input:focus-visible {
   padding: 8px;
   background-color: #f9f9f9;
   border-radius: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.selection-counter {
+  margin-left: auto;
+  font-size: 0.9rem;
+  color: #666;
+  font-weight: 500;
 }
 
 .form-group {

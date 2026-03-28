@@ -15,6 +15,7 @@
     <div class="select-all-container">
       <input type="checkbox" id="select-all-chats">
       <label for="select-all-chats"><strong>Select All Chats</strong></label>
+      <span id="selection-count" class="selection-counter" aria-live="polite"></span>
     </div>
     <hr>
 
@@ -28,12 +29,16 @@
   <script>
     const selectAllCheckbox = document.getElementById('select-all-chats');
     const chatCheckboxes = document.querySelectorAll('input[name="selectedChats"]');
+    const selectionCounter = document.getElementById('selection-count');
     const form = document.getElementById('select-chats-form');
     const generateButton = document.getElementById('generate-button');
 
     function updateUIState() {
       const checkedCount = Array.from(chatCheckboxes).filter(cb => cb.checked).length;
       const totalCount = chatCheckboxes.length;
+
+      // Update counter text
+      selectionCounter.textContent = `Selected: ${checkedCount} / ${totalCount}`;
 
       // Update Select All state
       selectAllCheckbox.checked = checkedCount === totalCount && totalCount > 0;
