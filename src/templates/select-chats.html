@@ -12,6 +12,11 @@
     <input type="hidden" name="sessionId" value="{{sessionId}}">
     <input type="hidden" name="originalFilename" value="{{originalFilename}}">
 
+    <div class="form-group">
+      <label for="chat-search">Search chats:</label>
+      <input type="text" id="chat-search" class="search-input" placeholder="Filter by title..." autocomplete="off">
+    </div>
+
     <div class="select-all-container">
       <input type="checkbox" id="select-all-chats">
       <label for="select-all-chats"><strong>Select All Chats</strong></label>
@@ -29,6 +34,8 @@
   <script>
     const selectAllCheckbox = document.getElementById('select-all-chats');
     const chatCheckboxes = document.querySelectorAll('input[name="selectedChats"]');
+    const chatItems = document.querySelectorAll('.chat-item');
+    const chatSearch = document.getElementById('chat-search');
     const selectionCounter = document.getElementById('selection-count');
     const form = document.getElementById('select-chats-form');
     const generateButton = document.getElementById('generate-button');
@@ -37,12 +44,17 @@
       const checkedCount = Array.from(chatCheckboxes).filter(cb => cb.checked).length;
       const totalCount = chatCheckboxes.length;
 
+      // Filter visible checkboxes for "Select All" logic
+      const visibleCheckboxes = Array.from(chatCheckboxes).filter(cb => cb.closest('.chat-item').style.display !== 'none');
+      const visibleCheckedCount = visibleCheckboxes.filter(cb => cb.checked).length;
+      const visibleTotalCount = visibleCheckboxes.length;
+
       // Update counter text
       selectionCounter.textContent = `Selected: ${checkedCount} / ${totalCount}`;
 
-      // Update Select All state
-      selectAllCheckbox.checked = checkedCount === totalCount && totalCount > 0;
-      selectAllCheckbox.indeterminate = checkedCount > 0 && checkedCount < totalCount;
+      // Update Select All state based on visible items
+      selectAllCheckbox.checked = visibleCheckedCount === visibleTotalCount && visibleTotalCount > 0;
+      selectAllCheckbox.indeterminate = visibleCheckedCount > 0 && visibleCheckedCount < visibleTotalCount;
 
       // Update Generate Button state - disable if nothing is selected
       generateButton.disabled = checkedCount === 0;
@@ -54,12 +66,26 @@
     }
 
     selectAllCheckbox.addEventListener('change', (e) => {
-      chatCheckboxes.forEach(cb => cb.checked = e.target.checked);
+      // Only affect visible checkboxes
+      chatCheckboxes.forEach(cb => {
+        if (cb.closest('.chat-item').style.display !== 'none') {
+          cb.checked = e.target.checked;
+        }
+      });
       updateUIState();
     });
 
     chatCheckboxes.forEach(cb => {
       cb.addEventListener('change', updateUIState);
+    });
+
+    chatSearch.addEventListener('input', (e) => {
+      const searchTerm = e.target.value.toLowerCase();
+      chatItems.forEach(item => {
+        const title = item.querySelector('label').textContent.toLowerCase();
+        item.style.display = title.includes(searchTerm) ? '' : 'none';
+      });
+      updateUIState();
     });
 
     form.addEventListener('submit', (e) => {
