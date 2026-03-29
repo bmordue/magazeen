@@ -104,6 +104,14 @@ input:focus-visible {
   margin-bottom: 4px;
 }
 
+.search-input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
 hr {
   border: 0;
   border-top: 1px solid var(--border-color);
