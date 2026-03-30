@@ -13,8 +13,11 @@
     <input type="hidden" name="originalFilename" value="{{originalFilename}}">
 
     <div class="form-group">
-      <label for="chat-search">Search chats:</label>
-      <input type="text" id="chat-search" class="search-input" placeholder="Filter by title..." autocomplete="off">
+      <label for="chat-search">Search chats <small>(Press '/' to focus)</small>:</label>
+      <div class="search-container">
+        <input type="text" id="chat-search" class="search-input" placeholder="Filter by title..." autocomplete="off">
+        <button type="button" id="search-clear" class="search-clear" aria-label="Clear search">&times;</button>
+      </div>
     </div>
 
     <div class="select-all-container">
@@ -24,9 +27,10 @@
     </div>
     <hr>
 
-    <div class="chat-list">
+    <div class="chat-list" id="chat-list">
       {{chatList}}
     </div>
+    <div id="no-results" class="no-results">No chats found matching your search.</div>
 
     <button type="submit" id="generate-button">Generate EPUB</button>
   </form>
@@ -36,6 +40,8 @@
     const chatCheckboxes = document.querySelectorAll('input[name="selectedChats"]');
     const chatItems = document.querySelectorAll('.chat-item');
     const chatSearch = document.getElementById('chat-search');
+    const searchClear = document.getElementById('search-clear');
+    const noResults = document.getElementById('no-results');
     const selectionCounter = document.getElementById('selection-count');
     const form = document.getElementById('select-chats-form');
     const generateButton = document.getElementById('generate-button');
@@ -60,9 +66,14 @@
       generateButton.disabled = checkedCount === 0;
       if (checkedCount === 0) {
         generateButton.title = "Select at least one chat to generate EPUB";
+        generateButton.textContent = 'Generate EPUB';
       } else {
         generateButton.title = "";
+        generateButton.textContent = `Generate EPUB (${checkedCount})`;
       }
+
+      // Update Search Clear button visibility
+      searchClear.style.display = chatSearch.value ? 'block' : 'none';
     }
 
     selectAllCheckbox.addEventListener('change', (e) => {
@@ -81,11 +92,32 @@
 
     chatSearch.addEventListener('input', (e) => {
       const searchTerm = e.target.value.toLowerCase();
+      let visibleCount = 0;
       chatItems.forEach(item => {
-        const title = item.querySelector('label').textContent.toLowerCase();
-        item.style.display = title.includes(searchTerm) ? '' : 'none';
+        const titleElement = item.querySelector('.chat-item-title') || item.querySelector('label');
+        const title = titleElement.textContent.toLowerCase();
+        const isVisible = title.includes(searchTerm);
+        item.style.display = isVisible ? '' : 'none';
+        if (isVisible) visibleCount++;
       });
+      noResults.style.display = visibleCount === 0 ? 'block' : 'none';
       updateUIState();
+    });
+
+    searchClear.addEventListener('click', () => {
+      chatSearch.value = '';
+      chatItems.forEach(item => item.style.display = '');
+      noResults.style.display = 'none';
+      chatSearch.focus();
+      updateUIState();
+    });
+
+    // Keyboard shortcut for search
+    document.addEventListener('keydown', (e) => {
+      if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+        chatSearch.focus();
+      }
     });
 
     form.addEventListener('submit', (e) => {

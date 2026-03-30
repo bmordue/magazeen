@@ -91,8 +91,10 @@ app.post('/upload', upload.single('chatExport'), async (req, res) => {
 
     const chatListHtml = chats.map(chat => `
       <div class="chat-item">
-        <input type="checkbox" name="selectedChats" value="${chat.id}" id="${chat.id}">
-        <label for="${chat.id}">${chat.title}</label>
+        <label class="chat-item-label">
+          <input type="checkbox" name="selectedChats" value="${chat.id}">
+          <span class="chat-item-title">${chat.title}</span>
+        </label>
       </div>
     `).join('');
 
