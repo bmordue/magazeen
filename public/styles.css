@@ -107,6 +107,7 @@ input:focus-visible {
 .search-input {
   width: 100%;
   padding: 10px;
+  padding-right: 35px; /* Space for the clear button */
   border: 1px solid var(--border-color);
   border-radius: 4px;
   box-sizing: border-box;
@@ -119,11 +120,55 @@ hr {
 }
 
 .chat-item {
-  margin-bottom: 10px;
+  margin-bottom: 4px;
 }
 
-label {
-  margin-left: 5px;
+.chat-item-label {
+  display: flex;
+  align-items: center;
+  padding: 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.chat-item-label:hover {
+  background-color: #f0f7ff;
+}
+
+.chat-item-title {
+  margin-left: 10px;
+}
+
+.search-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.search-clear {
+  position: absolute;
+  right: 10px;
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  color: #999;
+  cursor: pointer;
+  padding: 5px;
+  display: none;
+  line-height: 1;
+}
+
+.search-clear:hover {
+  color: #666;
+}
+
+.no-results {
+  padding: 20px;
+  text-align: center;
+  color: #666;
+  font-style: italic;
+  display: none;
 }
 
 .error-message {
