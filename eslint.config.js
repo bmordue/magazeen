@@ -16,6 +16,7 @@ export default [
   pluginJs.configs.recommended,
   {
     files: ["test/**/*.js"],
+    ignores: ["test/e2e/**"],
     ...pluginJest.configs["flat/recommended"],
     rules: {
         ...pluginJest.configs["flat/recommended"].rules,

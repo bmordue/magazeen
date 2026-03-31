@@ -143,3 +143,7 @@ junit.xml
 # Magazeen scratch files
 *.scratch.txt
 magazine-scratch.txt
+
+# Playwright E2E test artifacts
+playwright-report/
+test-results/
