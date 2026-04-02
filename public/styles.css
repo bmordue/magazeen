@@ -145,7 +145,20 @@ hr {
 }
 
 .chat-item-title {
-  margin-left: 10px;
+  font-weight: 500;
+  color: var(--text-color);
+}
+
+.chat-item-info {
+  margin-left: 12px;
+  display: flex;
+  flex-direction: column;
+}
+
+.chat-item-meta {
+  font-size: 0.8rem;
+  color: #666;
+  margin-top: 2px;
 }
 
 .search-container {

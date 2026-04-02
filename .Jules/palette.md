@@ -9,3 +9,7 @@
 ## 2026-04-01 - [Enhanced Multi-Select Interactions]
 **Learning:** Implementing Shift+Click range selection is a critical productivity feature for list-heavy interfaces. Combining this with contextual labels (e.g., "Select All Visible") and comprehensive feedback ("Showing X of Y | Selected: Z") during filtering provides users with high precision and confidence when managing large datasets.
 **Action:** Support Shift+Click for ranges in all multi-select lists. Use dynamic, contextual labels for bulk actions when filters are active to prevent ambiguity about which items are being affected.
+
+## 2026-04-05 - [Metadata-Rich List Items]
+**Learning:** Providing secondary metadata (like dates and item counts) in selection lists is crucial when primary titles are generic or repetitive. This reduces cognitive load and prevents user errors during selection. Using a vertical flex layout for the label content allows for clear visual hierarchy without cluttering the interface.
+**Action:** Always include relevant metadata sub-text in list items to provide context. Ensure that search filters target primary titles but remain functional when list item DOM structure becomes more complex.
