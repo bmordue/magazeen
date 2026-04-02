@@ -20,23 +20,28 @@
       </div>
     </div>
 
-    <div class="select-all-container">
+    <label class="select-all-container" for="select-all-chats">
       <input type="checkbox" id="select-all-chats">
-      <label for="select-all-chats"><strong>Select All Chats</strong></label>
+      <span id="select-all-label"><strong>Select All Chats</strong></span>
       <span id="selection-count" class="selection-counter" aria-live="polite"></span>
-    </div>
+    </label>
     <hr>
 
     <div class="chat-list" id="chat-list">
       {{chatList}}
     </div>
-    <div id="no-results" class="no-results">No chats found matching your search.</div>
+    <div id="no-results" class="no-results">
+      No chats found matching your search.
+      <br>
+      <button type="button" class="link-button" onclick="clearSearch()">Clear search</button>
+    </div>
 
     <button type="submit" id="generate-button">Generate EPUB</button>
   </form>
 
   <script>
     const selectAllCheckbox = document.getElementById('select-all-chats');
+    const selectAllLabel = document.getElementById('select-all-label');
     const chatCheckboxes = document.querySelectorAll('input[name="selectedChats"]');
     const chatItems = document.querySelectorAll('.chat-item');
     const chatSearch = document.getElementById('chat-search');
@@ -45,6 +50,8 @@
     const selectionCounter = document.getElementById('selection-count');
     const form = document.getElementById('select-chats-form');
     const generateButton = document.getElementById('generate-button');
+
+    let lastChecked = null;
 
     function updateUIState() {
       const checkedCount = Array.from(chatCheckboxes).filter(cb => cb.checked).length;
@@ -56,7 +63,13 @@
       const visibleTotalCount = visibleCheckboxes.length;
 
       // Update counter text
-      selectionCounter.textContent = `Selected: ${checkedCount} / ${totalCount}`;
+      if (visibleTotalCount < totalCount) {
+        selectionCounter.textContent = `Showing ${visibleTotalCount} of ${totalCount} | Selected: ${checkedCount}`;
+        selectAllLabel.innerHTML = '<strong>Select All Visible</strong>';
+      } else {
+        selectionCounter.textContent = `Selected: ${checkedCount} / ${totalCount}`;
+        selectAllLabel.innerHTML = '<strong>Select All Chats</strong>';
+      }
 
       // Update Select All state based on visible items
       selectAllCheckbox.checked = visibleCheckedCount === visibleTotalCount && visibleTotalCount > 0;
@@ -87,8 +100,38 @@
     });
 
     chatCheckboxes.forEach(cb => {
+      cb.addEventListener('click', (e) => {
+        if (e.shiftKey && lastChecked && lastChecked !== cb) {
+          let inRange = false;
+          let shouldCheck = lastChecked.checked;
+
+          chatCheckboxes.forEach(checkbox => {
+            if (checkbox === cb || checkbox === lastChecked) {
+              inRange = !inRange;
+            }
+
+            if (inRange || checkbox === cb || checkbox === lastChecked) {
+              // Only affect visible checkboxes in range
+              if (checkbox.closest('.chat-item').style.display !== 'none') {
+                checkbox.checked = shouldCheck;
+              }
+            }
+          });
+        }
+        lastChecked = cb;
+        updateUIState();
+      });
+
       cb.addEventListener('change', updateUIState);
     });
+
+    function clearSearch() {
+      chatSearch.value = '';
+      chatItems.forEach(item => item.style.display = '');
+      noResults.style.display = 'none';
+      chatSearch.focus();
+      updateUIState();
+    }
 
     chatSearch.addEventListener('input', (e) => {
       const searchTerm = e.target.value.toLowerCase();

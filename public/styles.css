@@ -79,11 +79,19 @@ input:focus-visible {
 
 .select-all-container {
   margin-bottom: 15px;
-  padding: 8px;
+  padding: 12px;
   background-color: #f9f9f9;
   border-radius: 4px;
   display: flex;
   align-items: center;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  border: 1px solid transparent;
+}
+
+.select-all-container:hover {
+  background-color: #f0f0f0;
+  border-color: var(--border-color);
 }
 
 .selection-counter {
@@ -164,11 +172,29 @@ hr {
 }
 
 .no-results {
-  padding: 20px;
+  padding: 30px 20px;
   text-align: center;
   color: #666;
   font-style: italic;
   display: none;
+  background: #f9f9f9;
+  border-radius: 4px;
+  margin-bottom: 20px;
+}
+
+.link-button {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  text-decoration: underline;
+  cursor: pointer;
+  font: inherit;
+  padding: 0;
+  margin-top: 10px;
+}
+
+.link-button:hover {
+  color: var(--primary-hover-color);
 }
 
 .error-message {
