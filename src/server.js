@@ -53,9 +53,14 @@ export async function processUploadedFile(filePath, originalFilename) {
   const chats = chatData.map((chat, index) => {
     const id = chat.uuid || `chat_${index}`;
     const title = chat.name || `Chat ${index + 1} (no name)`;
+    const messageCount = chat.chat_messages ? chat.chat_messages.length : 0;
+    const date = chat.created_at ? new Date(chat.created_at).toLocaleDateString() : 'Unknown date';
+
     return {
       id: id,
       title: title,
+      messageCount: messageCount,
+      date: date,
       originalChatData: chat
     };
   });
@@ -93,7 +98,10 @@ app.post('/upload', upload.single('chatExport'), async (req, res) => {
       <div class="chat-item">
         <label class="chat-item-label">
           <input type="checkbox" name="selectedChats" value="${chat.id}">
-          <span class="chat-item-title">${chat.title}</span>
+          <div class="chat-item-info">
+            <span class="chat-item-title">${chat.title}</span>
+            <span class="chat-item-meta">${chat.date} • ${chat.messageCount} messages</span>
+          </div>
         </label>
       </div>
     `).join('');

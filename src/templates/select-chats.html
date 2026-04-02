@@ -137,7 +137,7 @@
       const searchTerm = e.target.value.toLowerCase();
       let visibleCount = 0;
       chatItems.forEach(item => {
-        const titleElement = item.querySelector('.chat-item-title') || item.querySelector('label');
+        const titleElement = item.querySelector('.chat-item-title');
         const title = titleElement.textContent.toLowerCase();
         const isVisible = title.includes(searchTerm);
         item.style.display = isVisible ? '' : 'none';
