@@ -18,6 +18,12 @@
         <input type="text" id="chat-search" class="search-input" placeholder="Filter by title..." autocomplete="off">
         <button type="button" id="search-clear" class="search-clear" aria-label="Clear search">&times;</button>
       </div>
+      <div style="margin-top: 8px;">
+        <label for="show-selected-only" style="font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+          <input type="checkbox" id="show-selected-only">
+          Show selected only
+        </label>
+      </div>
     </div>
 
     <label class="select-all-container" for="select-all-chats">
@@ -45,6 +51,7 @@
     const chatCheckboxes = document.querySelectorAll('input[name="selectedChats"]');
     const chatItems = document.querySelectorAll('.chat-item');
     const chatSearch = document.getElementById('chat-search');
+    const showSelectedOnly = document.getElementById('show-selected-only');
     const searchClear = document.getElementById('search-clear');
     const noResults = document.getElementById('no-results');
     const selectionCounter = document.getElementById('selection-count');
@@ -96,7 +103,7 @@
           cb.checked = e.target.checked;
         }
       });
-      updateUIState();
+      applyFilters();
     });
 
     chatCheckboxes.forEach(cb => {
@@ -119,41 +126,53 @@
           });
         }
         lastChecked = cb;
-        updateUIState();
+        applyFilters();
       });
 
-      cb.addEventListener('change', updateUIState);
+      cb.addEventListener('change', applyFilters);
     });
 
-    function clearSearch() {
-      chatSearch.value = '';
-      chatItems.forEach(item => item.style.display = '');
-      noResults.style.display = 'none';
-      chatSearch.focus();
-      updateUIState();
-    }
-
-    chatSearch.addEventListener('input', (e) => {
-      const searchTerm = e.target.value.toLowerCase();
+    function applyFilters() {
+      const searchTerm = chatSearch.value.toLowerCase();
+      const onlySelected = showSelectedOnly.checked;
       let visibleCount = 0;
+
       chatItems.forEach(item => {
         const titleElement = item.querySelector('.chat-item-title');
         const title = titleElement.textContent.toLowerCase();
-        const isVisible = title.includes(searchTerm);
+        const isChecked = item.querySelector('input[name="selectedChats"]').checked;
+
+        const matchesSearch = title.includes(searchTerm);
+        const matchesSelection = !onlySelected || isChecked;
+
+        const isVisible = matchesSearch && matchesSelection;
         item.style.display = isVisible ? '' : 'none';
         if (isVisible) visibleCount++;
       });
+
       noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+      searchClear.style.display = chatSearch.value ? 'block' : 'none';
       updateUIState();
+    }
+
+    function clearSearch() {
+      chatSearch.value = '';
+      applyFilters();
+      chatSearch.focus();
+    }
+
+    chatSearch.addEventListener('input', applyFilters);
+    showSelectedOnly.addEventListener('change', applyFilters);
+
+    chatSearch.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        chatSearch.value = '';
+        applyFilters();
+        chatSearch.blur();
+      }
     });
 
-    searchClear.addEventListener('click', () => {
-      chatSearch.value = '';
-      chatItems.forEach(item => item.style.display = '');
-      noResults.style.display = 'none';
-      chatSearch.focus();
-      updateUIState();
-    });
+    searchClear.addEventListener('click', clearSearch);
 
     // Keyboard shortcut for search
     document.addEventListener('keydown', (e) => {
@@ -174,7 +193,8 @@
     });
 
     // Initialize state on page load
-    updateUIState();
+    chatSearch.focus();
+    applyFilters();
   </script>
 </body>
 </html>
