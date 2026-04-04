@@ -17,3 +17,7 @@
 ## 2026-04-03 - [Consolidated Filtering and Focused Entry]
 **Learning:** Providing a "Show selected only" toggle in long multi-select lists allows users to audit their choices without losing their place or search context. Combining this with autofocus on the search input and an Escape-to-clear shortcut creates a high-velocity interaction pattern for data-heavy selection tasks.
 **Action:** For list-heavy selection UIs, implement a unified filtering function that handles both text search and selection state. Always autofocus the primary search field and provide keyboard shortcuts (like Escape) for rapid navigation and state clearing.
+
+## 2026-04-06 - [Sticky Actions and Visual Selection Cues]
+**Learning:** In long list-based selection interfaces, anchoring primary action buttons in a sticky footer ensures they remain accessible without scrolling, significantly reducing friction. Providing immediate visual feedback for selected rows (e.g., background color and borders) and supporting keyboard shortcuts (Ctrl/Cmd + Enter) creates a much more responsive and efficient user experience.
+**Action:** Use sticky footers for primary actions in long lists and implement distinct visual styles for selected states to aid scannability. Always provide keyboard shortcuts for high-frequency actions and communicate them via subtle "Tips".

@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
-  <h1>Select Chats to Include</h1>
+  <h1>Select Chats: {{originalFilename}}</h1>
   <form action="/generate-epub" method="post" id="select-chats-form">
     <input type="hidden" name="sessionId" value="{{sessionId}}">
     <input type="hidden" name="originalFilename" value="{{originalFilename}}">
@@ -42,7 +42,12 @@
       <button type="button" class="link-button" onclick="clearSearch()">Clear search</button>
     </div>
 
-    <button type="submit" id="generate-button">Generate EPUB</button>
+    <div class="sticky-footer">
+      <div class="footer-hint">
+        Tip: Press <strong>Ctrl + Enter</strong> (or <strong>Cmd + Enter</strong>) to generate
+      </div>
+      <button type="submit" id="generate-button">Generate EPUB</button>
+    </div>
   </form>
 
   <script>
@@ -61,7 +66,14 @@
     let lastChecked = null;
 
     function updateUIState() {
-      const checkedCount = Array.from(chatCheckboxes).filter(cb => cb.checked).length;
+      const checkedCount = Array.from(chatCheckboxes).filter(cb => {
+        const isChecked = cb.checked;
+        const label = cb.closest('.chat-item-label');
+        if (label) {
+          label.classList.toggle('selected', isChecked);
+        }
+        return isChecked;
+      }).length;
       const totalCount = chatCheckboxes.length;
 
       // Filter visible checkboxes for "Select All" logic
@@ -174,11 +186,24 @@
 
     searchClear.addEventListener('click', clearSearch);
 
-    // Keyboard shortcut for search
+    // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
+      // Focus search with '/'
       if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
         e.preventDefault();
         chatSearch.focus();
+      }
+
+      // Generate EPUB with Ctrl/Cmd + Enter
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        const checkedCount = Array.from(chatCheckboxes).filter(cb => cb.checked).length;
+        if (checkedCount > 0 && !generateButton.disabled) {
+          if (typeof form.requestSubmit === 'function') {
+            form.requestSubmit();
+          } else {
+            generateButton.click();
+          }
+        }
       }
     });
 
