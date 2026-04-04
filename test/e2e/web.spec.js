@@ -157,9 +157,9 @@ test.describe('EPUB Generation', () => {
     await page.locator('#upload-button').click();
     await expect(page.locator('h1')).toHaveText('Select Chats to Include', { timeout: 15_000 });
 
-    // Select only the two chats that have actual messages (valid ones)
-    await page.locator('input[name="selectedChats"][value="2b147e30-8e5e-4646-b70e-cbda3d1fbaf6"]').check();
-    await page.locator('input[name="selectedChats"][value="a1b2c3d4-e5f6-7890-1234-abcdef123456"]').check();
+    // Select chats by visible title rather than hard-coded UUID values
+    await page.locator('.chat-item').filter({ hasText: 'Trouble attaching file to Mastodon post with Node.js script' }).locator('input[type="checkbox"]').check();
+    await page.locator('.chat-item').filter({ hasText: 'Second Chat Example' }).locator('input[type="checkbox"]').check();
     await expect(page.locator('#generate-button')).toBeEnabled();
 
     const [download] = await Promise.all([
@@ -168,6 +168,8 @@ test.describe('EPUB Generation', () => {
     ]);
 
     expect(download.suggestedFilename()).toMatch(/magazine-\d{4}-\d{2}\.epub/);
+    // Await full completion so the file is no longer streaming before the next test runs
+    await download.path();
   });
 
   test('selecting a single chat with messages triggers an EPUB download', async ({ page }) => {
@@ -176,8 +178,8 @@ test.describe('EPUB Generation', () => {
     await page.locator('#upload-button').click();
     await expect(page.locator('h1')).toHaveText('Select Chats to Include', { timeout: 15_000 });
 
-    // Select only the first valid chat
-    await page.locator('input[name="selectedChats"][value="2b147e30-8e5e-4646-b70e-cbda3d1fbaf6"]').check();
+    // Select the first chat by visible title rather than hard-coded UUID value
+    await page.locator('.chat-item').filter({ hasText: 'Trouble attaching file to Mastodon post with Node.js script' }).locator('input[type="checkbox"]').check();
 
     const [download] = await Promise.all([
       page.waitForEvent('download', { timeout: 30_000 }),
@@ -185,5 +187,7 @@ test.describe('EPUB Generation', () => {
     ]);
 
     expect(download.suggestedFilename()).toMatch(/magazine-\d{4}-\d{2}\.epub/);
+    // Await full completion so the server has finished writing and deleting the EPUB
+    await download.path();
   });
 });
