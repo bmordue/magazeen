@@ -13,3 +13,7 @@
 ## 2026-04-05 - [Metadata-Rich List Items]
 **Learning:** Providing secondary metadata (like dates and item counts) in selection lists is crucial when primary titles are generic or repetitive. This reduces cognitive load and prevents user errors during selection. Using a vertical flex layout for the label content allows for clear visual hierarchy without cluttering the interface.
 **Action:** Always include relevant metadata sub-text in list items to provide context. Ensure that search filters target primary titles but remain functional when list item DOM structure becomes more complex.
+
+## 2026-04-03 - [Consolidated Filtering and Focused Entry]
+**Learning:** Providing a "Show selected only" toggle in long multi-select lists allows users to audit their choices without losing their place or search context. Combining this with autofocus on the search input and an Escape-to-clear shortcut creates a high-velocity interaction pattern for data-heavy selection tasks.
+**Action:** For list-heavy selection UIs, implement a unified filtering function that handles both text search and selection state. Always autofocus the primary search field and provide keyboard shortcuts (like Escape) for rapid navigation and state clearing.
