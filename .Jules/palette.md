@@ -21,3 +21,7 @@
 ## 2026-04-06 - [Sticky Actions and Visual Selection Cues]
 **Learning:** In long list-based selection interfaces, anchoring primary action buttons in a sticky footer ensures they remain accessible without scrolling, significantly reducing friction. Providing immediate visual feedback for selected rows (e.g., background color and borders) and supporting keyboard shortcuts (Ctrl/Cmd + Enter) creates a much more responsive and efficient user experience.
 **Action:** Use sticky footers for primary actions in long lists and implement distinct visual styles for selected states to aid scannability. Always provide keyboard shortcuts for high-frequency actions and communicate them via subtle "Tips".
+
+## 2026-04-05 - [Sticky Filters and Aggregated Metadata]
+**Learning:** Implementing a sticky header for search filters and bulk actions in long lists prevents users from losing context or control while scrolling. Aggregating secondary metadata (like total message counts across selected items) provides users with a better sense of scale for the outcome of their bulk operations. Moving filter-clearing shortcuts (like Escape) to the document level ensures they are always accessible regardless of focus.
+**Action:** Use sticky headers (`.sticky-header`) to keep list controls accessible and provide aggregated summaries of selected data to aid user decision-making. Ensure reset shortcuts are globally scoped for high-velocity filtering tasks.
