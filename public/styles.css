@@ -263,3 +263,13 @@ hr {
 #select-chats-form {
   padding-bottom: 80px;
 }
+
+.sticky-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--background-color);
+  border-bottom: 1px solid var(--border-color);
+  padding: 10px 0;
+  margin-bottom: 15px;
+}

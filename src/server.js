@@ -97,7 +97,7 @@ app.post('/upload', upload.single('chatExport'), async (req, res) => {
     const chatListHtml = chats.map(chat => `
       <div class="chat-item">
         <label class="chat-item-label">
-          <input type="checkbox" name="selectedChats" value="${chat.id}">
+          <input type="checkbox" name="selectedChats" value="${chat.id}" data-message-count="${chat.messageCount}">
           <div class="chat-item-info">
             <span class="chat-item-title">${chat.title}</span>
             <span class="chat-item-meta">${chat.date} • ${chat.messageCount} messages</span>
