@@ -158,9 +158,14 @@ app.post('/generate-epub', async (req, res) => {
 
     for (const chat of chatsToInclude) {
       const title = chat.title;
-      const conversation = chat.originalChatData.chat_messages
-        .map(msg => `${msg.sender === 'human' ? 'Human' : 'Assistant'}: ${msg.text}`)
-        .join('\n\n');
+      const messages = chat.originalChatData.chat_messages || [];
+      const conversation = messages.map(msg => ({ sender: msg.sender, text: msg.text }));
+
+      if (conversation.length === 0) {
+        console.warn(`Skipping chat "${title}" – no messages to include.`);
+        continue;
+      }
+
       const insights = `Highlights from chat: ${title}`; // Generic insights
       const category = 'Chat Exports'; // Generic category
 
