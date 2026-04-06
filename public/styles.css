@@ -234,6 +234,21 @@ hr {
   margin-bottom: 15px;
 }
 
+.sticky-header {
+  position: sticky;
+  top: 0;
+  background-color: var(--container-bg-color);
+  padding-top: var(--spacing-unit);
+  padding-bottom: 10px;
+  border-bottom: 1px solid var(--border-color);
+  margin-left: calc(var(--spacing-unit) * -1);
+  margin-right: calc(var(--spacing-unit) * -1);
+  padding-left: var(--spacing-unit);
+  padding-right: var(--spacing-unit);
+  z-index: 90;
+  margin-bottom: 15px;
+}
+
 .sticky-footer {
   position: fixed;
   bottom: 0;

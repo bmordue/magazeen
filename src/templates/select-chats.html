@@ -12,26 +12,27 @@
     <input type="hidden" name="sessionId" value="{{sessionId}}">
     <input type="hidden" name="originalFilename" value="{{originalFilename}}">
 
-    <div class="form-group">
-      <label for="chat-search">Search chats <small>(Press '/' to focus)</small>:</label>
-      <div class="search-container">
-        <input type="text" id="chat-search" class="search-input" placeholder="Filter by title..." autocomplete="off">
-        <button type="button" id="search-clear" class="search-clear" aria-label="Clear search">&times;</button>
+    <div class="sticky-header">
+      <div class="form-group" style="margin-bottom: 12px;">
+        <label for="chat-search">Search chats <small>(Press '/' to focus)</small>:</label>
+        <div class="search-container">
+          <input type="text" id="chat-search" class="search-input" placeholder="Filter by title..." autocomplete="off">
+          <button type="button" id="search-clear" class="search-clear" aria-label="Clear search">&times;</button>
+        </div>
+        <div style="margin-top: 8px;">
+          <label for="show-selected-only" style="font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 8px;">
+            <input type="checkbox" id="show-selected-only">
+            Show selected only
+          </label>
+        </div>
       </div>
-      <div style="margin-top: 8px;">
-        <label for="show-selected-only" style="font-weight: normal; cursor: pointer; display: flex; align-items: center; gap: 8px;">
-          <input type="checkbox" id="show-selected-only">
-          Show selected only
-        </label>
-      </div>
-    </div>
 
-    <label class="select-all-container" for="select-all-chats">
-      <input type="checkbox" id="select-all-chats">
-      <span id="select-all-label"><strong>Select All Chats</strong></span>
-      <span id="selection-count" class="selection-counter" aria-live="polite"></span>
-    </label>
-    <hr>
+      <label class="select-all-container" for="select-all-chats" style="margin-bottom: 0;">
+        <input type="checkbox" id="select-all-chats">
+        <span id="select-all-label"><strong>Select All Chats</strong></span>
+        <span id="selection-count" class="selection-counter" aria-live="polite"></span>
+      </label>
+    </div>
 
     <div class="chat-list" id="chat-list">
       {{chatList}}
@@ -66,11 +67,15 @@
     let lastChecked = null;
 
     function updateUIState() {
+      let totalMessages = 0;
       const checkedCount = Array.from(chatCheckboxes).filter(cb => {
         const isChecked = cb.checked;
         const label = cb.closest('.chat-item-label');
         if (label) {
           label.classList.toggle('selected', isChecked);
+        }
+        if (isChecked) {
+          totalMessages += parseInt(cb.dataset.messageCount || 0, 10);
         }
         return isChecked;
       }).length;
@@ -82,11 +87,12 @@
       const visibleTotalCount = visibleCheckboxes.length;
 
       // Update counter text
+      const selectedInfo = checkedCount > 0 ? `Selected: ${checkedCount} (${totalMessages} messages)` : `Selected: 0`;
       if (visibleTotalCount < totalCount) {
-        selectionCounter.textContent = `Showing ${visibleTotalCount} of ${totalCount} | Selected: ${checkedCount}`;
+        selectionCounter.textContent = `Showing ${visibleTotalCount} of ${totalCount} | ${selectedInfo}`;
         selectAllLabel.innerHTML = '<strong>Select All Visible</strong>';
       } else {
-        selectionCounter.textContent = `Selected: ${checkedCount} / ${totalCount}`;
+        selectionCounter.textContent = `${selectedInfo} / ${totalCount}`;
         selectAllLabel.innerHTML = '<strong>Select All Chats</strong>';
       }
 
@@ -178,16 +184,26 @@
 
     chatSearch.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
-        chatSearch.value = '';
-        applyFilters();
+        clearAllFilters();
         chatSearch.blur();
       }
     });
 
     searchClear.addEventListener('click', clearSearch);
 
+    function clearAllFilters() {
+      chatSearch.value = '';
+      showSelectedOnly.checked = false;
+      applyFilters();
+    }
+
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
+      // Clear filters with Escape when not in search (or let it bubble if in search)
+      if (e.key === 'Escape' && document.activeElement !== chatSearch) {
+        clearAllFilters();
+      }
+
       // Focus search with '/'
       if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
         e.preventDefault();
