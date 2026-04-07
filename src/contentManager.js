@@ -1,5 +1,6 @@
 import { promises as fs } from 'fs';
 import * as syncFs from 'fs';
+import path from 'path';
 import { config } from './config.js';
 import { Logger } from './logger.js';
 import { Validator, ValidationError } from './validation.js';
@@ -16,6 +17,7 @@ export class ContentManager {
             existsSync: syncFs.existsSync,
             readFileSync: syncFs.readFileSync,
             writeFileSync: syncFs.writeFileSync,
+            mkdirSync: syncFs.mkdirSync,
             // Async operations (preferred)
             pathExists: async (path) => {
                 try {
@@ -148,6 +150,16 @@ export class ContentManager {
     // Sync version (for backward compatibility)
     saveContent() {
         try {
+            // Ensure directory exists
+            const dir = path.dirname(this.contentFile);
+            if (!this.fsUtils.existsSync(dir)) {
+                if (this.fsUtils.mkdirSync) {
+                    this.fsUtils.mkdirSync(dir, { recursive: true });
+                } else {
+                    syncFs.mkdirSync(dir, { recursive: true });
+                }
+            }
+
             this.fsUtils.writeFileSync(this.contentFile, JSON.stringify(this.content, null, 2));
             this.logger.info('Content saved successfully (sync)', { 
                 file: this.contentFile,
