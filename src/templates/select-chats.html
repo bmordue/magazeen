@@ -7,6 +7,9 @@
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
+  <div style="margin-bottom: 10px;">
+    <a href="/" style="color: #666; text-decoration: none; font-size: 0.9rem;">&larr; Back to upload</a>
+  </div>
   <h1>Select Chats: {{originalFilename}}</h1>
   <form action="/generate-epub" method="post" id="select-chats-form">
     <input type="hidden" name="sessionId" value="{{sessionId}}">
@@ -27,11 +30,14 @@
         </div>
       </div>
 
-      <label class="select-all-container" for="select-all-chats" style="margin-bottom: 0;">
-        <input type="checkbox" id="select-all-chats">
-        <span id="select-all-label"><strong>Select All Chats</strong></span>
-        <span id="selection-count" class="selection-counter" aria-live="polite"></span>
-      </label>
+      <div class="select-all-container" style="margin-bottom: 0; display: flex; align-items: center;">
+        <label for="select-all-chats" style="display: flex; align-items: center; cursor: pointer; flex-grow: 1;">
+          <input type="checkbox" id="select-all-chats" style="margin-right: 8px;">
+          <span id="select-all-label"><strong>Select All Chats</strong></span>
+          <span id="selection-count" class="selection-counter" aria-live="polite"></span>
+        </label>
+        <button type="button" id="clear-selection" class="link-button" style="margin-left: 10px; display: none; font-size: 0.8rem; margin-top: 0;">Clear all</button>
+      </div>
     </div>
 
     <div class="chat-list" id="chat-list">
@@ -61,6 +67,7 @@
     const searchClear = document.getElementById('search-clear');
     const noResults = document.getElementById('no-results');
     const selectionCounter = document.getElementById('selection-count');
+    const clearSelectionBtn = document.getElementById('clear-selection');
     const form = document.getElementById('select-chats-form');
     const generateButton = document.getElementById('generate-button');
 
@@ -107,12 +114,28 @@
         generateButton.textContent = 'Generate EPUB';
       } else {
         generateButton.title = "";
-        generateButton.textContent = `Generate EPUB (${checkedCount})`;
+        const chatSuffix = checkedCount === 1 ? 'chat' : 'chats';
+        const msgSuffix = totalMessages === 1 ? 'message' : 'messages';
+        generateButton.textContent = `Generate EPUB (${checkedCount} ${chatSuffix}, ${totalMessages} ${msgSuffix})`;
       }
 
       // Update Search Clear button visibility
       searchClear.style.display = chatSearch.value ? 'block' : 'none';
+
+      // Update Clear Selection button visibility
+      clearSelectionBtn.style.display = checkedCount > 0 ? 'inline-block' : 'none';
     }
+
+    clearSelectionBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      chatCheckboxes.forEach(cb => {
+        cb.checked = false;
+      });
+      selectAllCheckbox.checked = false;
+      selectAllCheckbox.indeterminate = false;
+      applyFilters();
+    });
 
     selectAllCheckbox.addEventListener('change', (e) => {
       // Only affect visible checkboxes
