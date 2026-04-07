@@ -25,3 +25,7 @@
 ## 2026-04-07 - [Sticky Headers and Scaled Selection Metadata]
 **Learning:** For high-volume selection tasks, pinning filter controls in a sticky header maintains context and control during deep scrolling. Complementing this with aggregate metadata (like total message count) in the selection summary provides users with a better sense of scale for the final output, aiding in curation decisions.
 **Action:** Implement `.sticky-header` for filter bars in long lists to maintain accessibility. Always include aggregate metrics (counts, sizes, estimated pages) in selection summaries to provide scale context beyond just item counts.
+
+## 2026-04-08 - [Correct Layout for Bulk Actions and Breadcrumbs]
+**Learning:** When adding multiple interactive elements to a list header (like breadcrumbs and bulk clear buttons), using flexbox layouts with separate elements instead of nesting buttons inside labels is crucial for accessibility and predictable interaction. Breadcrumbs should provide a clear path back to the entry state (e.g., upload), especially when session data might be ephemeral.
+**Action:** Avoid nesting interactive elements in `<label>` tags. Use separate elements with flexbox for header controls. Always provide a clear way back (like breadcrumbs) in multi-step wizard-like flows.

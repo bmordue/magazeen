@@ -27,7 +27,7 @@ test.describe('File Upload', () => {
     await page.locator('#upload-button').click();
 
     // 15 s timeout allows for real file I/O and session storage on the server
-    await expect(page.locator('h1')).toHaveText('Select Chats to Include', { timeout: 15_000 });
+    await expect(page.locator('h1')).toHaveText(/Select Chats: .*/, { timeout: 15_000 });
     // The fixture contains 4 chats (2 with messages + 2 malformed with no messages);
     // all are presented to the user for selection
     await expect(page.locator('input[name="selectedChats"]')).toHaveCount(4);
@@ -38,7 +38,7 @@ test.describe('File Upload', () => {
     await page.locator('#chatExport').setInputFiles(SAMPLE_EXPORT);
     await page.locator('#upload-button').click();
 
-    await expect(page.locator('h1')).toHaveText('Select Chats to Include', { timeout: 15_000 });
+    await expect(page.locator('h1')).toHaveText(/Select Chats: .*/, { timeout: 15_000 });
     await expect(page.getByText('Trouble attaching file to Mastodon post with Node.js script')).toBeVisible();
     await expect(page.getByText('Second Chat Example')).toBeVisible();
   });
@@ -93,7 +93,7 @@ test.describe('Chat Selection', () => {
     await page.goto('/');
     await page.locator('#chatExport').setInputFiles(SAMPLE_EXPORT);
     await page.locator('#upload-button').click();
-    await expect(page.locator('h1')).toHaveText('Select Chats to Include', { timeout: 15_000 });
+    await expect(page.locator('h1')).toHaveText(/Select Chats: .*/, { timeout: 15_000 });
   });
 
   test('generate button is disabled when no chats are selected', async ({ page }) => {
@@ -131,7 +131,7 @@ test.describe('Chat Search', () => {
     await page.goto('/');
     await page.locator('#chatExport').setInputFiles(SAMPLE_EXPORT);
     await page.locator('#upload-button').click();
-    await expect(page.locator('h1')).toHaveText('Select Chats to Include', { timeout: 15_000 });
+    await expect(page.locator('h1')).toHaveText(/Select Chats: .*/, { timeout: 15_000 });
   });
 
   test('typing in the search box hides non-matching chats', async ({ page }) => {
@@ -155,7 +155,7 @@ test.describe('EPUB Generation', () => {
     await page.goto('/');
     await page.locator('#chatExport').setInputFiles(SAMPLE_EXPORT);
     await page.locator('#upload-button').click();
-    await expect(page.locator('h1')).toHaveText('Select Chats to Include', { timeout: 15_000 });
+    await expect(page.locator('h1')).toHaveText(/Select Chats: .*/, { timeout: 15_000 });
 
     // Select chats by visible title rather than hard-coded UUID values
     await page.locator('.chat-item').filter({ hasText: 'Trouble attaching file to Mastodon post with Node.js script' }).locator('input[type="checkbox"]').check();
@@ -176,7 +176,7 @@ test.describe('EPUB Generation', () => {
     await page.goto('/');
     await page.locator('#chatExport').setInputFiles(SAMPLE_EXPORT);
     await page.locator('#upload-button').click();
-    await expect(page.locator('h1')).toHaveText('Select Chats to Include', { timeout: 15_000 });
+    await expect(page.locator('h1')).toHaveText(/Select Chats: .*/, { timeout: 15_000 });
 
     // Select the first chat by visible title rather than hard-coded UUID value
     await page.locator('.chat-item').filter({ hasText: 'Trouble attaching file to Mastodon post with Node.js script' }).locator('input[type="checkbox"]').check();
