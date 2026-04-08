@@ -22,6 +22,10 @@
 **Learning:** In long list-based selection interfaces, anchoring primary action buttons in a sticky footer ensures they remain accessible without scrolling, significantly reducing friction. Providing immediate visual feedback for selected rows (e.g., background color and borders) and supporting keyboard shortcuts (Ctrl/Cmd + Enter) creates a much more responsive and efficient user experience.
 **Action:** Use sticky footers for primary actions in long lists and implement distinct visual styles for selected states to aid scannability. Always provide keyboard shortcuts for high-frequency actions and communicate them via subtle "Tips".
 
+## 2026-04-09 - [Keyboard Discoverability and High-Contrast Secondary Text]
+**Learning:** Consolidating keyboard shortcuts into a single, high-visibility "Tip" line in the sticky footer significantly improves feature discoverability for power users. Additionally, using `#575757` instead of `#666` for secondary text ensures WCAG AA compliance (4.5:1 contrast) on white backgrounds without sacrificing the "secondary" visual hierarchy.
+**Action:** Always document all page-level keyboard shortcuts in a consolidated hint area. Use `#575757` as the default for secondary/muted text to guarantee accessibility.
+
 ## 2026-04-07 - [Sticky Headers and Scaled Selection Metadata]
 **Learning:** For high-volume selection tasks, pinning filter controls in a sticky header maintains context and control during deep scrolling. Complementing this with aggregate metadata (like total message count) in the selection summary provides users with a better sense of scale for the final output, aiding in curation decisions.
 **Action:** Implement `.sticky-header` for filter bars in long lists to maintain accessibility. Always include aggregate metrics (counts, sizes, estimated pages) in selection summaries to provide scale context beyond just item counts.

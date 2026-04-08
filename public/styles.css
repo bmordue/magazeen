@@ -64,15 +64,29 @@ button[type="submit"]:disabled {
   transform: none;
 }
 
+a:focus-visible,
 button:focus-visible,
 input:focus-visible {
   outline: 3px solid var(--primary-color);
   outline-offset: 2px;
 }
 
+.breadcrumb-link {
+  color: #575757;
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: color 0.2s ease;
+}
+
+.breadcrumb-link:hover,
+.breadcrumb-link:focus-visible {
+  color: var(--primary-color);
+  text-decoration: underline;
+}
+
 .helper-text {
   font-size: 0.85rem;
-  color: #666;
+  color: #575757;
   margin-top: 4px;
   margin-bottom: 8px;
 }
@@ -97,7 +111,7 @@ input:focus-visible {
 .selection-counter {
   margin-left: auto;
   font-size: 0.9rem;
-  color: #666;
+  color: #575757;
   font-weight: 500;
 }
 
@@ -163,7 +177,7 @@ hr {
 
 .chat-item-meta {
   font-size: 0.8rem;
-  color: #666;
+  color: #575757;
   margin-top: 2px;
 }
 
@@ -187,13 +201,13 @@ hr {
 }
 
 .search-clear:hover {
-  color: #666;
+  color: #575757;
 }
 
 .no-results {
   padding: 30px 20px;
   text-align: center;
-  color: #666;
+  color: #575757;
   font-style: italic;
   display: none;
   background: #f9f9f9;
@@ -266,7 +280,7 @@ hr {
 
 .footer-hint {
   font-size: 0.85rem;
-  color: #666;
+  color: #575757;
 }
 
 #generate-button {
