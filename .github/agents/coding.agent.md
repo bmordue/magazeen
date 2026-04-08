@@ -67,7 +67,11 @@ For more information, see: https://github.com/steveyegge/beads
 **MANDATORY WORKFLOW:**
 
 1. **File issues for remaining work** - Create issues for anything that needs follow-up
-2. **Run quality gates** (if code changed) - Tests, linters, builds
+2. **Run quality gates** (if code changed) - Tests, linters, builds MUST ALL PASS
+   ```bash
+   npm run lint  # MUST pass with no errors
+   npm test      # MUST pass (ignore pre-existing failures unrelated to your changes)
+   ```
 3. **Update issue status** - Close finished work, update in-progress items
 4. **PUSH TO REMOTE** - This is MANDATORY:
    ```bash
@@ -81,10 +85,12 @@ For more information, see: https://github.com/steveyegge/beads
 7. **Hand off** - Provide context for next session
 
 **CRITICAL RULES:**
+- **Build MUST pass** - All linting and tests must pass before pushing
 - Work is NOT complete until `git push` succeeds
 - NEVER stop before pushing - that leaves work stranded locally
 - NEVER say "ready to push when you are" - YOU must push
 - If push fails, resolve and retry until it succeeds
+- If tests fail due to your changes, fix them before pushing
 
 ## Project-Specific Information
 

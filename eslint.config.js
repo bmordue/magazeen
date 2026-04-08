@@ -19,7 +19,8 @@ export default [
     ...pluginJest.configs["flat/recommended"],
     rules: {
         ...pluginJest.configs["flat/recommended"].rules,
-        // you can override individual rules here
+        // Allow skipped tests during development
+        'jest/no-disabled-tests': 'off',
     },
      languageOptions: {
         globals: {

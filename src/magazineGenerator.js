@@ -8,7 +8,7 @@ export class MagazineGenerator {
     constructor(contentManager, articleGenerator, epubGeneratorFactory, contentClusterer) {
         this.contentManager = contentManager;
         this.articleGenerator = articleGenerator;
-        this.epubGeneratorFactory = epubGeneratorFactory || this.defaultEPUBGeneratorFactory;
+        this.epubGeneratorFactory = epubGeneratorFactory || this.defaultEPUBGeneratorFactory.bind(this);
         this.contentClusterer = contentClusterer || new ContentClusterer();
     }
 
@@ -28,8 +28,8 @@ export class MagazineGenerator {
                              config.content.enableClustering,
             minSimilarity = this.contentManager.content.metadata?.clusteringSimilarity ??
                            config.content.clusteringSimilarity,
-            kindleOptimized = this.contentManager.content.metadata?.kindleOptimized ??
-                            config.content.kindleOptimized ||
+            kindleOptimized = (this.contentManager.content.metadata?.kindleOptimized ??
+                            config.content.kindleOptimized) ||
                             false  // Default to false for backward compatibility
         } = options;
 
@@ -70,7 +70,7 @@ export class MagazineGenerator {
                         </div>
                     `;
                 });
-                
+
                 allContentItems.push({
                     title: chat.title,
                     content: chatContent,
@@ -92,7 +92,7 @@ export class MagazineGenerator {
             // Add content to EPUB organized by sections
             sections.forEach(section => {
                 console.log(`  Section: "${section.sectionName}" (${section.articles.length} items)`);
-                
+
                 // Add a section marker/divider if EPUB generator supports it
                 // For now, we'll add articles with their section category
                 section.articles.forEach(item => {

@@ -208,7 +208,7 @@ body {
 
 .article-content p {
     margin-bottom: 1em;
-    text-align: justify;
+    text-align: left;
     line-height: 1.6;
     orphans: 3;
     widows: 3;
@@ -234,20 +234,19 @@ body {
 }
 
 .article-content code {
-    background-color: #f0f0f0;
+    background-color: #FFFFFF;
     padding: 2px 6px;
-    border-radius: 3px;
+    border: 1px solid var(--border-color);
     font-family: monospace;
     font-size: 0.9em;
 }
 
 .article-content pre {
-    background-color: #f0f0f0;
+    background-color: #FFFFFF;
     padding: 1em;
-    border-radius: 4px;
+    border: 2px solid var(--border-color);
     overflow-x: auto;
     margin: 1.2em 0;
-    border: 1px solid var(--border-color);
 }
 
 .article-content pre code {
