@@ -8,7 +8,7 @@
 </head>
 <body>
   <div style="margin-bottom: 10px;">
-    <a href="/" style="color: #666; text-decoration: none; font-size: 0.9rem;">&larr; Back to upload</a>
+    <a href="/" class="breadcrumb-link">&larr; Back to upload</a>
   </div>
   <h1>Select Chats: {{originalFilename}}</h1>
   <form action="/generate-epub" method="post" id="select-chats-form">
@@ -43,7 +43,7 @@
     <div class="chat-list" id="chat-list">
       {{chatList}}
     </div>
-    <div id="no-results" class="no-results">
+    <div id="no-results" class="no-results" aria-live="polite">
       No chats found matching your search.
       <br>
       <button type="button" class="link-button" onclick="clearSearch()">Clear search</button>
@@ -51,7 +51,7 @@
 
     <div class="sticky-footer">
       <div class="footer-hint">
-        Tip: Press <strong>Ctrl + Enter</strong> (or <strong>Cmd + Enter</strong>) to generate
+        Tip: <strong>/</strong> search • <strong>a</strong> toggle all • <strong>Esc</strong> clear • <strong>Ctrl+Enter</strong> generate
       </div>
       <button type="submit" id="generate-button">Generate EPUB</button>
     </div>
@@ -231,6 +231,12 @@
       if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
         e.preventDefault();
         chatSearch.focus();
+      }
+
+      // Toggle visible selections with 'a'
+      if (e.key === 'a' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+        e.preventDefault();
+        selectAllCheckbox.click();
       }
 
       // Generate EPUB with Ctrl/Cmd + Enter
