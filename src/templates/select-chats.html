@@ -51,7 +51,7 @@
 
     <div class="sticky-footer">
       <div class="footer-hint">
-        Tip: <strong>/</strong> search • <strong>a</strong> toggle all • <strong>Esc</strong> clear • <strong>Ctrl+Enter</strong> generate
+        Tip: <strong>/</strong> search • <strong>a</strong> toggle all • <strong>&uarr;&darr;</strong> navigate • <strong>Esc</strong> clear • <strong>Ctrl+Enter</strong> generate
       </div>
       <button type="submit" id="generate-button">Generate EPUB</button>
     </div>
@@ -222,21 +222,46 @@
 
     // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
+      const isInput = document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA';
+      const isSearchActive = document.activeElement === chatSearch;
+      const isCheckboxActive = document.activeElement.type === 'checkbox';
+
       // Clear filters with Escape when not in search (or let it bubble if in search)
-      if (e.key === 'Escape' && document.activeElement !== chatSearch) {
+      if (e.key === 'Escape' && !isSearchActive) {
         clearAllFilters();
       }
 
       // Focus search with '/'
-      if (e.key === '/' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+      if (e.key === '/' && (!isInput || isCheckboxActive)) {
         e.preventDefault();
         chatSearch.focus();
       }
 
       // Toggle visible selections with 'a'
-      if (e.key === 'a' && document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+      if (e.key === 'a' && (!isInput || isCheckboxActive)) {
         e.preventDefault();
         selectAllCheckbox.click();
+      }
+
+      // Arrow navigation
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+        const visibleElements = [
+          chatSearch,
+          ...Array.from(chatCheckboxes).filter(cb => cb.closest('.chat-item').style.display !== 'none'),
+          generateButton
+        ];
+        const currentIndex = visibleElements.indexOf(document.activeElement);
+
+        if (currentIndex !== -1) {
+          e.preventDefault();
+          let nextIndex;
+          if (e.key === 'ArrowDown') {
+            nextIndex = (currentIndex + 1) % visibleElements.length;
+          } else {
+            nextIndex = (currentIndex - 1 + visibleElements.length) % visibleElements.length;
+          }
+          visibleElements[nextIndex].focus();
+        }
       }
 
       // Generate EPUB with Ctrl/Cmd + Enter
