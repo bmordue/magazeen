@@ -11,8 +11,9 @@
   <form action="/upload" method="post" enctype="multipart/form-data" id="upload-form">
     <div class="form-group">
       <label for="chatExport">Select your Claude chat export (JSON):</label>
-      <p id="chatExportHelper" class="helper-text">You can find this in your Claude account settings under "Export Data".</p>
-      <input type="file" id="chatExport" name="chatExport" accept=".json" required aria-describedby="chatExportHelper">
+      <p id="chatExportHelper" class="helper-text">You can find this in your Claude account settings under "Export Data". <br><strong>Max file size: 10MB.</strong></p>
+      <div id="validation-error" class="error-message" style="display: none; margin-top: 10px; margin-bottom: 10px;" aria-live="polite"></div>
+      <input type="file" id="chatExport" name="chatExport" accept=".json" required aria-describedby="chatExportHelper validation-error">
     </div>
     <button type="submit" id="upload-button">Upload and Select Chats</button>
   </form>
@@ -20,6 +21,24 @@
   <script>
     const form = document.getElementById('upload-form');
     const uploadButton = document.getElementById('upload-button');
+    const fileInput = document.getElementById('chatExport');
+    const errorDisplay = document.getElementById('validation-error');
+
+    fileInput.addEventListener('change', () => {
+      errorDisplay.style.display = 'none';
+      const file = fileInput.files[0];
+      if (file) {
+        if (!file.name.toLowerCase().endsWith('.json')) {
+          errorDisplay.textContent = 'Please select a JSON file.';
+          errorDisplay.style.display = 'block';
+          fileInput.value = '';
+        } else if (file.size > 10 * 1024 * 1024) {
+          errorDisplay.textContent = 'File too large. Max size is 10MB.';
+          errorDisplay.style.display = 'block';
+          fileInput.value = '';
+        }
+      }
+    });
 
     form.addEventListener('submit', () => {
       uploadButton.disabled = true;
