@@ -33,3 +33,7 @@
 ## 2026-04-08 - [Correct Layout for Bulk Actions and Breadcrumbs]
 **Learning:** When adding multiple interactive elements to a list header (like breadcrumbs and bulk clear buttons), using flexbox layouts with separate elements instead of nesting buttons inside labels is crucial for accessibility and predictable interaction. Breadcrumbs should provide a clear path back to the entry state (e.g., upload), especially when session data might be ephemeral.
 **Action:** Avoid nesting interactive elements in `<label>` tags. Use separate elements with flexbox for header controls. Always provide a clear way back (like breadcrumbs) in multi-step wizard-like flows.
+
+## 2026-04-10 - [Accessible Client-Side Validation]
+**Learning:** For micro-UX improvements like file validation, leveraging native HTML elements and adding a small script for immediate feedback is more maintainable than custom UI widgets. Using `aria-live="polite"` on error containers and dynamically linking them to inputs via `aria-describedby` ensures that validation errors are immediately and clearly announced by assistive technologies.
+**Action:** Always use ARIA live regions for dynamic validation messages and ensure inputs are programmatically linked to their error containers to maintain accessibility.
