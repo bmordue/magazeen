@@ -33,3 +33,7 @@
 ## 2026-04-08 - [Correct Layout for Bulk Actions and Breadcrumbs]
 **Learning:** When adding multiple interactive elements to a list header (like breadcrumbs and bulk clear buttons), using flexbox layouts with separate elements instead of nesting buttons inside labels is crucial for accessibility and predictable interaction. Breadcrumbs should provide a clear path back to the entry state (e.g., upload), especially when session data might be ephemeral.
 **Action:** Avoid nesting interactive elements in `<label>` tags. Use separate elements with flexbox for header controls. Always provide a clear way back (like breadcrumbs) in multi-step wizard-like flows.
+
+## 2026-04-11 - [Client-side File Validation and Native UI]
+**Learning:** Implementing client-side file size and extension validation using `setCustomValidity` provides immediate, accessible feedback that integrates seamlessly with the browser's native form validation UI. This prevents unnecessary server-side errors (like Multer's "File too large") and improves the overall robustness of the upload process.
+**Action:** Use client-side JS to validate file inputs before submission. Combine this with `aria-live="polite"` for error announcements and `aria-describedby` to link error messages to the input, ensuring a high accessibility standard.

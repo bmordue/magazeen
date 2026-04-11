@@ -11,8 +11,9 @@
   <form action="/upload" method="post" enctype="multipart/form-data" id="upload-form">
     <div class="form-group">
       <label for="chatExport">Select your Claude chat export (JSON):</label>
-      <p id="chatExportHelper" class="helper-text">You can find this in your Claude account settings under "Export Data".</p>
+      <p id="chatExportHelper" class="helper-text">You can find this in your Claude account settings under "Export Data". Max file size: 10MB.</p>
       <input type="file" id="chatExport" name="chatExport" accept=".json" required aria-describedby="chatExportHelper">
+      <div id="file-error" class="error-message" style="display: none; margin-top: 10px;" aria-live="polite"></div>
     </div>
     <button type="submit" id="upload-button">Upload and Select Chats</button>
   </form>
@@ -20,8 +21,37 @@
   <script>
     const form = document.getElementById('upload-form');
     const uploadButton = document.getElementById('upload-button');
+    const fileInput = document.getElementById('chatExport');
+    const fileError = document.getElementById('file-error');
+    const MAX_SIZE = 10 * 1024 * 1024; // 10MB
 
-    form.addEventListener('submit', () => {
+    fileInput.addEventListener('change', () => {
+      const file = fileInput.files[0];
+      fileError.style.display = 'none';
+      fileInput.setCustomValidity('');
+      fileInput.setAttribute('aria-describedby', 'chatExportHelper');
+
+      if (file) {
+        if (file.size > MAX_SIZE) {
+          showError('File is too large. Maximum size is 10MB.');
+        } else if (!file.name.toLowerCase().endsWith('.json')) {
+          showError('Please select a valid JSON file.');
+        }
+      }
+    });
+
+    function showError(message) {
+      fileError.textContent = message;
+      fileError.style.display = 'block';
+      fileInput.setCustomValidity(message);
+      fileInput.setAttribute('aria-describedby', 'chatExportHelper file-error');
+    }
+
+    form.addEventListener('submit', (e) => {
+      if (!form.checkValidity()) {
+        e.preventDefault();
+        return;
+      }
       uploadButton.disabled = true;
       uploadButton.textContent = 'Uploading...';
     });
