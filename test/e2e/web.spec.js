@@ -43,7 +43,7 @@ test.describe('File Upload', () => {
     await expect(page.getByText('Second Chat Example')).toBeVisible();
   });
 
-  test('non-JSON file upload shows an error page', async ({ page }) => {
+  test('non-JSON file upload shows a client-side error', async ({ page }) => {
     await page.goto('/');
     await page.locator('#chatExport').setInputFiles({
       name: 'notes.txt',
@@ -52,8 +52,10 @@ test.describe('File Upload', () => {
     });
     await page.locator('#upload-button').click();
 
-    await expect(page.locator('h1')).toHaveText('An Error Occurred', { timeout: 10_000 });
-    await expect(page.locator('.error-message')).toContainText('Invalid file type');
+    // Verify client-side error is shown and form is not submitted
+    await expect(page.locator('#file-error')).toBeVisible();
+    await expect(page.locator('#file-error')).toContainText('Please select a valid JSON file');
+    await expect(page.locator('h1')).toHaveText('Upload Chat Export');
   });
 
   test('malformed JSON content shows an error page', async ({ page }) => {
@@ -71,10 +73,12 @@ test.describe('File Upload', () => {
 
   test('error page has a link back to home', async ({ page }) => {
     await page.goto('/');
+    // Use a .json extension but malformed content to bypass client-side validation
+    // and reach the server-side error page
     await page.locator('#chatExport').setInputFiles({
-      name: 'notes.txt',
-      mimeType: 'text/plain',
-      buffer: Buffer.from('not json'),
+      name: 'broken.json',
+      mimeType: 'application/json',
+      buffer: Buffer.from('{ not json }'),
     });
     await page.locator('#upload-button').click();
 
