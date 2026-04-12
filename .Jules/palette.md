@@ -37,3 +37,7 @@
 ## 2026-04-11 - [Client-side File Validation and Native UI]
 **Learning:** Implementing client-side file size and extension validation using `setCustomValidity` provides immediate, accessible feedback that integrates seamlessly with the browser's native form validation UI. This prevents unnecessary server-side errors (like Multer's "File too large") and improves the overall robustness of the upload process.
 **Action:** Use client-side JS to validate file inputs before submission. Combine this with `aria-live="polite"` for error announcements and `aria-describedby` to link error messages to the input, ensuring a high accessibility standard.
+
+## 2026-04-12 - [Secure Client-Side Search Highlighting]
+**Learning:** Search term highlighting is a high-value UX improvement for data-heavy lists, but implementing it via `innerHTML` introduces critical XSS vulnerabilities when dealing with user-controlled content.
+**Action:** Always use `document.createElement()` and `document.createTextNode()` for dynamic DOM manipulation and highlighting. Additionally, ensure all user-provided data is HTML-escaped on the server-side before being served to the client to provide a defense-in-depth security posture.
