@@ -41,3 +41,7 @@
 ## 2026-04-12 - [Secure Client-Side Search Highlighting]
 **Learning:** Search term highlighting is a high-value UX improvement for data-heavy lists, but implementing it via `innerHTML` introduces critical XSS vulnerabilities when dealing with user-controlled content.
 **Action:** Always use `document.createElement()` and `document.createTextNode()` for dynamic DOM manipulation and highlighting. Additionally, ensure all user-provided data is HTML-escaped on the server-side before being served to the client to provide a defense-in-depth security posture.
+
+## 2026-04-13 - [Enhanced Feedback and Mobile Polish]
+**Learning:** Using a CSS-only loading spinner within primary action buttons provides immediate, accessible feedback during async operations without requiring external assets. Additionally, using `:has(input:focus-visible)` on row containers significantly improves keyboard navigability by highlighting the entire interactive area, rather than just the focus ring of the checkbox. Ensuring sticky footers are responsive by stacking elements on mobile viewports prevents UI crowding and maintains high usability.
+**Action:** Always provide visual feedback (spinners/state changes) for primary actions. Use row-level focus indicators for list items to aid accessibility and ensure fixed/sticky elements are optimized for small screens using media queries.
