@@ -315,7 +315,7 @@
         return;
       }
       generateButton.disabled = true;
-      generateButton.textContent = 'Generating...';
+      generateButton.innerHTML = '<span class="spinner" aria-hidden="true"></span>Generating EPUB...';
     });
 
     // Initialize state on page load

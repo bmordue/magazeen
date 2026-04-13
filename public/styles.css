@@ -5,7 +5,7 @@
     --text-color: #333;
     --container-bg-color: #fff;
     --border-color: #ddd;
-    --error-color: red;
+    --error-color: #d32f2f;
     --error-bg-color: #ffebee;
     --success-color: green;
     --success-bg-color: #e8f5e9;
@@ -158,6 +158,12 @@ hr {
   background-color: #f0f7ff;
 }
 
+.chat-item-label:has(input:focus-visible) {
+  outline: 3px solid var(--primary-color);
+  outline-offset: -3px;
+  background-color: #f0f7ff;
+}
+
 .chat-item-label.selected {
   background-color: #e6f2ff;
   border-left: 4px solid var(--primary-color);
@@ -298,4 +304,43 @@ mark {
 /* Add padding to the form to prevent footer overlap */
 #select-chats-form {
   padding-bottom: 80px;
+}
+
+/* Spinner Styles */
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 1s ease-in-out infinite;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 600px) {
+  .sticky-footer {
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .footer-hint {
+    text-align: center;
+    order: 2;
+  }
+
+  #generate-button {
+    width: 100%;
+    order: 1;
+  }
+
+  #select-chats-form {
+    padding-bottom: 120px;
+  }
 }

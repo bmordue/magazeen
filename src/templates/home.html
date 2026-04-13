@@ -53,7 +53,7 @@
         return;
       }
       uploadButton.disabled = true;
-      uploadButton.textContent = 'Uploading...';
+      uploadButton.innerHTML = '<span class="spinner" aria-hidden="true"></span>Uploading...';
     });
   </script>
 </body>
