@@ -248,6 +248,13 @@ hr {
   margin-bottom: 15px;
 }
 
+mark {
+  background-color: #ffd700;
+  color: black;
+  padding: 0 2px;
+  border-radius: 2px;
+}
+
 .sticky-header {
   position: sticky;
   top: 0;

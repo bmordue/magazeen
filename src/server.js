@@ -77,6 +77,15 @@ export async function processUploadedFile(filePath, originalFilename) {
   return { sessionId, chats, originalFilename };
 }
 
+function escapeHtml(unsafe) {
+  return unsafe
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 app.post('/upload', upload.single('chatExport'), async (req, res) => {
   if (!req.file) {
     return res.status(400).send(renderErrorPage('No file uploaded. Please select a JSON file and try again.'));
@@ -94,17 +103,20 @@ app.post('/upload', upload.single('chatExport'), async (req, res) => {
   try {
     const { sessionId, chats, originalFilename } = await processUploadedFile(req.file.path, req.file.originalname);
 
-    const chatListHtml = chats.map(chat => `
+    const chatListHtml = chats.map(chat => {
+      const escapedTitle = escapeHtml(chat.title);
+      return `
       <div class="chat-item">
         <label class="chat-item-label">
           <input type="checkbox" name="selectedChats" value="${chat.id}" data-message-count="${chat.messageCount}">
           <div class="chat-item-info">
-            <span class="chat-item-title">${chat.title}</span>
+            <span class="chat-item-title">${escapedTitle}</span>
             <span class="chat-item-meta">${chat.date} • ${chat.messageCount} messages</span>
           </div>
         </label>
       </div>
-    `).join('');
+    `;
+    }).join('');
 
     res.send(renderTemplate('select-chats', {
       sessionId,

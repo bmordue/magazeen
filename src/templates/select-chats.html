@@ -180,15 +180,46 @@
 
       chatItems.forEach(item => {
         const titleElement = item.querySelector('.chat-item-title');
-        const title = titleElement.textContent.toLowerCase();
+        const originalTitle = titleElement.dataset.originalTitle || titleElement.textContent;
+        if (!titleElement.dataset.originalTitle) {
+          titleElement.dataset.originalTitle = originalTitle;
+        }
+
+        const titleLower = originalTitle.toLowerCase();
         const isChecked = item.querySelector('input[name="selectedChats"]').checked;
 
-        const matchesSearch = title.includes(searchTerm);
+        const matchesSearch = titleLower.includes(searchTerm);
         const matchesSelection = !onlySelected || isChecked;
 
         const isVisible = matchesSearch && matchesSelection;
         item.style.display = isVisible ? '' : 'none';
-        if (isVisible) visibleCount++;
+
+        if (isVisible) {
+          visibleCount++;
+          titleElement.textContent = ''; // Clear existing content safely
+
+          if (searchTerm && matchesSearch) {
+            let lastIndex = 0;
+            const regex = new RegExp(searchTerm.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'gi');
+            let match;
+
+            while ((match = regex.exec(originalTitle)) !== null) {
+              // Add text before match
+              titleElement.appendChild(document.createTextNode(originalTitle.substring(lastIndex, match.index)));
+
+              // Add highlighted match
+              const mark = document.createElement('mark');
+              mark.textContent = match[0];
+              titleElement.appendChild(mark);
+
+              lastIndex = regex.lastIndex;
+            }
+            // Add remaining text
+            titleElement.appendChild(document.createTextNode(originalTitle.substring(lastIndex)));
+          } else {
+            titleElement.textContent = originalTitle;
+          }
+        }
       });
 
       noResults.style.display = visibleCount === 0 ? 'block' : 'none';
