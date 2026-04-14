@@ -51,7 +51,7 @@
 
     <div class="sticky-footer">
       <div class="footer-hint">
-        Tip: <strong>/</strong> search • <strong>a</strong> toggle all • <strong>&uarr;&darr;</strong> navigate • <strong>Esc</strong> clear • <strong>Ctrl+Enter</strong> generate
+        Tip: <strong>/</strong> search • <strong>a</strong> toggle all • <strong>&uarr;&darr;</strong> nav • <strong>Home/End</strong> • <strong>PgUp/Dn</strong> • <strong>Esc</strong> clear • <strong>Ctrl+Enter</strong> generate
       </div>
       <button type="submit" id="generate-button">Generate EPUB</button>
     </div>
@@ -222,7 +222,25 @@
         }
       });
 
-      noResults.style.display = visibleCount === 0 ? 'block' : 'none';
+      if (visibleCount === 0) {
+        noResults.style.display = 'block';
+        if (onlySelected && !searchTerm) {
+          noResults.innerHTML = `
+            No selected chats to show.
+            <br>
+            <button type="button" class="link-button" onclick="document.getElementById('show-selected-only').click()">Show all chats</button>
+          `;
+        } else {
+          noResults.innerHTML = `
+            No chats found matching your search.
+            <br>
+            <button type="button" class="link-button" onclick="clearSearch()">Clear search</button>
+          `;
+        }
+      } else {
+        noResults.style.display = 'none';
+      }
+
       searchClear.style.display = chatSearch.value ? 'block' : 'none';
       updateUIState();
     }
@@ -274,8 +292,8 @@
         selectAllCheckbox.click();
       }
 
-      // Arrow navigation
-      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      // Arrow navigation and PageUp/PageDown/Home/End
+      if (['ArrowDown', 'ArrowUp', 'PageDown', 'PageUp', 'Home', 'End'].includes(e.key)) {
         const visibleElements = [
           chatSearch,
           ...Array.from(chatCheckboxes).filter(cb => cb.closest('.chat-item').style.display !== 'none'),
@@ -283,13 +301,21 @@
         ];
         const currentIndex = visibleElements.indexOf(document.activeElement);
 
-        if (currentIndex !== -1) {
+        if (currentIndex !== -1 || ['Home', 'End'].includes(e.key)) {
           e.preventDefault();
           let nextIndex;
           if (e.key === 'ArrowDown') {
             nextIndex = (currentIndex + 1) % visibleElements.length;
-          } else {
+          } else if (e.key === 'ArrowUp') {
             nextIndex = (currentIndex - 1 + visibleElements.length) % visibleElements.length;
+          } else if (e.key === 'PageDown') {
+            nextIndex = Math.min(currentIndex + 10, visibleElements.length - 1);
+          } else if (e.key === 'PageUp') {
+            nextIndex = Math.max(currentIndex - 10, 0);
+          } else if (e.key === 'Home') {
+            nextIndex = 0;
+          } else if (e.key === 'End') {
+            nextIndex = visibleElements.length - 1;
           }
           visibleElements[nextIndex].focus();
         }

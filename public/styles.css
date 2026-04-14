@@ -108,6 +108,12 @@ input:focus-visible {
   border-color: var(--border-color);
 }
 
+.select-all-container:has(input:focus-visible) {
+  outline: 3px solid var(--primary-color);
+  outline-offset: -3px;
+  background-color: #f0f7ff;
+}
+
 .selection-counter {
   margin-left: auto;
   font-size: 0.9rem;
