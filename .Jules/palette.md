@@ -45,3 +45,7 @@
 ## 2026-04-13 - [Enhanced Feedback and Mobile Polish]
 **Learning:** Using a CSS-only loading spinner within primary action buttons provides immediate, accessible feedback during async operations without requiring external assets. Additionally, using `:has(input:focus-visible)` on row containers significantly improves keyboard navigability by highlighting the entire interactive area, rather than just the focus ring of the checkbox. Ensuring sticky footers are responsive by stacking elements on mobile viewports prevents UI crowding and maintains high usability.
 **Action:** Always provide visual feedback (spinners/state changes) for primary actions. Use row-level focus indicators for list items to aid accessibility and ensure fixed/sticky elements are optimized for small screens using media queries.
+
+## 2026-04-14 - [High-Velocity List Navigation and Contextual Recovery]
+**Learning:** Expanding keyboard navigation to include Home/End (extreme bounds) and PageUp/PageDown (chunked jumps) dramatically improves the experience for users managing large datasets. Complementing this with contextual empty states that provide direct recovery actions (e.g., a "Show all chats" button when "Show selected only" yields no results) prevents dead-ends and maintains user momentum.
+**Action:** Implement Home/End and PgUp/PgDn shortcuts for all list-heavy selection interfaces. Always replace generic "No results" messages with context-aware strings and include primary recovery buttons directly in the empty state container.
