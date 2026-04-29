@@ -1,16 +1,21 @@
 import { promises as fs } from 'fs';
 import * as crypto from 'crypto';
 import * as path from 'path';
+import { config } from './config.js';
 
-const CACHE_DIR = path.resolve('./summary_cache');
+function getCacheDir() {
+    return path.resolve(path.dirname(config.paths.contentFile), 'summary_cache');
+}
 
 async function ensureCacheDir() {
+    const cacheDir = getCacheDir();
+
     try {
-        await fs.mkdir(CACHE_DIR, { recursive: true });
-        return true;
+        await fs.mkdir(cacheDir, { recursive: true });
+        return cacheDir;
     } catch (error) {
-        console.error(`Failed to create cache directory at ${CACHE_DIR}:`, error);
-        return false;
+        console.error(`Error ensuring cache directory at ${cacheDir}:`, error);
+        return null;
     }
 }
 
@@ -19,13 +24,13 @@ function getCacheKey(content) {
 }
 
 export async function getCachedSummary(content) {
-    const cacheDirReady = await ensureCacheDir();
-    if (!cacheDirReady) {
+    const cacheDir = await ensureCacheDir();
+    if (!cacheDir) {
         return null;
     }
 
     const cacheKey = getCacheKey(content);
-    const cacheFile = path.join(CACHE_DIR, `${cacheKey}.txt`);
+    const cacheFile = path.join(cacheDir, `${cacheKey}.txt`);
 
     try {
         return await fs.readFile(cacheFile, 'utf8');
@@ -38,13 +43,13 @@ export async function getCachedSummary(content) {
 }
 
 export async function cacheSummary(content, summary) {
-    const cacheDirReady = await ensureCacheDir();
-    if (!cacheDirReady) {
+    const cacheDir = await ensureCacheDir();
+    if (!cacheDir) {
         return;
     }
 
     const cacheKey = getCacheKey(content);
-    const cacheFile = path.join(CACHE_DIR, `${cacheKey}.txt`);
+    const cacheFile = path.join(cacheDir, `${cacheKey}.txt`);
 
     try {
         await fs.writeFile(cacheFile, summary, 'utf8');
