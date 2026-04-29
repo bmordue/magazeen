@@ -196,46 +196,61 @@ export class ContentManager {
         }
     }
 
+    /**
+     * Validates and constructs an article object, enforcing page limits.
+     * @param {string} title - Article title
+     * @param {string} content - Article content (may contain HTML)
+     * @param {string} category - Article category
+     * @param {string|null} author - Article author
+     * @param {Array<string>} tags - Article tags
+     * @returns {Object|null} The prepared article object, or null if the page limit would be exceeded
+     * @throws {ValidationError} If the article data fails validation
+     */
+    _prepareArticle(title, content, category, author, tags) {
+        const articleData = {
+            title,
+            content,
+            category: category || config.content.defaultCategory,
+            author,
+            tags: tags || []
+        };
+
+        Validator.validateArticle(articleData);
+
+        const wordCount = this.countWords(content);
+
+        if (this.wouldExceedPageLimit(wordCount)) {
+            const pageInfo = this.getPageLimitInfo();
+            const errorMessage = `Cannot add article "${title}": would exceed page limit of ${pageInfo.pageLimit} pages (currently ${pageInfo.currentPages} pages, would become ${Math.ceil((pageInfo.totalWords + wordCount) / pageInfo.wordsPerPage)} pages)`;
+            this.logger.error(errorMessage, null, { title, wordCount, pageInfo });
+            return null;
+        }
+
+        return {
+            id: Date.now().toString(),
+            title: articleData.title,
+            content: articleData.content,
+            category: articleData.category,
+            author: articleData.author,
+            tags: articleData.tags,
+            dateAdded: new Date().toISOString(),
+            wordCount
+        };
+    }
+
     // Sync version (for backward compatibility)
     addArticle(title, content, category = "General", author = null, tags = []) {
         try {
-            const articleData = {
-                title,
-                content,
-                category: category || config.content.defaultCategory,
-                author,
-                tags: tags || []
-            };
-            
-            Validator.validateArticle(articleData);
-            
-            const wordCount = this.countWords(content);
-            
-            if (this.wouldExceedPageLimit(wordCount)) {
-                const pageInfo = this.getPageLimitInfo();
-                const errorMessage = `Cannot add article "${title}": would exceed page limit of ${pageInfo.pageLimit} pages (currently ${pageInfo.currentPages} pages, would become ${Math.ceil((pageInfo.totalWords + wordCount) / pageInfo.wordsPerPage)} pages)`;
-                this.logger.error(errorMessage, null, { title, wordCount, pageInfo });
-                return null;
-            }
-            
-            const article = {
-                id: Date.now().toString(),
-                title: articleData.title,
-                content: articleData.content,
-                category: articleData.category,
-                author: articleData.author,
-                tags: articleData.tags,
-                dateAdded: new Date().toISOString(),
-                wordCount
-            };
+            const article = this._prepareArticle(title, content, category, author, tags);
+            if (article === null) return null;
             
             this.content.articles.push(article);
             this.saveContent();
             
-            this.logger.info(`Added article: "${title}" (${wordCount} words)`, {
+            this.logger.info(`Added article: "${title}" (${article.wordCount} words)`, {
                 id: article.id,
                 category: article.category,
-                wordCount,
+                wordCount: article.wordCount,
                 totalArticles: this.content.articles.length
             });
             
@@ -260,43 +275,16 @@ export class ContentManager {
         await this._ensureInitialized();
         
         try {
-            const articleData = {
-                title,
-                content,
-                category: category || config.content.defaultCategory,
-                author,
-                tags: tags || []
-            };
-            
-            Validator.validateArticle(articleData);
-            
-            const wordCount = this.countWords(content);
-            
-            if (this.wouldExceedPageLimit(wordCount)) {
-                const pageInfo = this.getPageLimitInfo();
-                const errorMessage = `Cannot add article "${title}": would exceed page limit of ${pageInfo.pageLimit} pages (currently ${pageInfo.currentPages} pages, would become ${Math.ceil((pageInfo.totalWords + wordCount) / pageInfo.wordsPerPage)} pages)`;
-                this.logger.error(errorMessage, null, { title, wordCount, pageInfo });
-                return null;
-            }
-            
-            const article = {
-                id: Date.now().toString(),
-                title: articleData.title,
-                content: articleData.content,
-                category: articleData.category,
-                author: articleData.author,
-                tags: articleData.tags,
-                dateAdded: new Date().toISOString(),
-                wordCount
-            };
+            const article = this._prepareArticle(title, content, category, author, tags);
+            if (article === null) return null;
             
             this.content.articles.push(article);
             await this.saveContentAsync();
             
-            this.logger.info(`Added article: "${title}" (${wordCount} words)`, {
+            this.logger.info(`Added article: "${title}" (${article.wordCount} words)`, {
                 id: article.id,
                 category: article.category,
-                wordCount,
+                wordCount: article.wordCount,
                 totalArticles: this.content.articles.length
             });
             
@@ -477,11 +465,15 @@ export class ContentManager {
         };
     }
 
+    _updateChatSelection(chat, selected) {
+        chat.selected = selected;
+        this.saveContent();
+    }
+
     selectClaudeChat(chatId) {
         const chat = this._findClaudeChat(chatId);
         if (chat) {
-            chat.selected = true;
-            this.saveContent();
+            this._updateChatSelection(chat, true);
             this.logger.info(`Chat "${chat.title}" selected`, { chatId });
             console.log(`Chat "${chat.title}" selected.`);
         } else {
@@ -492,8 +484,7 @@ export class ContentManager {
     deselectClaudeChat(chatId) {
         const chat = this._findClaudeChat(chatId);
         if (chat) {
-            chat.selected = false;
-            this.saveContent();
+            this._updateChatSelection(chat, false);
             this.logger.info(`Chat "${chat.title}" deselected`, { chatId });
             console.log(`Chat "${chat.title}" deselected.`);
         } else {
@@ -504,8 +495,7 @@ export class ContentManager {
     toggleClaudeChatSelection(chatId) {
         const chat = this._findClaudeChat(chatId);
         if (chat) {
-            chat.selected = !chat.selected;
-            this.saveContent();
+            this._updateChatSelection(chat, !chat.selected);
             this.logger.info(`Chat "${chat.title}" selection toggled`, { 
                 chatId, 
                 selected: chat.selected 
