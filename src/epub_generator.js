@@ -16,6 +16,16 @@ class EPUBMagazineGenerator {
         this.year = this.currentDate.getFullYear();
     }
 
+    // Returns the CSS file name to use; subclasses can override
+    getCSSFileName() {
+        return "epub_styles.css";
+    }
+
+    // Returns fallback CSS content if the CSS file cannot be read; subclasses can override
+    getDefaultCSS() {
+        return '';
+    }
+
     // Initialize EPUB structure
     initializeEPUB(title, author, description) {
         this.title = title;
@@ -33,12 +43,14 @@ class EPUBMagazineGenerator {
         this.oebps = this.zip.folder("OEBPS");
         
         // Add CSS
+        const cssFileName = this.getCSSFileName();
         let cssContent = '';
         try {
-            const cssPath = path.join(path.dirname(fileURLToPath(import.meta.url)), "epub_styles.css");
+            const cssPath = path.join(path.dirname(fileURLToPath(import.meta.url)), cssFileName);
             cssContent = readFileSync(cssPath, "utf-8");
         } catch (error) {
-            console.error(`Warning: Could not read 'epub_styles.css'. Proceeding without custom styles. Error: ${error.message}`);
+            console.error(`Warning: Could not read '${cssFileName}'. Proceeding without custom styles. Error: ${error.message}`);
+            cssContent = this.getDefaultCSS();
         }
         this.oebps.file("styles.css", cssContent);
         
