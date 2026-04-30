@@ -17,6 +17,7 @@ Magazeen is a Node.js ES modules project that generates personal EPUB magazines 
 ### Application Startup and Usage
 - **CLI Interface:** `npx magazeen` or `node src/cli.js` -- starts interactive menu with 10 options (add article, interest, chat highlight, manage Claude chats, generate magazine, view content, set page limit, export scratch file, apply scratch file, exit).
 - **Web Server:** `npm run start:web` -- starts Express server on http://localhost:3000. NEVER CANCEL. Server runs continuously.
+- **Web Server (dev, with stub identity):** `DEV_STUB_USER="alice@example.com:Alice Smith:editors" npm run start:web` -- recommended way to exercise the web server locally without a real reverse proxy. The format is `email:Display Name:group1,group2`.
 - **Create Template:** `npx magazeen --template` -- creates `out/magazine-content.json` with sample content.
 - **Import Claude Chats:** `npx magazeen --import-claude <path-to-json>` -- imports chat data from Claude JSON export format.
 - **Import Claude Chats from URL:** `npx magazeen --import-claude-url <url>` -- imports chat data from Claude JSON export format via URL.
@@ -52,9 +53,11 @@ Always run these validation scenarios after making changes:
 7. **Verify EPUB:** `file out/magazine-*.epub` should show "Zip data" (EPUB is a ZIP file)
 
 ### Web Server Functionality Test
-1. **Start Server:** `npm run start:web` (runs on port 3000)
-2. **Test Response:** `curl -s http://localhost:3000` should return HTML with upload form
-3. **Verify:** Upload form should be accessible and functional
+1. **Start Server:** `DEV_STUB_USER="alice@example.com:Alice Smith:editors" npm run start:web` (runs on port 3000)
+2. **Test Open Route:** `curl -s http://localhost:3000` should return HTML with upload form
+3. **Test Protected Route with Remote-User header:** `curl -s -X POST http://localhost:3000/upload -H "Remote-User: alice@example.com" -F "chatExport=@test/fixtures/sampleClaudeExport.json"` should return the chat selection page (not 401)
+4. **Test Unauthenticated Access:** `curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:3000/upload` (no Remote-User header, no DEV_STUB_USER) should return 401
+5. **Verify:** Upload form should be accessible and functional
 
 ### Test Data Verification
 - **Sample Chat Export:** `test/fixtures/sampleClaudeExport.json` contains valid and malformed test data
@@ -90,6 +93,8 @@ Set timeouts appropriately and NEVER cancel these operations:
 src/
 ├── cli.js                 # Command Line Interface (handles all CLI options)
 ├── server.js              # Express web server (handles web interface)
+├── web/
+│   └── auth.js            # Auth middleware (loadUser, requireAuth, requireProxyAuth)
 ├── contentManager.js      # Content storage and management (manages all content types)
 ├── magazineGenerator.js   # Main EPUB generation logic (creates EPUB files)
 ├── articleGenerator.js    # Article formatting (formats content for EPUB)

@@ -5,6 +5,7 @@ import crypto from 'crypto';
 import { tmpdir } from 'os';
 
 import { kv as vercelKv } from '@vercel/kv';
+import { loadUser, requireAuth } from './web/auth.js';
 
 // Mock KV for local development if environment variables are missing
 const store = new Map();
@@ -32,12 +33,26 @@ import { ArticleGenerator } from './articleGenerator.js';
 import { MagazineGenerator } from './magazineGenerator.js';
 import { renderTemplate } from './templateRenderer.js';
 
+// Trust the first proxy (nginx/Authelia) so req.ip is the real client IP.
+app.set('trust proxy', 1);
+app.disable('x-powered-by');
+
+// Security headers
+app.use((_req, res, next) => {
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  next();
+});
 
 // Middleware to parse URL-encoded bodies (as sent by HTML forms)
 app.use(express.urlencoded({ extended: true }));
 
 // Serve static files from the 'public' directory
 app.use(express.static('public'));
+
+// Resolve and attach the current principal for every request.
+app.use(loadUser);
 
 // Configure multer for file uploads
 const upload = multer({ dest: tmpdir(), limits: { fileSize: 10 * 1024 * 1024 } }); // e.g., 10MB limit
@@ -86,7 +101,7 @@ function escapeHtml(unsafe) {
     .replace(/'/g, '&#039;');
 }
 
-app.post('/upload', upload.single('chatExport'), async (req, res) => {
+app.post('/upload', requireAuth, upload.single('chatExport'), async (req, res) => {
   if (!req.file) {
     return res.status(400).send(renderErrorPage('No file uploaded. Please select a JSON file and try again.'));
   }
@@ -136,7 +151,7 @@ app.post('/upload', upload.single('chatExport'), async (req, res) => {
   }
 });
 
-app.post('/generate-epub', async (req, res) => {
+app.post('/generate-epub', requireAuth, async (req, res) => {
   const { selectedChats: selectedChatIds, sessionId } = req.body;
   let kvDataRetrieved = false; // Flag to ensure cleanup even if errors occur after retrieval
 
@@ -222,9 +237,16 @@ function renderErrorPage(message) {
 }
 
 if (process.env.NODE_ENV !== 'test') {
-  app.listen(port, () => {
-    console.log(`Server listening at http://localhost:${port}`);
-  });
+  const host = process.env.NODE_ENV === 'production' ? '127.0.0.1' : undefined;
+  if (host) {
+    app.listen(port, host, () => {
+      console.log(`Server listening at http://${host}:${port}`);
+    });
+  } else {
+    app.listen(port, () => {
+      console.log(`Server listening at http://localhost:${port}`);
+    });
+  }
 }
 
 export default app;
