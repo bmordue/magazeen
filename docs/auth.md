@@ -39,7 +39,6 @@ Emails are always normalised to **lowercase and trimmed**.
 | `NODE_ENV`             | `development` | Controls `127.0.0.1` binding and dev-stub gating                |
 | `REQUIRE_PROXY_AUTH`   | (unset)       | When `true`, disables `DEV_STUB_USER` and enables strict mode   |
 | `DEV_STUB_USER`        | (unset)       | Dev-only fake identity (`email:Display Name:group1,group2`)      |
-| `ADMIN_GROUP`          | `admins`      | Group name granting admin privileges (reserved for future use)   |
 | `MAGAZEEN_HASH_SECRET` | (unset)       | HMAC secret for hashing user emails in scoped content paths. If unset, plain sha256 is used. |
 | `MAGAZEEN_USER_SCOPED` | (unset)       | When `true`, namespace content files by sha256(email)            |
 | `PORT`                 | `3000`        | Existing port variable, keep as-is                               |

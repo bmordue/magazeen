@@ -14,7 +14,7 @@
 
 import express from 'express';
 import request from 'supertest';
-import { loadUser, requireAuth, requireProxyAuth, GUEST_USER } from '../src/web/auth.js';
+import { loadUser, requireAuth, requireProxyAuth } from '../src/web/auth.js';
 
 // ─── Test app factory ────────────────────────────────────────────────────────
 

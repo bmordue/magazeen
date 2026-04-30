@@ -5,7 +5,7 @@ import crypto from 'crypto';
 import { tmpdir } from 'os';
 
 import { kv as vercelKv } from '@vercel/kv';
-import { loadUser, requireAuth } from './web/auth.js';
+import { loadUser, requireAuth, resolveContentPath } from './web/auth.js';
 
 // Mock KV for local development if environment variables are missing
 const store = new Map();
@@ -32,6 +32,7 @@ import { ContentManager } from './contentManager.js';
 import { ArticleGenerator } from './articleGenerator.js';
 import { MagazineGenerator } from './magazineGenerator.js';
 import { renderTemplate } from './templateRenderer.js';
+import { config } from './config.js';
 
 // Trust the first proxy (nginx/Authelia) so req.ip is the real client IP.
 app.set('trust proxy', 1);
@@ -179,7 +180,8 @@ app.post('/generate-epub', requireAuth, async (req, res) => {
       return res.status(400).send(renderErrorPage('No chats were selected to include in the EPUB. Please select at least one chat.'));
     }
 
-    const contentManager = new ContentManager();
+    const contentPath = resolveContentPath(config.paths.contentFile, res.locals.user);
+    const contentManager = new ContentManager(contentPath);
     const articleGenerator = new ArticleGenerator(contentManager);
     const magazineGenerator = new MagazineGenerator(contentManager, articleGenerator);
 

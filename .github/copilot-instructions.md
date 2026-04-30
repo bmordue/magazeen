@@ -53,10 +53,10 @@ Always run these validation scenarios after making changes:
 7. **Verify EPUB:** `file out/magazine-*.epub` should show "Zip data" (EPUB is a ZIP file)
 
 ### Web Server Functionality Test
-1. **Start Server:** `DEV_STUB_USER="alice@example.com:Alice Smith:editors" npm run start:web` (runs on port 3000)
+1. **Start Server (with stub identity):** `DEV_STUB_USER="alice@example.com:Alice Smith:editors" npm run start:web` (runs on port 3000)
 2. **Test Open Route:** `curl -s http://localhost:3000` should return HTML with upload form
 3. **Test Protected Route with Remote-User header:** `curl -s -X POST http://localhost:3000/upload -H "Remote-User: alice@example.com" -F "chatExport=@test/fixtures/sampleClaudeExport.json"` should return the chat selection page (not 401)
-4. **Test Unauthenticated Access:** `curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:3000/upload` (no Remote-User header, no DEV_STUB_USER) should return 401
+4. **Test Unauthenticated Access (separate shell, no DEV_STUB_USER set):** `curl -s -o /dev/null -w "%{http_code}" -X POST http://localhost:3000/upload` should return 401 only when the server was started **without** `DEV_STUB_USER` (e.g. `npm run start:web`)
 5. **Verify:** Upload form should be accessible and functional
 
 ### Test Data Verification
