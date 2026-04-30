@@ -135,7 +135,10 @@ export function requireProxyAuth(req, res, next) {
  * Returns the content-file path for a user, honouring MAGAZEEN_USER_SCOPED.
  *
  * When MAGAZEEN_USER_SCOPED=true the file is placed under a directory named
- * by the sha256 of the user's email so content stays isolated per user.
+ * by the HMAC-SHA256 (using MAGAZEEN_HASH_SECRET) of the user's email, so
+ * content stays isolated per user and the directory name cannot be guessed
+ * from the email alone. Falls back to plain sha256 when no secret is set.
+ *
  * When unset (default) the single shared path is returned unchanged.
  *
  * @param {string} basePath  - e.g. 'out/magazine-content.json'
@@ -149,7 +152,10 @@ export function resolveContentPath(basePath, user) {
   if (!user || user.id === GUEST_USER.id) {
     return basePath;
   }
-  const hash = crypto.createHash('sha256').update(user.email).digest('hex');
+  const secret = process.env.MAGAZEEN_HASH_SECRET;
+  const hash = secret
+    ? crypto.createHmac('sha256', secret).update(user.email).digest('hex')
+    : crypto.createHash('sha256').update(user.email).digest('hex');
   // Replace the filename portion, keeping the directory and basename.
   const lastSlash = basePath.lastIndexOf('/');
   if (lastSlash === -1) {

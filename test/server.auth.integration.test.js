@@ -63,7 +63,8 @@ describe('Auth integration – protected endpoints', () => {
   const originalEnv = process.env;
 
   beforeEach(() => {
-    process.env = { ...originalEnv, NODE_ENV: 'test' };
+    process.env = { ...originalEnv };
+    delete process.env.NODE_ENV;
     delete process.env.DEV_STUB_USER;
     delete process.env.REQUIRE_PROXY_AUTH;
     app = buildTestApp();
