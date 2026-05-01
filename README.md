@@ -89,13 +89,29 @@ In the interactive menu (option 7), you can view current page statistics and adj
 - Allows dynamic adjustment of the page limit
 
 
+## Authentication Model
+
+The web server (`npm run start:web`) delegates authentication to an upstream reverse proxy (nginx + Authelia or oauth2-proxy). It trusts the `Remote-User`, `Remote-Email`, `Remote-Name`, and `Remote-Groups` headers injected by the proxy and **never** handles credentials, passwords, or tokens directly.
+
+For local development without a real proxy, set `DEV_STUB_USER`:
+
+```bash
+DEV_STUB_USER="alice@example.com:Alice Smith:admins" npm run start:web
+```
+
+See [`docs/auth.md`](docs/auth.md) for the full deployment topology, nginx configuration examples, environment variables, and threat model.
+
 ## Web Interface (New)
 
 A web interface is available for uploading JSON chat exports (e.g., from Claude), selecting specific chats, and downloading the generated EPUB.
 
 ### 1. Start the Web Server
 ```bash
-npm run start:web
+# Development (with a stub user identity)
+DEV_STUB_USER="alice@example.com:Alice Smith:editors" npm run start:web
+
+# Production (behind nginx + Authelia)
+NODE_ENV=production REQUIRE_PROXY_AUTH=true npm run start:web
 ```
 This will start the server on `http://localhost:3000`.
 
@@ -106,7 +122,7 @@ This will start the server on `http://localhost:3000`.
 - Select the chats you want to include in your EPUB.
 - Click "Generate EPUB". The EPUB file will be compiled and downloaded by your browser.
 
-**Note:** The web interface currently supports the Claude JSON export format. Uploaded files are processed and then deleted from the server; generated EPUBs are also deleted after download.
+**Note:** The web interface currently supports the Claude JSON export format. Uploaded files are processed and then deleted from the server; generated EPUBs are also deleted after download. Upload and generation endpoints require authentication (a `Remote-User` header from the proxy, or `DEV_STUB_USER` in development).
 
 ## Importing Claude Chats
 
